@@ -347,6 +347,137 @@ void R_LightPoint (vec3_t p, vec3_t color)
 	VectorScale (color, gl_modulate->value, color);
 }
 
+// This sets up opengl lights
+void R_RealLights (vec3_t ambient, float rgba[4], vec3_t diffstr)
+{
+	float		point[4] = {0,0,0,0};
+	vec3_t		end;
+	float		r;
+	int			lnum;
+	dlight_t	*dl;
+	float		light;
+	vec3_t		dist;
+	float		color[4] = {0,0,0,1};
+	float		zero[4] = {0,0,0,1};
+	float		add;
+	float		an;
+	float		dir[4];
+	GLint		max_lights;
+	int			count;
+	
+	// Setup material
+	qglMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, rgba);
+
+	if (!r_worldmodel->lightdata)
+	{
+		color[0] = 1.0;
+		color[1] = 1.0;
+		color[2] = 1.0;
+	}
+	else
+	{
+		VectorCopy(currententity->origin,point);
+		end[0] = point[0];
+		end[1] = point[1];
+		end[2] = point[2] - 2048;
+		
+		r = RecursiveLightPoint (r_worldmodel->nodes, point, end);
+
+		if (r == -1)
+		{
+			VectorCopy(currententity->origin,point);
+			end[0] = point[0];
+			end[1] = point[1];
+			end[2] = point[2] - 2048;
+			point[2] += 16;
+
+			r = RecursiveLightPoint (r_worldmodel->nodes, point, end);
+		}
+
+		if (r == -1)
+			VectorSet(color,0,0,0);
+		else
+			VectorCopy(pointcolor, color);
+	}
+
+	// Basic ambient
+	VectorAdd(ambient, color, color);
+	color[3] = 1.0;
+	qglLightModelfv(GL_LIGHT_MODEL_AMBIENT, color);
+
+	an = currententity->angles[1]/180*M_PI;
+	dir[0] = cos(an);
+	dir[1] = sin(an);
+	dir[2] = 1;
+	VectorNormalize (dir);
+	dir[3] = 0;
+
+	color[0] = 0.5-color[0]/4;
+	color[1] = 0.5-color[1]/4;
+	color[2] = 0.5-color[2]/4;
+	VectorCopy(color, diffstr);
+	point[0] = -0.5;
+	point[1] = 0.5;
+	point[2] = 0;
+
+	// Setup light 0
+	qglLightfv(GL_LIGHT0, GL_POSITION, dir);
+	qglLightfv(GL_LIGHT0, GL_DIFFUSE, color);
+	//VectorScale(color, 0.5, color);
+	//qglLightfv(GL_LIGHT0, GL_AMBIENT, color);
+	qglEnable (GL_LIGHT0);
+
+	qglGetIntegerv(GL_MAX_LIGHTS, &max_lights);
+
+	//
+	// add dynamic lights (directional) (linear falloff of dist dl->intensity) 
+	//
+	light = 0;
+	dl = r_newrefdef.dlights;
+	count = 1;
+	for (lnum=0 ; lnum<r_newrefdef.num_dlights ; lnum++, dl++)
+	{
+		VectorSubtract (currententity->origin,
+						dl->origin,
+						dist);
+		add = dl->intensity - VectorLength(dist);
+		add *= (1.0/256);
+		if (add > 0)
+		{
+			VectorScale(dl->color, add, color);
+
+			// We 'are' the light, make our colour ambient
+			if (dist[0] == 0 && dist[1] == 0 && dist[2] == 0) 
+			{
+				qglLightfv(GL_LIGHT0+count, GL_AMBIENT, color);
+				qglLightfv(GL_LIGHT0+count, GL_DIFFUSE, zero);
+			}
+			// Otherwise make the light diffuse
+			else
+			{
+				qglLightfv(GL_LIGHT0+count, GL_DIFFUSE, color);
+				qglLightfv(GL_LIGHT0+count, GL_AMBIENT, zero);
+
+				VectorNegate(dist, point);
+				point[0] = 0;
+
+				qglLightfv(GL_LIGHT0+count, GL_POSITION, point);
+			}
+
+			qglEnable (GL_LIGHT0+count);
+
+			count++;
+			if (count >= max_lights) break;
+		}
+	}
+
+	while (count < max_lights)
+	{
+		qglDisable (GL_LIGHT0+count);
+		count++;
+	}
+}
+
 
 //===================================================================
 
@@ -464,7 +595,8 @@ void R_BuildLightMap (msurface_t *surf, byte *dest, int stride)
 	lightstyle_t	*style;
 	int monolightmap;
 
-	if ( surf->texinfo->flags & (SURF_SKY|SURF_TRANS33|SURF_TRANS66|SURF_WARP) )
+//	if ( surf->texinfo->flags & (SURF_SKY|SURF_TRANS33|SURF_TRANS66|SURF_WARP))
+	if ( surf->texinfo->flags & (SURF_SKY|SURF_WARP))
 		ri.Sys_Error (ERR_DROP, "R_BuildLightMap called for non-lit surface");
 
 	smax = (surf->extents[0]>>4)+1;

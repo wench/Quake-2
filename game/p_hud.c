@@ -92,6 +92,7 @@ void BeginIntermission (edict_t *targ)
 
 	level.intermissiontime = level.time;
 	level.changemap = targ->map;
+	level.changemap_target = targ->target;
 
 	if (strstr(level.changemap, "*"))
 	{
@@ -231,7 +232,7 @@ void DeathmatchScoreboardMessage (edict_t *ent, edict_t *killer)
 			j = strlen(entry);
 			if (stringlength + j > 1024)
 				break;
-			strcpy (string + stringlength, entry);
+			strcat_s (string, sizeof(string), entry);
 			stringlength += j;
 		}
 
@@ -242,7 +243,7 @@ void DeathmatchScoreboardMessage (edict_t *ent, edict_t *killer)
 		j = strlen(entry);
 		if (stringlength + j > 1024)
 			break;
-		strcpy (string + stringlength, entry);
+		strcat_s(string, sizeof(string), entry);
 		stringlength += j;
 	}
 
@@ -377,7 +378,7 @@ G_SetStats
 void G_SetStats (edict_t *ent)
 {
 	gitem_t		*item;
-	int			index, cells;
+	int			index, cells=0;
 	int			power_armor_type;
 
 	//

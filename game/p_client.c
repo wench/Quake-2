@@ -515,7 +515,7 @@ void player_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int damag
 	self->s.sound = 0;
 	self->client->weapon_sound = 0;
 
-	self->maxs[2] = -8;
+	self->s.maxs[2] = -8;
 
 //	self->solid = SOLID_NOT;
 	self->svflags |= SVF_DEADMONSTER;
@@ -560,29 +560,29 @@ void player_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int damag
 	{	// normal death
 		if (!self->deadflag)
 		{
-			static int i;
+				static int i;
 
 			i = (i+1)%3;
 			// start a death animation
 			self->client->anim_priority = ANIM_DEATH;
 			if (self->client->ps.pmove.pm_flags & PMF_DUCKED)
 			{
-				self->s.frame = FRAME_crdeath1-1;
-				self->client->anim_end = FRAME_crdeath5;
+				self->s.frame = self->client->frame_crdeath1-1;
+				self->client->anim_end = self->client->frame_crdeath5;
 			}
 			else switch (i)
 			{
 			case 0:
-				self->s.frame = FRAME_death101-1;
-				self->client->anim_end = FRAME_death106;
+				self->s.frame = self->client->frame_death101-1;
+				self->client->anim_end = self->client->frame_death106;
 				break;
 			case 1:
-				self->s.frame = FRAME_death201-1;
-				self->client->anim_end = FRAME_death206;
+				self->s.frame = self->client->frame_death201-1;
+				self->client->anim_end = self->client->frame_death206;
 				break;
 			case 2:
-				self->s.frame = FRAME_death301-1;
-				self->client->anim_end = FRAME_death308;
+				self->s.frame = self->client->frame_death301-1;
+				self->client->anim_end = self->client->frame_death308;
 				break;
 			}
 			gi.sound (self, CHAN_VOICE, gi.soundindex(va("*death%i.wav", (rand()%4)+1)), 1, ATTN_NORM, 0);
@@ -898,7 +898,7 @@ void	SelectSpawnPoint (edict_t *ent, vec3_t origin, vec3_t angles)
 
 		if (!spot)
 		{
-			if (!game.spawnpoint[0])
+			//if (!game.spawnpoint[0])
 			{	// there wasn't a spawnpoint without a target, so use any
 				spot = G_Find (spot, FOFS(classname), "info_player_start");
 			}
@@ -960,8 +960,8 @@ void CopyToBodyQue (edict_t *ent)
 	body->s.number = body - g_edicts;
 
 	body->svflags = ent->svflags;
-	VectorCopy (ent->mins, body->mins);
-	VectorCopy (ent->maxs, body->maxs);
+	VectorCopy (ent->s.mins, body->s.mins);
+	VectorCopy (ent->s.maxs, body->s.maxs);
 	VectorCopy (ent->absmin, body->absmin);
 	VectorCopy (ent->absmax, body->absmax);
 	VectorCopy (ent->size, body->size);
@@ -1056,8 +1056,8 @@ void spectator_respawn (edict_t *ent)
 		}
 	}
 
-	// clear score on respawn
-	ent->client->pers.score = ent->client->resp.score = 0;
+	// clear client on respawn
+	ent->client->resp.score = ent->client->pers.score = 0;
 
 	ent->svflags &= ~SVF_NOCLIENT;
 	PutClientInServer (ent);
@@ -1085,6 +1085,213 @@ void spectator_respawn (edict_t *ent)
 
 //==============================================================
 
+void SetupClientFrames(edict_t *ent)
+{
+	// An 'anox' ent
+	if (ent->anox)
+	{
+		qboolean com = false;
+		int i;
+		anox_entity_desc_t *desc = ent->anox;
+		md2_info_t *info;
+
+		ent->s.modelindex2 = -1;
+		ent->anox = desc;
+		ent->s.modelindex = gi.modelindex(desc->model_path);
+		ent->s.skinnum = desc->profile;
+
+		VectorCopy (desc->mins, ent->s.mins);
+		VectorCopy (desc->maxs, ent->s.maxs);
+
+		info = gi.GetModelInfo(gi.modelindex(desc->model_path));
+
+		memset(&(ent->client->frame_stand01), 0, ((char*)&(ent->client->frame_death308)) - ((char*)&(ent->client->frame_stand01)));
+
+		// Some jumping for stiletto
+		if (strstr(desc->classname,"_com")) com = true;
+
+		for (i = 0; i < info->num_framesets; i++)
+		{
+			if (Q_strcasecmp(info->frameset[i].anim, "walk") == 0)
+			{
+				ent->client->frame_walk1 = info->frameset[i].first_frame;
+				ent->client->frame_walk6 = info->frameset[i].first_frame+info->frameset[i].num_frames-1;
+				ent->client->frame_crwalk1 = info->frameset[i].first_frame;
+				ent->client->frame_crwalk6 = info->frameset[i].first_frame+info->frameset[i].num_frames-1;
+			}
+			else if (Q_strcasecmp(info->frameset[i].anim, "run") == 0)
+			{
+				ent->client->frame_run1 = info->frameset[i].first_frame;
+				ent->client->frame_run6 = info->frameset[i].first_frame+info->frameset[i].num_frames-1;
+			}
+			else if (Q_strcasecmp(info->frameset[i].anim, "die") == 0)
+			{
+				ent->client->frame_death101 = info->frameset[i].first_frame;
+				ent->client->frame_death106 = info->frameset[i].first_frame+info->frameset[i].num_frames-1;
+				ent->client->frame_death201 = info->frameset[i].first_frame;
+				ent->client->frame_death206 = info->frameset[i].first_frame+info->frameset[i].num_frames-1;
+				ent->client->frame_death301 = info->frameset[i].first_frame;
+				ent->client->frame_death308 = info->frameset[i].first_frame+info->frameset[i].num_frames-1;
+				ent->client->frame_crdeath1 = info->frameset[i].first_frame;
+				ent->client->frame_crdeath5 = info->frameset[i].first_frame+info->frameset[i].num_frames-1;
+			}
+			else if (Q_strcasecmp(info->frameset[i].anim, "hit") == 0)
+			{
+				ent->client->frame_pain101 = info->frameset[i].first_frame;
+				ent->client->frame_pain104 = info->frameset[i].first_frame+info->frameset[i].num_frames-1;
+				ent->client->frame_pain201 = info->frameset[i].first_frame;
+				ent->client->frame_pain204 = info->frameset[i].first_frame+info->frameset[i].num_frames-1;
+				ent->client->frame_pain301 = info->frameset[i].first_frame;
+				ent->client->frame_pain304 = info->frameset[i].first_frame+info->frameset[i].num_frames-1;
+				ent->client->frame_crpain1 = info->frameset[i].first_frame;
+				ent->client->frame_crpain4 = info->frameset[i].first_frame+info->frameset[i].num_frames-1;
+			}
+			else if (Q_strcasecmp(info->frameset[i].name, "gest_a") == 0 ||
+					Q_strcasecmp(info->frameset[i].name, "cine_a") == 0 ||
+					Q_strcasecmp(info->frameset[i].anim, "win") == 0)
+			{
+				ent->client->frame_flip01 = info->frameset[i].first_frame;
+				ent->client->frame_flip12 = info->frameset[i].first_frame+info->frameset[i].num_frames-1;
+			}
+			else if (Q_strcasecmp(info->frameset[i].name, "gest_b") == 0 ||
+					Q_strcasecmp(info->frameset[i].name, "cine_b") == 0)
+			{
+				ent->client->frame_salute01 = info->frameset[i].first_frame;
+				ent->client->frame_salute11 = info->frameset[i].first_frame+info->frameset[i].num_frames-1;
+			}
+			else if (Q_strcasecmp(info->frameset[i].name, "gest_c") == 0 ||
+					Q_strcasecmp(info->frameset[i].name, "cine_c") == 0)
+			{
+				ent->client->frame_taunt01 = info->frameset[i].first_frame;
+				ent->client->frame_taunt17 = info->frameset[i].first_frame+info->frameset[i].num_frames-1;
+			}
+			else if (Q_strcasecmp(info->frameset[i].name, "gest_d") == 0 ||
+					Q_strcasecmp(info->frameset[i].name, "cine_d") == 0)
+			{
+				ent->client->frame_wave01 = info->frameset[i].first_frame;
+				ent->client->frame_wave11 = info->frameset[i].first_frame+info->frameset[i].num_frames-1;
+			}
+			else if (Q_strcasecmp(info->frameset[i].name, "gest_e") == 0 ||
+					Q_strcasecmp(info->frameset[i].name, "cine_e") == 0)
+			{
+				ent->client->frame_point01 = info->frameset[i].first_frame;
+				ent->client->frame_point12 = info->frameset[i].first_frame+info->frameset[i].num_frames-1;
+			}
+			else if (Q_strcasecmp(info->frameset[i].name, "amb_a") == 0)
+			{
+				ent->client->frame_stand01 = info->frameset[i].first_frame;
+				ent->client->frame_stand40 = info->frameset[i].first_frame+info->frameset[i].num_frames-1;
+				ent->client->frame_crstnd01 = info->frameset[i].first_frame;
+				ent->client->frame_crstnd19 = info->frameset[i].first_frame+info->frameset[i].num_frames-1;
+			}
+			else if (Q_strcasecmp(info->frameset[i].name, "amb_c") == 0)
+			{
+				if (com)
+				{
+					ent->client->frame_stand01 = info->frameset[i].first_frame;
+					ent->client->frame_stand40 = info->frameset[i].first_frame+info->frameset[i].num_frames-1;
+				}
+				else
+				{
+					ent->client->frame_crstnd01 = info->frameset[i].first_frame;
+					ent->client->frame_crstnd19 = info->frameset[i].first_frame+info->frameset[i].num_frames-1;
+				}
+			}
+			else if (Q_strcasecmp(info->frameset[i].name, "atak1_a") == 0)
+			{
+				ent->client->frame_attack1 = info->frameset[i].first_frame;
+				ent->client->frame_attack8 = info->frameset[i].first_frame+info->frameset[i].num_frames-1;
+			}
+			else if (Q_strcasecmp(info->frameset[i].name, "atakr1_m") == 0)
+			{
+				ent->client->frame_attack1 = info->frameset[i].first_frame;
+				ent->client->frame_attack8 = info->frameset[i].first_frame+info->frameset[i].num_frames-1;
+			}
+		}
+
+		if (!ent->client->frame_run1) ent->client->frame_run1 = ent->client->frame_walk1;
+		if (!ent->client->frame_run6) ent->client->frame_run6 = ent->client->frame_walk6;
+		if (!ent->client->frame_run1) ent->client->frame_run1 = ent->client->frame_walk1;
+		if (!ent->client->frame_run6) ent->client->frame_run6 = ent->client->frame_walk6;
+
+		// Some jumping for stiletto
+		if (!Q_strcasecmp(desc->classname,"character_stiletto_com"))
+		{
+			ent->client->frame_jump1 = 55;
+			ent->client->frame_jump2 = 56;
+			ent->client->frame_jump3 = 47;
+			ent->client->frame_jump6 = 50;
+		}
+
+		VectorCopy (desc->mins, ent->client->ps.stand_mins);
+		VectorCopy (desc->maxs, ent->client->ps.stand_maxs);
+		ent->client->ps.run_speed = desc->run_speed;//160;		// 300 quake, 160 anox
+		ent->client->ps.walk_speed = desc->walk_speed;//68;		// 300 quake, 68 anox
+		if (ent->client->ps.run_speed < ent->client->ps.walk_speed)
+			ent->client->ps.run_speed = ent->client->ps.walk_speed;
+		ent->client->ps.duck_speed = desc->walk_speed;//68;		// 100 quake, 68 anox
+	}
+	else
+	{
+		const vec3_t	mins = {-16, -16, -24};
+		const vec3_t	maxs = {16, 16, 32};
+
+		VectorCopy (mins, ent->client->ps.stand_mins);
+		VectorCopy (maxs, ent->client->ps.stand_maxs);
+		ent->client->ps.run_speed = 300;		// 300 quake, 160 anox
+		ent->client->ps.walk_speed = 300;		// 300 quake, 68 anox
+		ent->client->ps.duck_speed = 68;		// 100 quake, 68 anox
+
+		ent->s.modelindex = -1;
+		ent->s.modelindex2 = -1;
+		ent->s.skinnum = ent - g_edicts - 1;
+
+		ent->client->frame_stand01 = FRAME_stand01;
+		ent->client->frame_stand40 = FRAME_stand40;
+		ent->client->frame_run1 = FRAME_run1;
+		ent->client->frame_run6 = FRAME_run6;
+		ent->client->frame_walk1 = FRAME_run1;
+		ent->client->frame_walk6 = FRAME_run6;
+		ent->client->frame_attack1 = FRAME_attack1;
+		ent->client->frame_attack8 = FRAME_attack8;
+		ent->client->frame_pain101 = FRAME_pain101;
+		ent->client->frame_pain104 = FRAME_pain104;
+		ent->client->frame_pain201 = FRAME_pain201;
+		ent->client->frame_pain204 = FRAME_pain204;
+		ent->client->frame_pain301 = FRAME_pain301;
+		ent->client->frame_pain304 = FRAME_pain304;
+		ent->client->frame_jump1 = FRAME_jump1;
+		ent->client->frame_jump2 = FRAME_jump2;
+		ent->client->frame_jump3 = FRAME_jump3;
+		ent->client->frame_jump6 = FRAME_jump6;
+		ent->client->frame_flip01 = FRAME_flip01;
+		ent->client->frame_flip12 = FRAME_flip12;
+		ent->client->frame_salute01 = FRAME_salute01;
+		ent->client->frame_salute11 = FRAME_salute11;
+		ent->client->frame_taunt01 = FRAME_taunt01;
+		ent->client->frame_taunt17 = FRAME_taunt17;
+		ent->client->frame_wave01 = FRAME_wave01;
+		ent->client->frame_wave11 = FRAME_wave11;
+		ent->client->frame_point01 = FRAME_point01;
+		ent->client->frame_point12 = FRAME_point12;
+		ent->client->frame_crstnd01 = FRAME_crstnd01;
+		ent->client->frame_crstnd19 = FRAME_crstnd19;
+		ent->client->frame_crwalk1 = FRAME_crwalk1;
+		ent->client->frame_crwalk6 = FRAME_crwalk6;
+		ent->client->frame_crattak1 = FRAME_crattak1;
+		ent->client->frame_crattak9 = FRAME_crattak9;
+		ent->client->frame_crpain1 = FRAME_crpain1;
+		ent->client->frame_crpain4 = FRAME_crpain4;
+		ent->client->frame_crdeath1 = FRAME_crdeath1;
+		ent->client->frame_crdeath5 = FRAME_crdeath5;
+		ent->client->frame_death101 = FRAME_death101;
+		ent->client->frame_death106 = FRAME_death106;
+		ent->client->frame_death201 = FRAME_death201;
+		ent->client->frame_death206 = FRAME_death206;
+		ent->client->frame_death301 = FRAME_death301;
+		ent->client->frame_death308 = FRAME_death308;
+	}
+}
 
 /*
 ===========
@@ -1145,6 +1352,9 @@ void PutClientInServer (edict_t *ent)
 	}
 	else
 	{
+		char		userinfo[MAX_INFO_STRING];
+		memcpy (userinfo, client->pers.userinfo, sizeof(userinfo));
+		ClientUserinfoChanged (ent, userinfo);
 		memset (&resp, 0, sizeof(resp));
 	}
 
@@ -1180,8 +1390,8 @@ void PutClientInServer (edict_t *ent)
 	ent->flags &= ~FL_NO_KNOCKBACK;
 	ent->svflags &= ~SVF_DEADMONSTER;
 
-	VectorCopy (mins, ent->mins);
-	VectorCopy (maxs, ent->maxs);
+	VectorCopy (mins, ent->s.mins);
+	VectorCopy (maxs, ent->s.maxs);
 	VectorClear (ent->velocity);
 
 	// clear playerstate values
@@ -1208,8 +1418,8 @@ void PutClientInServer (edict_t *ent)
 
 	// clear entity state values
 	ent->s.effects = 0;
-	ent->s.modelindex = 255;		// will use the skin specified model
-	ent->s.modelindex2 = 255;		// custom gun model
+	ent->s.modelindex = -1;		// will use the skin specified model
+	ent->s.modelindex2 = -1;		// custom gun model
 	// sknum is player num and weapon number
 	// weapon number will be added in changeweapon
 	ent->s.skinnum = ent - g_edicts - 1;
@@ -1221,13 +1431,18 @@ void PutClientInServer (edict_t *ent)
 
 	// set the delta angle
 	for (i=0 ; i<3 ; i++)
+	{
 		client->ps.pmove.delta_angles[i] = ANGLE2SHORT(spawn_angles[i] - client->resp.cmd_angles[i]);
+	}
 
 	ent->s.angles[PITCH] = 0;
 	ent->s.angles[YAW] = spawn_angles[YAW];
 	ent->s.angles[ROLL] = 0;
 	VectorCopy (ent->s.angles, client->ps.viewangles);
 	VectorCopy (ent->s.angles, client->v_angle);
+
+	// Sets up the clients frames
+	SetupClientFrames(ent);
 
 	// spawn a spectator
 	if (client->pers.spectator) {
@@ -1272,11 +1487,18 @@ void ClientBeginDeathmatch (edict_t *ent)
 	// locate ent at a spawn point
 	PutClientInServer (ent);
 
-	// send effect
-	gi.WriteByte (svc_muzzleflash);
-	gi.WriteShort (ent-g_edicts);
-	gi.WriteByte (MZ_LOGIN);
-	gi.multicast (ent->s.origin, MULTICAST_PVS);
+	if (level.intermissiontime)
+	{
+		MoveClientToIntermission (ent);
+	}
+	else
+	{
+		// send effect
+		gi.WriteByte (svc_muzzleflash);
+		gi.WriteShort (ent-g_edicts);
+		gi.WriteByte (MZ_LOGIN);
+		gi.multicast (ent->s.origin, MULTICAST_PVS);
+	}
 
 	gi.bprintf (PRINT_HIGH, "%s entered the game\n", ent->client->pers.netname);
 
@@ -1361,6 +1583,7 @@ The game can override any of the settings in place
 */
 void ClientUserinfoChanged (edict_t *ent, char *userinfo)
 {
+	anox_entity_desc_t *desc = 0;
 	char	*s;
 	int		playernum;
 
@@ -1387,8 +1610,49 @@ void ClientUserinfoChanged (edict_t *ent, char *userinfo)
 
 	playernum = ent-g_edicts-1;
 
-	// combine name and skin into a configstring
-	gi.configstring (CS_PLAYERSKINS+playernum, va("%s\\%s", ent->client->pers.netname, s) );
+	desc = anox_find_desc(s);
+
+	if (desc && (!Q_strcasecmp(desc->entity_type,"playerchar") ||
+				!Q_strcasecmp(desc->entity_type,"char") ||
+				!Q_strcasecmp(desc->entity_type,"charhover") ||
+				!Q_strcasecmp(desc->entity_type,"floater") ||
+				!Q_strcasecmp(desc->entity_type,"charfly") ||
+				!Q_strcasecmp(desc->classname,"character_boots_com")))
+	{
+		ent->anox = desc;
+		ent->s.modelindex = gi.modelindex(desc->model_path);
+		ent->s.skinnum = desc->profile;
+
+		// Stiletto, Rho, fatima, npc_hf, npc_noxgal, npc_petita, npc_vigil_female, npc_spacegal,
+		// npc_jen, npc_deanamo, npc_lohf*, monster_queen_waugee, character_gannie
+		// all use a female soundset
+		if (!Q_strncasecmp(s,"character_stiletto", strlen("character_stiletto")) ||
+				!Q_strncasecmp(s,"character_rho", strlen("character_rho")) ||
+				!Q_strncasecmp(s,"fatima", strlen("fatima")) ||
+				!Q_strncasecmp(s,"npc_hf", strlen("npc_hf")) ||
+				!Q_strncasecmp(s,"npc_noxgal", strlen("npc_noxgal")) ||
+				!Q_strncasecmp(s,"npc_petita", strlen("npc_petita")) ||
+				!Q_strncasecmp(s,"npc_vigil_female", strlen("npc_vigil_female")) ||
+				!Q_strncasecmp(s,"npc_spacegal", strlen("npc_spacegal")) ||
+				!Q_strncasecmp(s,"npc_jen", strlen("npc_jen")) ||
+				!Q_strncasecmp(s,"npc_deanamo", strlen("npc_deanamo")) ||
+				!Q_strncasecmp(s,"npc_lohf", strlen("npc_lohf")) ||
+				!Q_strncasecmp(s,"monster_queen_waugee", strlen("monster_queen_waugee")) ||
+				!Q_strncasecmp(s,"character_gannie", strlen("character_gannie")) )
+			gi.configstring (CS_PLAYERSKINS+playernum, va("%s\\female/cobalt", ent->client->pers.netname) );
+		else
+			gi.configstring (CS_PLAYERSKINS+playernum, va("%s\\male/grunt", ent->client->pers.netname) );
+		}
+	else
+	{
+		ent->anox = 0;
+		ent->s.modelindex = -1;
+		ent->s.skinnum = ent - g_edicts - 1;
+
+		// combine name and skin into a configstring
+		gi.configstring (CS_PLAYERSKINS+playernum, va("%s\\%s", ent->client->pers.netname, s) );
+	}
+
 
 	// fov
 	if (deathmatch->value && ((int)dmflags->value & DF_FIXED_FOV))
@@ -1413,6 +1677,9 @@ void ClientUserinfoChanged (edict_t *ent, char *userinfo)
 
 	// save off the userinfo in case we want to check something later
 	strncpy (ent->client->pers.userinfo, userinfo, sizeof(ent->client->pers.userinfo)-1);
+
+	// Sets up the clients frames
+	SetupClientFrames(ent);
 }
 
 
@@ -1489,6 +1756,7 @@ qboolean ClientConnect (edict_t *ent, char *userinfo)
 	if (game.maxclients > 1)
 		gi.dprintf ("%s connected\n", ent->client->pers.netname);
 
+	ent->svflags = 0; // make sure we start with known default
 	ent->client->pers.connected = true;
 	return true;
 }
@@ -1602,8 +1870,8 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 
 		if (ent->movetype == MOVETYPE_NOCLIP)
 			client->ps.pmove.pm_type = PM_SPECTATOR;
-		else if (ent->s.modelindex != 255)
-			client->ps.pmove.pm_type = PM_GIB;
+		//else if (ent->s.modelindex != -1)
+		//	client->ps.pmove.pm_type = PM_GIB;
 		else if (ent->deadflag)
 			client->ps.pmove.pm_type = PM_DEAD;
 		else
@@ -1629,6 +1897,15 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 		pm.trace = PM_trace;	// adds default parms
 		pm.pointcontents = gi.pointcontents;
 
+		VectorCopy(client->ps.stand_mins, pm.mins);
+		VectorCopy(client->ps.stand_maxs, pm.maxs);
+
+		if (ucmd->buttons & BUTTON_WALKING)
+			pm.run_speed = client->ps.walk_speed;
+		else
+			pm.run_speed = client->ps.run_speed;
+		pm.duck_speed = client->ps.duck_speed;
+
 		// perform a pmove
 		gi.Pmove (&pm);
 
@@ -1642,8 +1919,8 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 			ent->velocity[i] = pm.s.velocity[i]*0.125;
 		}
 
-		VectorCopy (pm.mins, ent->mins);
-		VectorCopy (pm.maxs, ent->maxs);
+		VectorCopy (pm.mins, ent->s.mins);
+		VectorCopy (pm.maxs, ent->s.maxs);
 
 		client->resp.cmd_angles[0] = SHORT2ANGLE(ucmd->angles[0]);
 		client->resp.cmd_angles[1] = SHORT2ANGLE(ucmd->angles[1]);

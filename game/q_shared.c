@@ -1151,6 +1151,419 @@ skipwhite:
 
 
 /*
+==============
+COM_Parse2
+
+Parse a token out of a string
+Also ignores # comments
+==============
+*/
+char *COM_Parse2 (char **data_p)
+{
+	int		c;
+	int		len;
+	char	*data;
+
+	data = *data_p;
+	len = 0;
+	com_token[0] = 0;
+	
+	if (!data)
+	{
+		*data_p = NULL;
+		return "";
+	}
+		
+// skip whitespace
+skipwhite:
+	while ( (c = *data) <= ' ')
+	{
+		if (c == 0)
+		{
+			*data_p = NULL;
+			return "";
+		}
+		data++;
+	}
+	
+// skip // comments
+	if (c=='/' && data[1] == '/')
+	{
+		while (*data && *data != '\n')
+			data++;
+		goto skipwhite;
+	}
+
+// skip # comments
+	if (c=='#')
+	{
+		while (*data && *data != '\n')
+			data++;
+		goto skipwhite;
+	}
+
+// handle quoted strings specially
+	if (c == '\"')
+	{
+		data++;
+		while (1)
+		{
+			c = *data++;
+			if (c=='\"' || !c)
+			{
+				com_token[len] = 0;
+				*data_p = data;
+				return com_token;
+			}
+			if (len < MAX_TOKEN_CHARS)
+			{
+				com_token[len] = c;
+				len++;
+			}
+		}
+	}
+
+// parse a regular word
+	do
+	{
+		if (len < MAX_TOKEN_CHARS)
+		{
+			com_token[len] = c;
+			len++;
+		}
+		data++;
+		c = *data;
+	} while (c>32);
+
+	if (len == MAX_TOKEN_CHARS)
+	{
+//		Com_Printf ("Token exceeded %i chars, discarded.\n", MAX_TOKEN_CHARS);
+		len = 0;
+	}
+	com_token[len] = 0;
+
+	*data_p = data;
+	return com_token;
+}
+
+
+/*
+==============
+COM_Parse3
+
+Parse a token out of a string. Breaks at | or '\n'
+Dosn't break at spaces
+Also ignores # comments
+==============
+*/
+char *COM_Parse3 (char **data_p, qboolean skip_white)
+{
+	int		c;
+	int		len;
+	char	*data;
+
+	data = *data_p;
+	len = 0;
+	com_token[0] = 0;
+	
+	if (!data)
+	{
+		*data_p = NULL;
+		return "";
+	}
+		
+// skip whitespace (and comment)
+	if (skip_white) {
+skipwhite:
+		while ( (c = *data) <= ' ')
+		{
+			if (c == 0)
+			{
+				*data_p = NULL;
+				return "";
+			}
+			data++;
+		}
+		
+	// skip // comments
+		if (c=='/' && data[1] == '/')
+		{
+			while (*data && *data != '\n')
+				data++;
+			goto skipwhite;
+		}
+	// skip # comments
+		if (c=='#')
+		{
+			while (*data && *data != '\n')
+				data++;
+			goto skipwhite;
+		}
+	// skip ; comments
+		if (c==';')
+		{
+			while (*data && *data != '\n')
+				data++;
+			goto skipwhite;
+		}
+	}
+	else
+	{
+		if ( (c = *data) <= ' ') return "";
+		if (c=='/' && data[1] == '/') return "";
+		if (c=='#') return "";
+		if (c==';') return "";
+	}
+
+// handle quoted strings specially
+	if (c == '\"')
+	{
+		data++;
+		while (1)
+		{
+			c = *data++;
+			if (c=='\"' || !c)
+			{
+				com_token[len] = 0;
+				*data_p = data;
+				return com_token;
+			}
+			if (len < MAX_TOKEN_CHARS)
+			{
+				com_token[len] = c;
+				len++;
+			}
+		}
+	}
+	else {
+		c = *data;
+	}
+
+// parse a regular word
+	if (c!='|') do
+	{
+		if (len < MAX_TOKEN_CHARS)
+		{
+			com_token[len] = c;
+			len++;
+		}
+		data++;
+		c = *data;
+	} while (c>=32 && c!='|');
+
+	if (c=='|') data++;
+
+	if (len == MAX_TOKEN_CHARS)
+	{
+//		Com_Printf ("Token exceeded %i chars, discarded.\n", MAX_TOKEN_CHARS);
+		len = 0;
+	}
+	com_token[len] = 0;
+
+	*data_p = data;
+	return com_token;
+}
+
+
+/*
+==============
+COM_Parse4
+
+Parse a token out of a string. Breaks at = or '\n'
+Also ignores # comments
+==============
+*/
+char *COM_Parse4 (char **data_p)
+{
+	int		c;
+	int		len;
+	char	*data;
+
+	data = *data_p;
+	len = 0;
+	com_token[0] = 0;
+	
+	if (!data)
+	{
+		*data_p = NULL;
+		return "";
+	}
+		
+// skip whitespace
+skipwhite:
+	c = *data;
+	while ( c <= ' ' || c == '=')
+	{
+		if (c == 0)
+		{
+			*data_p = NULL;
+			return "";
+		}
+		data++;
+		c = *data;
+	}
+	
+// skip // comments
+	if (c=='/' && data[1] == '/')
+	{
+		while (*data && *data != '\n')
+			data++;
+		goto skipwhite;
+	}
+
+// skip # comments
+	if (c=='#')
+	{
+		while (*data && *data != '\n')
+			data++;
+		goto skipwhite;
+	}
+
+// handle quoted strings specially
+	if (c == '\"')
+	{
+		data++;
+		while (1)
+		{
+			c = *data++;
+			if (c=='\"' || !c)
+			{
+				com_token[len] = 0;
+				*data_p = data;
+				return com_token;
+			}
+			if (len < MAX_TOKEN_CHARS)
+			{
+				com_token[len] = c;
+				len++;
+			}
+		}
+	}
+
+// parse a regular word
+	do
+	{
+		if (len < MAX_TOKEN_CHARS)
+		{
+			com_token[len] = c;
+			len++;
+		}
+		data++;
+		c = *data;
+	} while (c>32 && c!='=');
+
+	if (len == MAX_TOKEN_CHARS)
+	{
+//		Com_Printf ("Token exceeded %i chars, discarded.\n", MAX_TOKEN_CHARS);
+		len = 0;
+	}
+	com_token[len] = 0;
+
+	*data_p = data;
+	return com_token;
+}
+
+
+/*
+==============
+COM_Parse5
+
+Parse a token out of a string. Breaks at : or '\n'
+Also ignores # comments
+==============
+*/
+char *COM_Parse5 (char **data_p)
+{
+	int		c;
+	int		len;
+	char	*data;
+
+	data = *data_p;
+	len = 0;
+	com_token[0] = 0;
+	
+	if (!data)
+	{
+		*data_p = NULL;
+		return "";
+	}
+		
+// skip whitespace
+skipwhite:
+	c = *data;
+	while ( c <= ' ' || c == ':')
+	{
+		if (c == 0)
+		{
+			*data_p = NULL;
+			return "";
+		}
+		data++;
+		c = *data;
+	}
+	
+// skip // comments
+	if (c=='/' && data[1] == '/')
+	{
+		while (*data && *data != '\n')
+			data++;
+		goto skipwhite;
+	}
+
+// skip # comments
+	if (c=='#')
+	{
+		while (*data && *data != '\n')
+			data++;
+		goto skipwhite;
+	}
+
+// handle quoted strings specially
+	if (c == '\"')
+	{
+		data++;
+		while (1)
+		{
+			c = *data++;
+			if (c=='\"' || !c)
+			{
+				com_token[len] = 0;
+				*data_p = data;
+				return com_token;
+			}
+			if (len < MAX_TOKEN_CHARS)
+			{
+				com_token[len] = c;
+				len++;
+			}
+		}
+	}
+
+// parse a regular word
+	do
+	{
+		if (len < MAX_TOKEN_CHARS)
+		{
+			com_token[len] = c;
+			len++;
+		}
+		data++;
+		c = *data;
+	} while (c>32 && c!=':');
+
+	if (len == MAX_TOKEN_CHARS)
+	{
+//		Com_Printf ("Token exceeded %i chars, discarded.\n", MAX_TOKEN_CHARS);
+		len = 0;
+	}
+	com_token[len] = 0;
+
+	*data_p = data;
+	return com_token;
+}
+
+
+/*
 ===============
 Com_PageInMemory
 

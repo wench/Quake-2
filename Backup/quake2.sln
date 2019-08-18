@@ -1,0 +1,35 @@
+Microsoft Visual Studio Solution File, Format Version 7.00
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "game", "game\game.vcproj", "{B9883FF9-3B45-41F0-9E9A-FE9790164F4C}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "quake2", "quake2.vcproj", "{DEE7E5C8-5318-42B2-8ACA-1721AB6FBA08}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ref_gl", "ref_gl\ref_gl.vcproj", "{C6139B43-0E23-4760-8578-BC80284A838E}"
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		ConfigName.0 = Debug
+		ConfigName.1 = Release
+	EndGlobalSection
+	GlobalSection(ProjectDependencies) = postSolution
+		{DEE7E5C8-5318-42B2-8ACA-1721AB6FBA08}.0 = {B9883FF9-3B45-41F0-9E9A-FE9790164F4C}
+		{DEE7E5C8-5318-42B2-8ACA-1721AB6FBA08}.1 = {C6139B43-0E23-4760-8578-BC80284A838E}
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{B9883FF9-3B45-41F0-9E9A-FE9790164F4C}.Debug.ActiveCfg = Debug|Win32
+		{B9883FF9-3B45-41F0-9E9A-FE9790164F4C}.Debug.Build.0 = Debug|Win32
+		{B9883FF9-3B45-41F0-9E9A-FE9790164F4C}.Release.ActiveCfg = Release|Win32
+		{B9883FF9-3B45-41F0-9E9A-FE9790164F4C}.Release.Build.0 = Release|Win32
+		{DEE7E5C8-5318-42B2-8ACA-1721AB6FBA08}.Debug.ActiveCfg = Debug|Win32
+		{DEE7E5C8-5318-42B2-8ACA-1721AB6FBA08}.Debug.Build.0 = Debug|Win32
+		{DEE7E5C8-5318-42B2-8ACA-1721AB6FBA08}.Release.ActiveCfg = Release|Win32
+		{DEE7E5C8-5318-42B2-8ACA-1721AB6FBA08}.Release.Build.0 = Release|Win32
+		{C6139B43-0E23-4760-8578-BC80284A838E}.Debug.ActiveCfg = Debug|Win32
+		{C6139B43-0E23-4760-8578-BC80284A838E}.Debug.Build.0 = Debug|Win32
+		{C6139B43-0E23-4760-8578-BC80284A838E}.Release.ActiveCfg = Release|Win32
+		{C6139B43-0E23-4760-8578-BC80284A838E}.Release.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal

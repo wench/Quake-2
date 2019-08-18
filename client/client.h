@@ -63,6 +63,18 @@ typedef struct
 	vec3_t		lerp_origin;		// for trails (variable hz)
 
 	int			fly_stoptime;
+
+	// New partical generators (np[3] is the npsimple generator)
+	struct {
+		int		index;			// Index of the cnp_generator_t (tracks changes)
+		char	triangle[8];	// Triangle we are bound to. Default -1 = none
+		int		first_time;		// First time we were run (can be reset)
+		int		last_time;		// Last time we were run (for envelope deltas)
+		float	*gen_rem;		// Generated remainder
+		vec3_t	normal;			// Forward direction of it
+	} np[4];
+
+	int			rand_value;		// random value for particle 'flicker'
 } centity_t;
 
 #define MAX_CLIENTWEAPONMODELS		20		// PGM -- upped from 16 to fit the chainfist vwep
@@ -164,6 +176,8 @@ typedef struct
 
 	struct sfx_s	*sound_precache[MAX_SOUNDS];
 	struct image_s	*image_precache[MAX_IMAGES];
+
+	struct cnp_generator_s	*part_generators[MAX_APD];
 
 	clientinfo_t	clientinfo[MAX_CLIENTS];
 	clientinfo_t	baseclientinfo;
@@ -291,6 +305,8 @@ extern	cvar_t	*cl_timedemo;
 
 extern	cvar_t	*cl_vwep;
 
+extern	cvar_t	*cl_thirdperson;
+
 typedef struct
 {
 	int		key;				// so entities can reuse same entry
@@ -308,7 +324,7 @@ extern	cdlight_t	cl_dlights[MAX_DLIGHTS];
 // the cl_parse_entities must be large enough to hold UPDATE_BACKUP frames of
 // entities, so that when a delta compressed message arives from the server
 // it can be un-deltad from the original 
-#define	MAX_PARSE_ENTITIES	1024
+#define	MAX_PARSE_ENTITIES	4096
 extern	entity_state_t	cl_parse_entities[MAX_PARSE_ENTITIES];
 
 //=============================================================================
@@ -353,6 +369,7 @@ void CL_ParticleEffect3 (vec3_t org, vec3_t dir, int color, int count);
 
 // ========
 // PGM
+
 typedef struct particle_s
 {
 	struct particle_s	*next;
@@ -368,7 +385,6 @@ typedef struct particle_s
 	float		alphavel;
 } cparticle_t;
 
-
 #define	PARTICLE_GRAVITY	40
 #define BLASTER_PARTICLE_COLOR		0xe0
 // PMM
@@ -383,6 +399,7 @@ void CL_QuadTrail (vec3_t start, vec3_t end);
 void CL_RailTrail (vec3_t start, vec3_t end);
 void CL_BubbleTrail (vec3_t start, vec3_t end);
 void CL_FlagTrail (vec3_t start, vec3_t end, float color);
+void CL_ClearNewParticles (void);
 
 // RAFAEL
 void CL_IonripperTrail (vec3_t start, vec3_t end);
@@ -434,6 +451,95 @@ void CL_AddEntities (void);
 void CL_AddDLights (void);
 void CL_AddTEnts (void);
 void CL_AddLightStyles (void);
+
+//=================================================
+
+//
+// New Particles Anachronox Style
+//
+
+typedef struct np_envelope_s
+{
+	// End time is next, or no end
+	struct np_envelope_s	*next;	
+
+	int		time;	// The time of this 
+	float	value;	// Value for this time
+
+} np_envelope_t;
+
+// Note velocity works on frame lerping (difference of generater origin position over 2 frame)
+enum {
+	FLOWMOD_NONE			= 0,
+	FLOWMOD_VEL				= 1,
+	FLOWMOD_VEL_SQUARED		= 2,
+	FLOWMOD_DIR_ACCEL		= 3,
+	FLOWMOD_NEG_DIR_ACCEL	= 4
+};
+
+typedef struct cnp_generator_s
+{
+	// Next generator in APD file
+	struct cnp_generator_s	*next;			// Next generator in list
+
+	struct newparticle_s	*first;			// First particle that belongs to us
+
+	np_generator_t			info;			// Info shared with refresh
+	int						num_generators;	// Number of children and this one
+
+	float					resist;			// Air resistance. 0 (def) for none
+	vec3_t					accel;			// Acceleration (0,0,0)
+	float					vartime;		// 0 (part->timerate = 1 + vartime)
+	int						flowmod;		// FLOWMOD_NONE
+	qboolean				follow;			// Particles move with owner ent 
+	int						randloop[2];	// Randomly loop all generators at random time between times
+	int						loops;			// 0 = infinite
+
+	float					rotate[2];		// Rotate each particle by this much per second
+	qboolean				random_angle;	// Randomized start angle
+
+	int						volflags;		// Flags for volume control. (4 bits)
+
+	// if random_number < flicker then don't display particle
+	int						flicker;		// Chance of flicker this frame (0-100%)
+	qboolean				flicker_all;	// Flicker all simultaneously
+	int						rand_value;
+
+	// Generation envelopes
+	int						gen_time;		// Maximum generation envelope size
+	np_envelope_t			*flow;			// Value is number of particles to generate per second (0)
+	np_envelope_t			*angles[2];		// Min and max angle deviance (0,360)
+	np_envelope_t			*velocity[2];	// Min and max velocity (0,0)
+	np_envelope_t			*burst;			// At specific time, generate specific number of particles (0)
+
+	// Particle decay envelopes
+	int						decay_time;
+	np_envelope_t			*radius;		// Radius envelope (1.0F)
+	np_envelope_t			*rgba[4];		// Colour and alpha envelopes (1) (note in file 255)
+	np_envelope_t			*texcoord[4];	// Envelope for texture coords (l=0,t=0,r=1,b=1)
+
+} cnp_generator_t;
+
+typedef struct newparticle_s
+{
+	struct newparticle_s	*next;
+
+	float					*gen_forward;	// Generator Forward 
+	centity_t				*owner;			// Owner ent for follow generators. If owner become invalid then we will stop following it
+
+	int						time;			// Creation time
+	float					time_rate;		// Time rate multiplier (default 1)
+
+	float					angle;			// Randomized start angle
+	float					rotation;		// Rotation per second
+
+	vec3_t					origin;			// Creation origin (if owner then relative to owner)
+	vec3_t					velocity;		// Creation Velocity
+} cnewparticle_t;
+
+
+cnp_generator_t *CL_RegisterAPD (char *name);
+void CL_FreeGeneratorChain (cnp_generator_t	*gen);
 
 //=================================================
 
@@ -524,6 +630,7 @@ void V_AddEntity (entity_t *ent);
 void V_AddParticle (vec3_t org, int color, float alpha);
 void V_AddLight (vec3_t org, float intensity, float r, float g, float b);
 void V_AddLightStyle (int style, float r, float g, float b);
+void V_AddNewParticle (newparticle_t *np);
 
 //
 // cl_tent.c
@@ -551,6 +658,9 @@ void CL_FlyEffect (centity_t *ent, vec3_t origin);
 void CL_BfgParticles (entity_t *ent);
 void CL_AddParticles (void);
 void CL_EntityEvent (entity_state_t *ent);
+void CL_AddNewParticles (void);
+void CL_RunGenerators (centity_t *ent);
+
 // RAFAEL
 void CL_TrapParticles (entity_t *ent);
 

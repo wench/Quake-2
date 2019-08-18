@@ -17,29 +17,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-/*
-Copyright (C) 1997-2001 Id Software, Inc.
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-*/
 
 // game.h -- game dll information visible to server
 
-#define	GAME_API_VERSION	3
+#define	GAME_API_VERSION	('ANOX')
 
 // edict->svflags
 
@@ -101,7 +82,6 @@ struct edict_s
 	//================================
 
 	int			svflags;			// SVF_NOCLIENT, SVF_DEADMONSTER, SVF_MONSTER, etc
-	vec3_t		mins, maxs;
 	vec3_t		absmin, absmax, size;
 	solid_t		solid;
 	int			clipmask;
@@ -192,6 +172,22 @@ typedef struct
 	void	(*AddCommandString) (char *text);
 
 	void	(*DebugGraph) (float value, int color);
+
+	// files will be memory mapped read only
+	// the returned buffer may be part of a larger pak file,
+	// or a discrete file from anywhere in the quake search path
+	// a -1 return means the file does not exist
+	// NULL can be passed for buf to just determine existance
+	int		(*FS_LoadFile) (char *name, void **buf);
+	void	(*FS_FreeFile) (void *buf);
+
+	// Get frame info on a MD2 file
+	md2_info_t *	(*GetModelInfo) (int index);
+	void			(*WipeModelInfo) ();
+
+	// Particle index
+	int		(*apdindex) (char *name);
+
 } game_import_t;
 
 //

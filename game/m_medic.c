@@ -30,6 +30,18 @@ MEDIC
 
 qboolean visible (edict_t *self, edict_t *other);
 
+enum {
+	medic_move_stand = 1,
+	medic_move_walk,
+	medic_move_run,
+	medic_move_pain1,
+	medic_move_pain2,
+	medic_move_death,
+	medic_move_duck,
+	medic_move_attackHyperBlaster,
+	medic_move_attackBlaster,
+	medic_move_attackCable
+};
 
 static int	sound_idle1;
 static int	sound_pain1;
@@ -213,11 +225,10 @@ mframe_t medic_frames_stand [] =
 	ai_stand, 0, NULL,
 
 };
-mmove_t medic_move_stand = {FRAME_wait1, FRAME_wait90, medic_frames_stand, NULL};
 
 void medic_stand (edict_t *self)
 {
-	self->monsterinfo.currentmove = &medic_move_stand;
+	self->monsterinfo.currentmove = medic_move_stand;
 }
 
 
@@ -236,11 +247,10 @@ mframe_t medic_frames_walk [] =
 	ai_walk, 14,	NULL,
 	ai_walk, 9.3,	NULL
 };
-mmove_t medic_move_walk = {FRAME_walk1, FRAME_walk12, medic_frames_walk, NULL};
 
 void medic_walk (edict_t *self)
 {
-	self->monsterinfo.currentmove = &medic_move_walk;
+	self->monsterinfo.currentmove = medic_move_walk;
 }
 
 
@@ -254,7 +264,6 @@ mframe_t medic_frames_run [] =
 	ai_run, 35.6,	NULL
 	
 };
-mmove_t medic_move_run = {FRAME_run1, FRAME_run6, medic_frames_run, NULL};
 
 void medic_run (edict_t *self)
 {
@@ -275,9 +284,9 @@ void medic_run (edict_t *self)
 	}
 
 	if (self->monsterinfo.aiflags & AI_STAND_GROUND)
-		self->monsterinfo.currentmove = &medic_move_stand;
+		self->monsterinfo.currentmove = medic_move_stand;
 	else
-		self->monsterinfo.currentmove = &medic_move_run;
+		self->monsterinfo.currentmove = medic_move_run;
 }
 
 
@@ -292,7 +301,6 @@ mframe_t medic_frames_pain1 [] =
 	ai_move, 0, NULL,
 	ai_move, 0, NULL
 };
-mmove_t medic_move_pain1 = {FRAME_paina1, FRAME_paina8, medic_frames_pain1, medic_run};
 
 mframe_t medic_frames_pain2 [] =
 {
@@ -312,7 +320,6 @@ mframe_t medic_frames_pain2 [] =
 	ai_move, 0, NULL,
 	ai_move, 0, NULL
 };
-mmove_t medic_move_pain2 = {FRAME_painb1, FRAME_painb15, medic_frames_pain2, medic_run};
 
 void medic_pain (edict_t *self, edict_t *other, float kick, int damage)
 {
@@ -329,12 +336,12 @@ void medic_pain (edict_t *self, edict_t *other, float kick, int damage)
 
 	if (random() < 0.5)
 	{
-		self->monsterinfo.currentmove = &medic_move_pain1;
+		self->monsterinfo.currentmove = medic_move_pain1;
 		gi.sound (self, CHAN_VOICE, sound_pain1, 1, ATTN_NORM, 0);
 	}
 	else
 	{
-		self->monsterinfo.currentmove = &medic_move_pain2;
+		self->monsterinfo.currentmove = medic_move_pain2;
 		gi.sound (self, CHAN_VOICE, sound_pain2, 1, ATTN_NORM, 0);
 	}
 }
@@ -367,8 +374,8 @@ void medic_fire_blaster (edict_t *self)
 
 void medic_dead (edict_t *self)
 {
-	VectorSet (self->mins, -16, -16, -24);
-	VectorSet (self->maxs, 16, 16, -8);
+	VectorSet (self->s.mins, -16, -16, -24);
+	VectorSet (self->s.maxs, 16, 16, -8);
 	self->movetype = MOVETYPE_TOSS;
 	self->svflags |= SVF_DEADMONSTER;
 	self->nextthink = 0;
@@ -408,7 +415,6 @@ mframe_t medic_frames_death [] =
 	ai_move, 0, NULL,
 	ai_move, 0, NULL
 };
-mmove_t medic_move_death = {FRAME_death1, FRAME_death30, medic_frames_death, medic_dead};
 
 void medic_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int damage, vec3_t point)
 {
@@ -439,7 +445,7 @@ void medic_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int damage
 	self->deadflag = DEAD_DEAD;
 	self->takedamage = DAMAGE_YES;
 
-	self->monsterinfo.currentmove = &medic_move_death;
+	self->monsterinfo.currentmove = medic_move_death;
 }
 
 
@@ -448,7 +454,7 @@ void medic_duck_down (edict_t *self)
 	if (self->monsterinfo.aiflags & AI_DUCKED)
 		return;
 	self->monsterinfo.aiflags |= AI_DUCKED;
-	self->maxs[2] -= 32;
+	self->s.maxs[2] -= 32;
 	self->takedamage = DAMAGE_YES;
 	self->monsterinfo.pausetime = level.time + 1;
 	gi.linkentity (self);
@@ -465,7 +471,7 @@ void medic_duck_hold (edict_t *self)
 void medic_duck_up (edict_t *self)
 {
 	self->monsterinfo.aiflags &= ~AI_DUCKED;
-	self->maxs[2] += 32;
+	self->s.maxs[2] += 32;
 	self->takedamage = DAMAGE_AIM;
 	gi.linkentity (self);
 }
@@ -489,7 +495,6 @@ mframe_t medic_frames_duck [] =
 	ai_move, -1,	NULL,
 	ai_move, -1,	NULL
 };
-mmove_t medic_move_duck = {FRAME_duck1, FRAME_duck16, medic_frames_duck, medic_run};
 
 void medic_dodge (edict_t *self, edict_t *attacker, float eta)
 {
@@ -499,7 +504,7 @@ void medic_dodge (edict_t *self, edict_t *attacker, float eta)
 	if (!self->enemy)
 		self->enemy = attacker;
 
-	self->monsterinfo.currentmove = &medic_move_duck;
+	self->monsterinfo.currentmove = medic_move_duck;
 }
 
 mframe_t medic_frames_attackHyperBlaster [] =
@@ -521,14 +526,13 @@ mframe_t medic_frames_attackHyperBlaster [] =
 	ai_charge, 0,	medic_fire_blaster,
 	ai_charge, 0,	medic_fire_blaster
 };
-mmove_t medic_move_attackHyperBlaster = {FRAME_attack15, FRAME_attack30, medic_frames_attackHyperBlaster, medic_run};
 
 
 void medic_continue (edict_t *self)
 {
 	if (visible (self, self->enemy) )
 		if (random() <= 0.95)
-			self->monsterinfo.currentmove = &medic_move_attackHyperBlaster;
+			self->monsterinfo.currentmove = medic_move_attackHyperBlaster;
 }
 
 
@@ -549,7 +553,6 @@ mframe_t medic_frames_attackBlaster [] =
 	ai_charge, 0,	NULL,
 	ai_charge, 0,	medic_continue	// Change to medic_continue... Else, go to frame 32
 };
-mmove_t medic_move_attackBlaster = {FRAME_attack1, FRAME_attack14, medic_frames_attackBlaster, medic_run};
 
 
 void medic_hook_launch (edict_t *self)
@@ -690,15 +693,14 @@ mframe_t medic_frames_attackCable [] =
 	ai_move, 1.2,	NULL,
 	ai_move, 1.3,	NULL
 };
-mmove_t medic_move_attackCable = {FRAME_attack33, FRAME_attack60, medic_frames_attackCable, medic_run};
 
 
 void medic_attack(edict_t *self)
 {
 	if (self->monsterinfo.aiflags & AI_MEDIC)
-		self->monsterinfo.currentmove = &medic_move_attackCable;
+		self->monsterinfo.currentmove = medic_move_attackCable;
 	else
-		self->monsterinfo.currentmove = &medic_move_attackBlaster;
+		self->monsterinfo.currentmove = medic_move_attackBlaster;
 }
 
 qboolean medic_checkattack (edict_t *self)
@@ -710,6 +712,25 @@ qboolean medic_checkattack (edict_t *self)
 	}
 
 	return M_CheckAttack (self);
+}
+
+mmove_t medic_moves[] = {
+	{FRAME_wait1, FRAME_wait90, medic_frames_stand, NULL},
+	{FRAME_walk1, FRAME_walk12, medic_frames_walk, NULL},
+	{FRAME_run1, FRAME_run6, medic_frames_run, NULL},
+	{FRAME_paina1, FRAME_paina8, medic_frames_pain1, medic_run},
+	{FRAME_painb1, FRAME_painb15, medic_frames_pain2, medic_run},
+	{FRAME_death1, FRAME_death30, medic_frames_death, medic_dead},
+	{FRAME_duck1, FRAME_duck16, medic_frames_duck, medic_run},
+	{FRAME_attack15, FRAME_attack30, medic_frames_attackHyperBlaster, medic_run},
+	{FRAME_attack1, FRAME_attack14, medic_frames_attackBlaster, medic_run},
+	{FRAME_attack33, FRAME_attack60, medic_frames_attackCable, medic_run}
+};
+
+mmove_t * medic_get_currentmove(edict_t *self)
+{
+	if (!self->monsterinfo.currentmove) return NULL;
+	return &medic_moves[self->monsterinfo.currentmove-1];
 }
 
 
@@ -739,8 +760,8 @@ void SP_monster_medic (edict_t *self)
 	self->movetype = MOVETYPE_STEP;
 	self->solid = SOLID_BBOX;
 	self->s.modelindex = gi.modelindex ("models/monsters/medic/tris.md2");
-	VectorSet (self->mins, -24, -24, -24);
-	VectorSet (self->maxs, 24, 24, 32);
+	VectorSet (self->s.mins, -24, -24, -24);
+	VectorSet (self->s.maxs, 24, 24, 32);
 
 	self->health = 300;
 	self->gib_health = -130;
@@ -759,10 +780,11 @@ void SP_monster_medic (edict_t *self)
 	self->monsterinfo.idle = medic_idle;
 	self->monsterinfo.search = medic_search;
 	self->monsterinfo.checkattack = medic_checkattack;
+	self->monsterinfo.get_currentmove = medic_get_currentmove;
 
 	gi.linkentity (self);
 
-	self->monsterinfo.currentmove = &medic_move_stand;
+	self->monsterinfo.currentmove = medic_move_stand;
 	self->monsterinfo.scale = MODEL_SCALE;
 
 	walkmonster_start (self);

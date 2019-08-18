@@ -86,6 +86,7 @@ cvar_t	*gender;
 cvar_t	*gender_auto;
 
 cvar_t	*cl_vwep;
+cvar_t	*cl_thirdperson;
 
 client_static_t	cls;
 client_state_t	cl;
@@ -591,11 +592,19 @@ CL_ClearState
 */
 void CL_ClearState (void)
 {
+	int i;
 	S_StopAllSounds ();
 	CL_ClearEffects ();
 	CL_ClearTEnts ();
 
 // wipe the entire cl structure
+	for (i = 0; i < MAX_EDICTS; i++)
+	{
+		if (cl_entities[i].np[0].gen_rem) free(cl_entities[i].np[0].gen_rem);
+		if (cl_entities[i].np[1].gen_rem) free(cl_entities[i].np[1].gen_rem);
+		if (cl_entities[i].np[2].gen_rem) free(cl_entities[i].np[2].gen_rem);
+		if (cl_entities[i].np[3].gen_rem) free(cl_entities[i].np[3].gen_rem);
+	}
 	memset (&cl, 0, sizeof(cl));
 	memset (&cl_entities, 0, sizeof(cl_entities));
 
@@ -1484,6 +1493,7 @@ void CL_InitLocal (void)
 	gender->modified = false; // clear this so we know when user sets it manually
 
 	cl_vwep = Cvar_Get ("cl_vwep", "1", CVAR_ARCHIVE);
+	cl_thirdperson = Cvar_Get ("cl_thirdpereson", "1", 0);
 
 
 	//
@@ -1783,6 +1793,10 @@ void CL_Init (void)
 		return;		// nothing running on the client
 
 	// all archived variables will now be loaded
+
+	// Clear client first
+	memset (&cl, 0, sizeof(cl));
+	memset (&cl_entities, 0, sizeof(cl_entities));
 
 	Con_Init ();	
 #if defined __linux__ || defined __sgi

@@ -32,12 +32,19 @@ The .pak files are just a linear collapse of a directory tree
 */
 
 #define IDPAKHEADER		(('K'<<24)+('C'<<16)+('A'<<8)+'P')
+#define ADATHEADER		(('T'<<24)+('A'<<16)+('D'<<8)+'A')
 
 typedef struct
 {
 	char	name[56];
 	int		filepos, filelen;
 } dpackfile_t;
+typedef struct
+{
+	char	name[128];
+	int		filepos, filelen;
+	int unk, checksum;
+} adatfile_t;
 
 typedef struct
 {
@@ -84,7 +91,14 @@ typedef struct
 */
 
 #define IDALIASHEADER		(('2'<<24)+('P'<<16)+('D'<<8)+'I')
-#define ALIAS_VERSION	8
+#define ALIAS_VERSION		8
+
+#define ALIAS_VERSION_ANOX_OLD		0x0000000E
+#define ALIAS_VERSION_ANOX_3_BYTE	0x0000000F
+#define ALIAS_VERSION_ANOX_4_BYTE	0x0001000F
+#define ALIAS_VERSION_ANOX_6_BYTE	0x0002000F
+
+#define IDMDAHEADER		(('1'<<24)+('A'<<16)+('D'<<8)+'M')
 
 #define	MAX_TRIANGLES	4096
 #define MAX_VERTS		2048
@@ -106,9 +120,41 @@ typedef struct
 
 typedef struct
 {
+	unsigned short	v[3];			// scaled byte to fit in frame mins/maxs
+	vec3_t			normal;			// Normal
+} dtrivertx_t;
+
+typedef struct
+{
 	byte	v[3];			// scaled byte to fit in frame mins/maxs
 	byte	lightnormalindex;
-} dtrivertx_t;
+} dtrivertx_q_t;
+
+typedef struct
+{
+	byte	v[3];			// scaled byte to fit in frame mins/maxs
+	byte	lightnormalindex;
+	byte	unknown;
+} dtrivertx_a3_t;
+
+typedef struct
+{
+	//struct {
+	//	unsigned 	x:11;
+	//	unsigned 	y:11;
+	//	unsigned 	z:10;
+	//} v;
+	int		v;
+	byte	lightnormalindex;
+	byte	unknown;
+} dtrivertx_a4_t;
+
+typedef struct
+{
+	unsigned short	v[3];
+	byte	lightnormalindex;
+	byte	unknown;
+} dtrivertx_a6_t;
 
 #define DTRIVERTX_V0   0
 #define DTRIVERTX_V1   1
@@ -158,6 +204,38 @@ typedef struct
 	int			ofs_end;		// end of file
 
 } dmdl_t;
+
+typedef struct
+{
+	int			ident;
+	int			version;
+
+	int			skinwidth;
+	int			skinheight;
+	int			framesize;		// byte size of each frame
+
+	int			num_skins;
+	int			num_xyz;
+	int			num_st;			// greater than num_xyz for seams
+	int			num_tris;
+	int			num_glcmds;		// dwords in strip/fan command list
+	int			num_frames;
+
+	int			ofs_skins;		// each skin is a MAX_SKINNAME string
+	int			ofs_st;			// byte offset from start for stverts
+	int			ofs_tris;		// offset for dtriangles
+	int			ofs_frames;		// offset for first frame
+	int			ofs_glcmds;	
+	int			ofs_end;		// end of file
+
+	// Anox Extra
+
+	int			num_passes;
+	int			ofs_passes;
+	float		scale[3];		// Global scale?
+	int			num_tags;
+	int			ofs_tags;
+} dmdl_anox_t;
 
 /*
 ========================================================================
@@ -368,12 +446,21 @@ typedef struct
 
 #define	SURF_SLICK		0x2		// effects game physics
 
-#define	SURF_SKY		0x4		// don't draw, but add to skybox
-#define	SURF_WARP		0x8		// turbulent water warp
-#define	SURF_TRANS33	0x10
-#define	SURF_TRANS66	0x20
-#define	SURF_FLOWING	0x40	// scroll towards angle
-#define	SURF_NODRAW		0x80	// don't bother referencing the texture
+#define	SURF_SKY			0x4		// don't draw, but add to skybox
+#define	SURF_WARP			0x8		// turbulent water warp
+#define	SURF_TRANS33		0x10
+#define	SURF_TRANS66		0x20
+#define	SURF_FLOWING		0x40	// scroll towards angle
+#define	SURF_NODRAW			0x80	// don't bother referencing the texture
+#define	SURF_HINT			0x100
+#define	SURF_SKIP			0x200
+#define	SURF_MIRROR			0x400
+#define	SURF_TRANSTHING		0x800
+#define	SURF_ALPHACHAN		0x1000
+#define	SURF_MIDTEXTURE		0x2000
+#define	SURF_HALF_SCROLL	0x4000
+#define	SURF_QUART_SCROLL	0x8000
+#define	SURF_FOG			0x10000
 
 
 

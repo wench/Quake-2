@@ -35,6 +35,22 @@ char *actor_names[MAX_ACTOR_NAMES] =
 	"Bitterman"
 };
 
+enum {
+	actor_move_stand=1,
+	actor_move_walk,
+	actor_move_run,
+	actor_move_pain1,
+	actor_move_pain2,
+	actor_move_pain3,
+	actor_move_flipoff,
+	actor_move_taunt,
+	actor_move_death1,
+	actor_move_death2,
+	actor_move_attack
+};
+
+extern mmove_t actor_moves [];
+
 
 mframe_t actor_frames_stand [] =
 {
@@ -82,15 +98,17 @@ mframe_t actor_frames_stand [] =
 	ai_stand, 0, NULL,
 	ai_stand, 0, NULL
 };
-mmove_t actor_move_stand = {FRAME_stand101, FRAME_stand140, actor_frames_stand, NULL};
 
 void actor_stand (edict_t *self)
 {
-	self->monsterinfo.currentmove = &actor_move_stand;
+	mmove_t *cm;
+	self->monsterinfo.currentmove = actor_move_stand;
+
+	cm = &actor_moves[self->monsterinfo.currentmove];
 
 	// randomize on startup
 	if (level.time < 1.0)
-		self->s.frame = self->monsterinfo.currentmove->firstframe + (rand() % (self->monsterinfo.currentmove->lastframe - self->monsterinfo.currentmove->firstframe + 1));
+		self->s.frame = cm->firstframe + (rand() % (cm->lastframe - cm->firstframe + 1));
 }
 
 
@@ -108,11 +126,10 @@ mframe_t actor_frames_walk [] =
 	ai_walk, 0,  NULL,
 	ai_walk, 0,  NULL
 };
-mmove_t actor_move_walk = {FRAME_walk01, FRAME_walk08, actor_frames_walk, NULL};
 
 void actor_walk (edict_t *self)
 {
-	self->monsterinfo.currentmove = &actor_move_walk;
+	self->monsterinfo.currentmove = actor_move_walk;
 }
 
 
@@ -131,7 +148,6 @@ mframe_t actor_frames_run [] =
 	ai_run, -2, NULL,
 	ai_run, -1, NULL
 };
-mmove_t actor_move_run = {FRAME_run02, FRAME_run07, actor_frames_run, NULL};
 
 void actor_run (edict_t *self)
 {
@@ -150,7 +166,7 @@ void actor_run (edict_t *self)
 		return;
 	}
 
-	self->monsterinfo.currentmove = &actor_move_run;
+	self->monsterinfo.currentmove = actor_move_run;
 }
 
 
@@ -160,7 +176,6 @@ mframe_t actor_frames_pain1 [] =
 	ai_move, 4,  NULL,
 	ai_move, 1,  NULL
 };
-mmove_t actor_move_pain1 = {FRAME_pain101, FRAME_pain103, actor_frames_pain1, actor_run};
 
 mframe_t actor_frames_pain2 [] =
 {
@@ -168,7 +183,6 @@ mframe_t actor_frames_pain2 [] =
 	ai_move, 4,  NULL,
 	ai_move, 0,  NULL
 };
-mmove_t actor_move_pain2 = {FRAME_pain201, FRAME_pain203, actor_frames_pain2, actor_run};
 
 mframe_t actor_frames_pain3 [] =
 {
@@ -176,7 +190,6 @@ mframe_t actor_frames_pain3 [] =
 	ai_move, 1,  NULL,
 	ai_move, 0,  NULL
 };
-mmove_t actor_move_pain3 = {FRAME_pain301, FRAME_pain303, actor_frames_pain3, actor_run};
 
 mframe_t actor_frames_flipoff [] =
 {
@@ -195,7 +208,6 @@ mframe_t actor_frames_flipoff [] =
 	ai_turn, 0,  NULL,
 	ai_turn, 0,  NULL
 };
-mmove_t actor_move_flipoff = {FRAME_flip01, FRAME_flip14, actor_frames_flipoff, actor_run};
 
 mframe_t actor_frames_taunt [] =
 {
@@ -217,7 +229,6 @@ mframe_t actor_frames_taunt [] =
 	ai_turn, 0,  NULL,
 	ai_turn, 0,  NULL
 };
-mmove_t actor_move_taunt = {FRAME_taunt01, FRAME_taunt17, actor_frames_taunt, actor_run};
 
 char *messages[] =
 {
@@ -248,9 +259,9 @@ void actor_pain (edict_t *self, edict_t *other, float kick, int damage)
 		VectorSubtract (other->s.origin, self->s.origin, v);
 		self->ideal_yaw = vectoyaw (v);
 		if (random() < 0.5)
-			self->monsterinfo.currentmove = &actor_move_flipoff;
+			self->monsterinfo.currentmove = actor_move_flipoff;
 		else
-			self->monsterinfo.currentmove = &actor_move_taunt;
+			self->monsterinfo.currentmove = actor_move_taunt;
 		name = actor_names[(self - g_edicts)%MAX_ACTOR_NAMES];
 		gi.cprintf (other, PRINT_CHAT, "%s: %s!\n", name, messages[rand()%3]);
 		return;
@@ -258,11 +269,11 @@ void actor_pain (edict_t *self, edict_t *other, float kick, int damage)
 
 	n = rand() % 3;
 	if (n == 0)
-		self->monsterinfo.currentmove = &actor_move_pain1;
+		self->monsterinfo.currentmove = actor_move_pain1;
 	else if (n == 1)
-		self->monsterinfo.currentmove = &actor_move_pain2;
+		self->monsterinfo.currentmove = actor_move_pain2;
 	else
-		self->monsterinfo.currentmove = &actor_move_pain3;
+		self->monsterinfo.currentmove = actor_move_pain3;
 }
 
 
@@ -298,8 +309,8 @@ void actorMachineGun (edict_t *self)
 
 void actor_dead (edict_t *self)
 {
-	VectorSet (self->mins, -16, -16, -24);
-	VectorSet (self->maxs, 16, 16, -8);
+	VectorSet (self->s.mins, -16, -16, -24);
+	VectorSet (self->s.maxs, 16, 16, -8);
 	self->movetype = MOVETYPE_TOSS;
 	self->svflags |= SVF_DEADMONSTER;
 	self->nextthink = 0;
@@ -316,7 +327,6 @@ mframe_t actor_frames_death1 [] =
 	ai_move, -2,  NULL,
 	ai_move, 1,   NULL
 };
-mmove_t actor_move_death1 = {FRAME_death101, FRAME_death107, actor_frames_death1, actor_dead};
 
 mframe_t actor_frames_death2 [] =
 {
@@ -334,7 +344,6 @@ mframe_t actor_frames_death2 [] =
 	ai_move, -13, NULL,
 	ai_move, 0,   NULL
 };
-mmove_t actor_move_death2 = {FRAME_death201, FRAME_death213, actor_frames_death2, actor_dead};
 
 void actor_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int damage, vec3_t point)
 {
@@ -363,9 +372,9 @@ void actor_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int damage
 
 	n = rand() % 2;
 	if (n == 0)
-		self->monsterinfo.currentmove = &actor_move_death1;
+		self->monsterinfo.currentmove = actor_move_death1;
 	else
-		self->monsterinfo.currentmove = &actor_move_death2;
+		self->monsterinfo.currentmove = actor_move_death2;
 }
 
 
@@ -386,13 +395,32 @@ mframe_t actor_frames_attack [] =
 	ai_charge, 3,   NULL,
 	ai_charge, 2,   NULL
 };
-mmove_t actor_move_attack = {FRAME_attak01, FRAME_attak04, actor_frames_attack, actor_run};
+
+mmove_t actor_moves [] = {
+	{FRAME_stand101, FRAME_stand140, actor_frames_stand, NULL},
+	{FRAME_walk01, FRAME_walk08, actor_frames_walk, NULL},
+	{FRAME_run02, FRAME_run07, actor_frames_run, NULL},
+	{FRAME_pain101, FRAME_pain103, actor_frames_pain1, actor_run},
+	{FRAME_pain201, FRAME_pain203, actor_frames_pain2, actor_run},
+	{FRAME_pain301, FRAME_pain303, actor_frames_pain3, actor_run},
+	{FRAME_flip01, FRAME_flip14, actor_frames_flipoff, actor_run},
+	{FRAME_taunt01, FRAME_taunt17, actor_frames_taunt, actor_run},
+	{FRAME_death101, FRAME_death107, actor_frames_death1, actor_dead},
+	{FRAME_death201, FRAME_death213, actor_frames_death2, actor_dead},
+	{FRAME_attak01, FRAME_attak04, actor_frames_attack, actor_run}
+};
+
+mmove_t *actor_get_currentmove(edict_t *self)
+{
+	if (!self->monsterinfo.currentmove) return NULL;
+	return &actor_moves[self->monsterinfo.currentmove-1];
+}
 
 void actor_attack(edict_t *self)
 {
 	int		n;
 
-	self->monsterinfo.currentmove = &actor_move_attack;
+	self->monsterinfo.currentmove = actor_move_attack;
 	n = (rand() & 15) + 3 + 7;
 	self->monsterinfo.pausetime = level.time + n * FRAMETIME;
 }
@@ -447,8 +475,8 @@ void SP_misc_actor (edict_t *self)
 	self->movetype = MOVETYPE_STEP;
 	self->solid = SOLID_BBOX;
 	self->s.modelindex = gi.modelindex("players/male/tris.md2");
-	VectorSet (self->mins, -16, -16, -24);
-	VectorSet (self->maxs, 16, 16, 32);
+	VectorSet (self->s.mins, -16, -16, -24);
+	VectorSet (self->s.maxs, 16, 16, 32);
 
 	if (!self->health)
 		self->health = 100;
@@ -457,6 +485,7 @@ void SP_misc_actor (edict_t *self)
 	self->pain = actor_pain;
 	self->die = actor_die;
 
+	self->monsterinfo.get_currentmove = actor_get_currentmove;
 	self->monsterinfo.stand = actor_stand;
 	self->monsterinfo.walk = actor_walk;
 	self->monsterinfo.run = actor_run;
@@ -468,7 +497,7 @@ void SP_misc_actor (edict_t *self)
 
 	gi.linkentity (self);
 
-	self->monsterinfo.currentmove = &actor_move_stand;
+	self->monsterinfo.currentmove = actor_move_stand;
 	self->monsterinfo.scale = MODEL_SCALE;
 
 	walkmonster_start (self);
@@ -589,8 +618,8 @@ void SP_target_actor (edict_t *self)
 
 	self->solid = SOLID_TRIGGER;
 	self->touch = target_actor_touch;
-	VectorSet (self->mins, -8, -8, -8);
-	VectorSet (self->maxs, 8, 8, 8);
+	VectorSet (self->s.mins, -8, -8, -8);
+	VectorSet (self->s.maxs, 8, 8, 8);
 	self->svflags = SVF_NOCLIENT;
 
 	if (self->spawnflags & 1)

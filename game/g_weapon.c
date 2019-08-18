@@ -47,7 +47,7 @@ static void check_dodge (edict_t *self, vec3_t start, vec3_t dir, int speed)
 	if ((tr.ent) && (tr.ent->svflags & SVF_MONSTER) && (tr.ent->health > 0) && (tr.ent->monsterinfo.dodge) && infront(tr.ent, self))
 	{
 		VectorSubtract (tr.endpos, start, v);
-		eta = (VectorLength(v) - tr.ent->maxs[0]) / speed;
+		eta = (VectorLength(v) - tr.ent->s.maxs[0]) / speed;
 		tr.ent->monsterinfo.dodge (tr.ent, self, eta);
 	}
 }
@@ -75,18 +75,18 @@ qboolean fire_hit (edict_t *self, vec3_t aim, int damage, int kick)
 	if (range > aim[0])
 		return false;
 
-	if (aim[1] > self->mins[0] && aim[1] < self->maxs[0])
+	if (aim[1] > self->s.mins[0] && aim[1] < self->s.maxs[0])
 	{
 		// the hit is straight on so back the range up to the edge of their bbox
-		range -= self->enemy->maxs[0];
+		range -= self->enemy->s.maxs[0];
 	}
 	else
 	{
 		// this is a side hit so adjust the "right" value out to the edge of their bbox
 		if (aim[1] < 0)
-			aim[1] = self->enemy->mins[0];
+			aim[1] = self->enemy->s.mins[0];
 		else
-			aim[1] = self->enemy->maxs[0];
+			aim[1] = self->enemy->s.maxs[0];
 	}
 
 	VectorMA (self->s.origin, range, dir, point);
@@ -364,8 +364,8 @@ void fire_blaster (edict_t *self, vec3_t start, vec3_t dir, int damage, int spee
 	bolt->clipmask = MASK_SHOT;
 	bolt->solid = SOLID_BBOX;
 	bolt->s.effects |= effect;
-	VectorClear (bolt->mins);
-	VectorClear (bolt->maxs);
+	VectorClear (bolt->s.mins);
+	VectorClear (bolt->s.maxs);
 	bolt->s.modelindex = gi.modelindex ("models/objects/laser/tris.md2");
 	bolt->s.sound = gi.soundindex ("misc/lasfly.wav");
 	bolt->owner = self;
@@ -410,7 +410,7 @@ static void Grenade_Explode (edict_t *ent)
 		vec3_t	v;
 		vec3_t	dir;
 
-		VectorAdd (ent->enemy->mins, ent->enemy->maxs, v);
+		VectorAdd (ent->enemy->s.mins, ent->enemy->s.maxs, v);
 		VectorMA (ent->enemy->s.origin, 0.5, v, v);
 		VectorSubtract (ent->s.origin, v, v);
 		points = ent->dmg - 0.5 * VectorLength (v);
@@ -502,8 +502,8 @@ void fire_grenade (edict_t *self, vec3_t start, vec3_t aimdir, int damage, int s
 	grenade->clipmask = MASK_SHOT;
 	grenade->solid = SOLID_BBOX;
 	grenade->s.effects |= EF_GRENADE;
-	VectorClear (grenade->mins);
-	VectorClear (grenade->maxs);
+	VectorClear (grenade->s.mins);
+	VectorClear (grenade->s.maxs);
 	grenade->s.modelindex = gi.modelindex ("models/objects/grenade/tris.md2");
 	grenade->owner = self;
 	grenade->touch = Grenade_Touch;
@@ -535,8 +535,8 @@ void fire_grenade2 (edict_t *self, vec3_t start, vec3_t aimdir, int damage, int 
 	grenade->clipmask = MASK_SHOT;
 	grenade->solid = SOLID_BBOX;
 	grenade->s.effects |= EF_GRENADE;
-	VectorClear (grenade->mins);
-	VectorClear (grenade->maxs);
+	VectorClear (grenade->s.mins);
+	VectorClear (grenade->s.maxs);
 	grenade->s.modelindex = gi.modelindex ("models/objects/grenade2/tris.md2");
 	grenade->owner = self;
 	grenade->touch = Grenade_Touch;
@@ -630,8 +630,8 @@ void fire_rocket (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed
 	rocket->clipmask = MASK_SHOT;
 	rocket->solid = SOLID_BBOX;
 	rocket->s.effects |= EF_ROCKET;
-	VectorClear (rocket->mins);
-	VectorClear (rocket->maxs);
+	VectorClear (rocket->s.mins);
+	VectorClear (rocket->s.maxs);
 	rocket->s.modelindex = gi.modelindex ("models/objects/rocket/tris.md2");
 	rocket->owner = self;
 	rocket->touch = rocket_touch;
@@ -680,7 +680,9 @@ void fire_rail (edict_t *self, vec3_t start, vec3_t aimdir, int damage, int kick
 		}
 		else
 		{
-			if ((tr.ent->svflags & SVF_MONSTER) || (tr.ent->client))
+			//ZOID--added so rail goes through SOLID_BBOX entities (gibs, etc)
+			if ((tr.ent->svflags & SVF_MONSTER) || (tr.ent->client) ||
+				(tr.ent->solid == SOLID_BBOX))
 				ignore = tr.ent;
 			else
 				ignore = NULL;
@@ -740,7 +742,7 @@ void bfg_explode (edict_t *self)
 			if (!CanDamage (ent, self->owner))
 				continue;
 
-			VectorAdd (ent->mins, ent->maxs, v);
+			VectorAdd (ent->s.mins, ent->s.maxs, v);
 			VectorMA (ent->s.origin, 0.5, v, v);
 			VectorSubtract (self->s.origin, v, v);
 			dist = VectorLength(v);
@@ -892,8 +894,8 @@ void fire_bfg (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, f
 	bfg->clipmask = MASK_SHOT;
 	bfg->solid = SOLID_BBOX;
 	bfg->s.effects |= EF_BFG | EF_ANIM_ALLFAST;
-	VectorClear (bfg->mins);
-	VectorClear (bfg->maxs);
+	VectorClear (bfg->s.mins);
+	VectorClear (bfg->s.maxs);
 	bfg->s.modelindex = gi.modelindex ("sprites/s_bfg1.sp2");
 	bfg->owner = self;
 	bfg->touch = bfg_touch;

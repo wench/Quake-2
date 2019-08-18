@@ -186,6 +186,7 @@ void CL_AddProjectiles (void)
 		V_AddLight (pr->origin, 200, 1, 1, 0);
 
 		VectorCopy (pr->angles, ent.angles);
+		VectorSet(ent.scale, 1, 1, 1);
 		V_AddEntity (&ent);
 	}
 }
@@ -253,13 +254,13 @@ void CL_ParseDelta (entity_state_t *from, entity_state_t *to, int number, int bi
 	to->number = number;
 
 	if (bits & U_MODEL)
-		to->modelindex = MSG_ReadByte (&net_message);
+		to->modelindex = MSG_ReadShort (&net_message);
 	if (bits & U_MODEL2)
-		to->modelindex2 = MSG_ReadByte (&net_message);
+		to->modelindex2 = MSG_ReadShort (&net_message);
 	if (bits & U_MODEL3)
-		to->modelindex3 = MSG_ReadByte (&net_message);
+		to->modelindex3 = MSG_ReadShort (&net_message);
 	if (bits & U_MODEL4)
-		to->modelindex4 = MSG_ReadByte (&net_message);
+		to->modelindex4 = MSG_ReadShort (&net_message);
 		
 	if (bits & U_FRAME8)
 		to->frame = MSG_ReadByte (&net_message);
@@ -305,7 +306,7 @@ void CL_ParseDelta (entity_state_t *from, entity_state_t *to, int number, int bi
 		MSG_ReadPos (&net_message, to->old_origin);
 
 	if (bits & U_SOUND)
-		to->sound = MSG_ReadByte (&net_message);
+		to->sound = MSG_ReadShort (&net_message);
 
 	if (bits & U_EVENT)
 		to->event = MSG_ReadByte (&net_message);
@@ -314,6 +315,58 @@ void CL_ParseDelta (entity_state_t *from, entity_state_t *to, int number, int bi
 
 	if (bits & U_SOLID)
 		to->solid = MSG_ReadShort (&net_message);
+
+	if (bits & U_RGB)
+	{
+		to->rgb[0] = MSG_ReadFloat (&net_message);
+		to->rgb[1] = MSG_ReadFloat (&net_message);
+		to->rgb[2] = MSG_ReadFloat (&net_message);
+	}
+	if (bits & U_SCALE)
+	{
+		to->scale[0] = MSG_ReadFloat (&net_message);
+		to->scale[1] = MSG_ReadFloat (&net_message);
+		to->scale[2] = MSG_ReadFloat (&net_message);
+	}
+	if (bits & U_OFFSET)
+	{
+		to->offset[0] = MSG_ReadFloat (&net_message);
+		to->offset[1] = MSG_ReadFloat (&net_message);
+		to->offset[2] = MSG_ReadFloat (&net_message);
+	}
+	if (bits & U_NPSIMPLE)
+	{
+		to->np[3] = MSG_ReadShort (&net_message);
+		to->np_tri[3][0] = -1;
+		to->np_tri[3][1] = -1;
+	}
+	if (bits & U_NP_0)
+	{
+		to->np[0] = MSG_ReadShort (&net_message);
+		to->np_tri[0][0] = MSG_ReadLong (&net_message);
+		to->np_tri[0][1] = MSG_ReadLong (&net_message);
+	}
+	if (bits & U_NP_1)
+	{
+		to->np[1] = MSG_ReadShort (&net_message);
+		to->np_tri[1][0] = MSG_ReadLong (&net_message);
+		to->np_tri[1][1] = MSG_ReadLong (&net_message);
+	}
+	if (bits & U_NP_2)
+	{
+		to->np[2] = MSG_ReadShort (&net_message);
+		to->np_tri[2][0] = MSG_ReadLong (&net_message);
+		to->np_tri[2][1] = MSG_ReadLong (&net_message);
+	}
+	if (bits & U_MINS_MAXS)
+	{	
+		to->mins[0] = MSG_ReadFloat (&net_message);
+		to->mins[1] = MSG_ReadFloat (&net_message);
+		to->mins[2] = MSG_ReadFloat (&net_message);
+		to->maxs[0] = MSG_ReadFloat (&net_message);
+		to->maxs[1] = MSG_ReadFloat (&net_message);
+		to->maxs[2] = MSG_ReadFloat (&net_message);
+	}
 }
 
 /*
@@ -622,6 +675,19 @@ void CL_ParsePlayerstate (frame_t *oldframe, frame_t *newframe)
 	if (flags & PS_RDFLAGS)
 		state->rdflags = MSG_ReadByte (&net_message);
 
+	if (flags & PS_MINMAX)
+	{
+		state->stand_mins[0] = MSG_ReadShort (&net_message)*0.125;
+		state->stand_mins[1] = MSG_ReadShort (&net_message)*0.125;
+		state->stand_mins[2] = MSG_ReadShort (&net_message)*0.125;
+		state->stand_maxs[0] = MSG_ReadShort (&net_message)*0.125;
+		state->stand_maxs[1] = MSG_ReadShort (&net_message)*0.125;
+		state->stand_maxs[2] = MSG_ReadShort (&net_message)*0.125;
+		state->run_speed = MSG_ReadShort (&net_message)*0.125;
+		state->walk_speed = MSG_ReadShort (&net_message)*0.125;
+		state->duck_speed = MSG_ReadShort (&net_message)*0.125;
+	}
+
 	// parse stats
 	statbits = MSG_ReadLong (&net_message);
 	for (i=0 ; i<MAX_STATS ; i++)
@@ -825,6 +891,9 @@ struct model_s *S_RegisterSexedModel (entity_state_t *ent, char *base)
 	return mdl;
 }
 
+// PMM - used in shell code 
+extern int Developer_searchpath (int who);
+// pmm
 /*
 ===============
 CL_AddPacketEntities
@@ -933,7 +1002,7 @@ void CL_AddPacketEntities (frame_t *frame)
 		else
 		{
 			// set skin
-			if (s1->modelindex == 255)
+			if (s1->modelindex == -1)
 			{	// use custom player skin
 				ent.skinnum = 0;
 				ci = &cl.clientinfo[s1->skinnum & 0xff];
@@ -1020,7 +1089,21 @@ void CL_AddPacketEntities (frame_t *frame)
 			}
 		}
 
-		if (s1->number == cl.playernum+1)
+		// interpolate scale
+		for (i=0 ; i<3 ; i++)
+		{
+			ent.scale[i] = cent->prev.scale[i] + cl.lerpfrac * 
+				(cent->current.scale[i] - cent->prev.scale[i]);
+		}
+
+		// interpolate rgb
+		for (i=0 ; i<3 ; i++)
+		{
+			ent.rgb[i] = cent->prev.rgb[i] + cl.lerpfrac * 
+				(cent->current.rgb[i] - cent->prev.rgb[i]);
+		}
+
+		if (s1->number == cl.playernum+1 && !cl_thirdperson->value)
 		{
 			ent.flags |= RF_VIEWERMODEL;	// only draw from mirrors
 			// FIXME: still pass to refresh
@@ -1035,6 +1118,22 @@ void CL_AddPacketEntities (frame_t *frame)
 				V_AddLight (ent.origin, 225, -1.0, -1.0, -1.0);	//PGM
 
 			continue;
+		}
+		else if (s1->number == cl.playernum+1)
+		{
+			VectorMA(cl.predicted_origin, cl.lerpfrac-1, cl.prediction_error, ent.origin);
+			VectorCopy(ent.origin, ent.oldorigin);
+			ent.angles[YAW] = cl.refdef.viewangles[YAW];
+			ent.angles[PITCH] = 0;
+		}
+
+		// interpolate offset
+		for (i=0 ; i<3 ; i++)
+		{
+			float o = cent->prev.offset[i] + cl.lerpfrac *(cent->current.offset[i] - cent->prev.offset[i]);
+
+			ent.origin[i] += cent->current.offset[i];
+			ent.oldorigin[i] += cent->current.offset[i];
 		}
 
 		// if set to invisible, skip
@@ -1068,9 +1167,48 @@ void CL_AddPacketEntities (frame_t *frame)
 		// add to refresh list
 		V_AddEntity (&ent);
 
+
 		// color shells generate a seperate entity for the main model
 		if (effects & EF_COLOR_SHELL)
 		{
+			// PMM - at this point, all of the shells have been handled
+			// if we're in the rogue pack, set up the custom mixing, otherwise just
+			// keep going
+//			if(Developer_searchpath(2) == 2)
+//			{
+				// all of the solo colors are fine.  we need to catch any of the combinations that look bad
+				// (double & half) and turn them into the appropriate color, and make double/quad something special
+				if (renderfx & RF_SHELL_HALF_DAM)
+				{
+					if(Developer_searchpath(2) == 2)
+					{
+						// ditch the half damage shell if any of red, blue, or double are on
+						if (renderfx & (RF_SHELL_RED|RF_SHELL_BLUE|RF_SHELL_DOUBLE))
+							renderfx &= ~RF_SHELL_HALF_DAM;
+					}
+				}
+
+				if (renderfx & RF_SHELL_DOUBLE)
+				{
+					if(Developer_searchpath(2) == 2)
+					{
+						// lose the yellow shell if we have a red, blue, or green shell
+						if (renderfx & (RF_SHELL_RED|RF_SHELL_BLUE|RF_SHELL_GREEN))
+							renderfx &= ~RF_SHELL_DOUBLE;
+						// if we have a red shell, turn it to purple by adding blue
+						if (renderfx & RF_SHELL_RED)
+							renderfx |= RF_SHELL_BLUE;
+						// if we have a blue shell (and not a red shell), turn it to cyan by adding green
+						else if (renderfx & RF_SHELL_BLUE)
+							// go to green if it's on already, otherwise do cyan (flash green)
+							if (renderfx & RF_SHELL_GREEN)
+								renderfx &= ~RF_SHELL_BLUE;
+							else
+								renderfx |= RF_SHELL_GREEN;
+					}
+				}
+//			}
+			// pmm
 			ent.flags = renderfx | RF_TRANSLUCENT;
 			ent.alpha = 0.30;
 			V_AddEntity (&ent);
@@ -1082,9 +1220,9 @@ void CL_AddPacketEntities (frame_t *frame)
 		ent.alpha = 0;
 
 		// duplicate for linked models
-		if (s1->modelindex2)
+		if (s1->modelindex2 && !(s1->modelindex2 == -1 && s1->modelindex != -1))
 		{
-			if (s1->modelindex2 == 255)
+			if (s1->modelindex2 == -1)
 			{	// custom weapon
 				ci = &cl.clientinfo[s1->skinnum & 0xff];
 				i = (s1->skinnum >> 8); // 0 is default weapon model
@@ -1098,17 +1236,18 @@ void CL_AddPacketEntities (frame_t *frame)
 						ent.model = cl.baseclientinfo.weaponmodel[0];
 				}
 			}
-			//PGM - hack to allow translucent linked models (defender sphere's shell)
-			//		set the high bit 0x80 on modelindex2 to enable translucency
-			else if(s1->modelindex2 & 0x80)
+			else
+				ent.model = cl.model_draw[s1->modelindex2];
+
+			// PMM - check for the defender sphere shell .. make it translucent
+			// replaces the previous version which used the high bit on modelindex2 to determine transparency
+			if (!Q_strcasecmp (cl.configstrings[CS_MODELS+(s1->modelindex2)], "models/items/shell/tris.md2"))
 			{
-				ent.model = cl.model_draw[s1->modelindex2 & 0x7F];
 				ent.alpha = 0.32;
 				ent.flags = RF_TRANSLUCENT;
 			}
-			//PGM
-			else
-				ent.model = cl.model_draw[s1->modelindex2];
+			// pmm
+
 			V_AddEntity (&ent);
 
 			//PGM - make sure these get reset.
@@ -1280,6 +1419,9 @@ void CL_AddPacketEntities (frame_t *frame)
 		}
 
 		VectorCopy (ent.origin, cent->lerp_origin);
+
+		// Do new particles
+		CL_RunGenerators(cent);
 	}
 }
 
@@ -1319,6 +1461,9 @@ void CL_AddViewWeapon (player_state_t *ps, player_state_t *ops)
 			+ cl.lerpfrac * (ps->gunoffset[i] - ops->gunoffset[i]);
 		gun.angles[i] = cl.refdef.viewangles[i] + LerpAngle (ops->gunangles[i],
 			ps->gunangles[i], cl.lerpfrac);
+
+		gun.scale[i] = 1;
+		gun.rgb[i] = 1;
 	}
 
 	if (gun_frame)
@@ -1338,9 +1483,113 @@ void CL_AddViewWeapon (player_state_t *ps, player_state_t *ops)
 	gun.flags = RF_MINLIGHT | RF_DEPTHHACK | RF_WEAPONMODEL;
 	gun.backlerp = 1.0 - cl.lerpfrac;
 	VectorCopy (gun.origin, gun.oldorigin);	// don't lerp at all
+	VectorSet(gun.scale, 1, 1, 1);
 	V_AddEntity (&gun);
 }
 
+#define DEG2RAD( a ) ( a * M_PI ) / 180.0F
+
+int		CL_PMpointcontents (vec3_t point);
+
+void CL_AddThirdPersonOffset (player_state_t *ps, player_state_t *ops)
+{
+	float		zcheck;
+	float		xycheck;
+	float		scale;
+	vec3_t		v, tempv, tempv2, origin;
+	int		i;
+
+	// Constants originally from p_client.c
+
+	const float thirdoffx = 64;
+	const float thirdoffz = 64;
+	const float thirdzmax = 10000;
+	const float thirdyaw = 0;
+	const float thirdpitch = 0;
+	const float thirdmaxpitch = 60;
+	vec3_t thirdorigin = {0,0,64};
+
+	xycheck = thirdoffx;
+	zcheck = thirdoffz;
+
+	if (!(ps->pmove.pm_flags & PMF_DUCKED))
+		thirdorigin[2] = ps->stand_maxs[2]-10;
+	else
+		thirdorigin[2] = ps->stand_mins[2]+22;
+
+	if (cl.refdef.viewangles[PITCH] > thirdmaxpitch) cl.refdef.viewangles[PITCH] = thirdmaxpitch;
+	else if (cl.refdef.viewangles[PITCH] < -thirdmaxpitch) cl.refdef.viewangles[PITCH] = -thirdmaxpitch;
+
+	tempv[YAW] = 0;//thirdyaw;
+	tempv[PITCH] = 0;//thirdpitch;
+	tempv[ROLL] = 0;
+	VectorSubtract (cl.refdef.viewangles, tempv, tempv);
+
+	//These calculates the cameras reletive position to the player
+	//because the the view offset is not normally reletive to the players angles
+	v[0] = cos(DEG2RAD(tempv[YAW])) * xycheck;
+	v[1] = sin(DEG2RAD(tempv[YAW])) * xycheck;
+
+	//These Move the camera back and forth depending on the players view pitch
+	v[0] *= - cos(DEG2RAD(tempv[PITCH]));
+	v[1] *= - cos(DEG2RAD(tempv[PITCH]));
+
+	//This calculates the camera height depending on the players view pitch but
+	//if the player is ducking keep the height constant so don't do this
+
+	if (!(ps->pmove.pm_flags & PMF_DUCKED))
+		v[2] = 0 + sin(DEG2RAD(tempv[PITCH])) * zcheck; 
+
+	// Work out the Reletive origin pos
+	origin[0] = cos(DEG2RAD(cl.refdef.viewangles[YAW])) * thirdorigin[0];
+	origin[1] = sin(DEG2RAD(cl.refdef.viewangles[YAW])) * thirdorigin[0];
+
+	origin[0] += sin(DEG2RAD(cl.refdef.viewangles[YAW])) * thirdorigin[1];
+	origin[1] += cos(DEG2RAD(cl.refdef.viewangles[YAW])) * thirdorigin[1];
+
+	if (ps->pmove.pm_flags & PMF_DUCKED) origin[2] = thirdorigin[2]-16;
+	else origin[2] = thirdorigin[2];
+
+	// Now add the origin's position
+	VectorAdd (v, origin, v);
+
+	// If the camera is higher than desired truncate the z value
+	if (v[2] > thirdzmax)
+		v[2] = thirdzmax;
+
+	//Now lets just check to see if the camera is in a wall. If it is move it forward
+	VectorAdd (cl.refdef.vieworg, origin, tempv2);
+	VectorAdd (cl.refdef.vieworg, v, tempv);
+
+	i = 0;
+	
+	if ((scale = CM_BoxTrace(tempv2, tempv, vec3_origin, vec3_origin, 0, MASK_SOLID).fraction) != 1)
+	{
+		// Oh dear the camera is in a wall
+		// Luck the scale value is how far
+		// we need to move it forward
+
+		// We have to first remove the
+		// origin offset
+		VectorSubtract (v, origin, v);
+
+		// Now multiply by scale
+		VectorScale (v, scale*0.8, v);
+
+		// Now add the origin back
+		VectorAdd (v, origin, v);
+	}
+
+
+	// Will do a different check now just to be sure
+	// if it fails put the camera in the players origin
+	// obviously something stupid is occuring
+	VectorAdd (cl.refdef.vieworg, v, tempv);
+	if (CL_PMpointcontents (tempv) & CONTENTS_SOLID)
+		VectorSet (v, 0, 0, 30);
+
+	VectorAdd (v, cl.refdef.vieworg, cl.refdef.vieworg);
+}
 
 /*
 ===============
@@ -1356,6 +1605,7 @@ void CL_CalcViewValues (void)
 	centity_t	*ent;
 	frame_t		*oldframe;
 	player_state_t	*ps, *ops;
+	vec3_t		viewoffset;
 
 	// find the previous frame to interpolate from
 	ps = &cl.frame.playerstate;
@@ -1374,32 +1624,6 @@ void CL_CalcViewValues (void)
 	ent = &cl_entities[cl.playernum+1];
 	lerp = cl.lerpfrac;
 
-	// calculate the origin
-	if ((cl_predict->value) && !(cl.frame.playerstate.pmove.pm_flags & PMF_NO_PREDICTION))
-	{	// use predicted values
-		unsigned	delta;
-
-		backlerp = 1.0 - lerp;
-		for (i=0 ; i<3 ; i++)
-		{
-			cl.refdef.vieworg[i] = cl.predicted_origin[i] + ops->viewoffset[i] 
-				+ cl.lerpfrac * (ps->viewoffset[i] - ops->viewoffset[i])
-				- backlerp * cl.prediction_error[i];
-		}
-
-		// smooth out stair climbing
-		delta = cls.realtime - cl.predicted_step_time;
-		if (delta < 100)
-			cl.refdef.vieworg[2] -= cl.predicted_step * (100 - delta) * 0.01;
-	}
-	else
-	{	// just use interpolated values
-		for (i=0 ; i<3 ; i++)
-			cl.refdef.vieworg[i] = ops->pmove.origin[i]*0.125 + ops->viewoffset[i] 
-				+ lerp * (ps->pmove.origin[i]*0.125 + ps->viewoffset[i] 
-				- (ops->pmove.origin[i]*0.125 + ops->viewoffset[i]) );
-	}
-
 	// if not running a demo or on a locked frame, add the local angle movement
 	if ( cl.frame.playerstate.pmove.pm_type < PM_DEAD )
 	{	// use predicted values
@@ -1412,8 +1636,50 @@ void CL_CalcViewValues (void)
 			cl.refdef.viewangles[i] = LerpAngle (ops->viewangles[i], ps->viewangles[i], lerp);
 	}
 
-	for (i=0 ; i<3 ; i++)
-		cl.refdef.viewangles[i] += LerpAngle (ops->kick_angles[i], ps->kick_angles[i], lerp);
+	if (!cl_thirdperson->value)
+	{
+		for (i = 0; i < 3; i++)
+			viewoffset[i] = ops->viewoffset[i] 
+				+ cl.lerpfrac * (ps->viewoffset[i] - ops->viewoffset[i]);
+	}
+	else
+	{
+		VectorClear(viewoffset);
+	}
+
+	// calculate the origin
+	if ((cl_predict->value) && !(cl.frame.playerstate.pmove.pm_flags & PMF_NO_PREDICTION))
+	{	// use predicted values
+		unsigned	delta;
+
+		backlerp = 1.0 - lerp;
+		for (i=0 ; i<3 ; i++)
+		{
+			cl.refdef.vieworg[i] = cl.predicted_origin[i] + viewoffset[i]
+				- backlerp * cl.prediction_error[i];
+		}
+
+		// smooth out stair climbing
+		delta = cls.realtime - cl.predicted_step_time;
+		if (delta < 100)
+			cl.refdef.vieworg[2] -= cl.predicted_step * (100 - delta) * 0.01;
+	}
+	else
+	{	// just use interpolated values
+		for (i=0 ; i<3 ; i++)
+			cl.refdef.vieworg[i] = ops->pmove.origin[i]*0.125 + viewoffset[i]
+				+ lerp * (ps->pmove.origin[i]*0.125 - ops->pmove.origin[i]*0.125);
+	}
+
+	if (!cl_thirdperson->value)
+	{
+		for (i=0 ; i<3 ; i++)
+			cl.refdef.viewangles[i] += LerpAngle (ops->kick_angles[i], ps->kick_angles[i], lerp);
+	}
+	else
+	{
+		CL_AddThirdPersonOffset (ps, ops);
+	}
 
 	AngleVectors (cl.refdef.viewangles, cl.v_forward, cl.v_right, cl.v_up);
 
@@ -1425,7 +1691,8 @@ void CL_CalcViewValues (void)
 		cl.refdef.blend[i] = ps->blend[i];
 
 	// add the weapon
-	CL_AddViewWeapon (ps, ops);
+	if (!cl_thirdperson->value)
+		CL_AddViewWeapon (ps, ops);
 }
 
 /*
@@ -1474,6 +1741,7 @@ void CL_AddEntities (void)
 #endif
 	CL_AddTEnts ();
 	CL_AddParticles ();
+	CL_AddNewParticles ();
 	CL_AddDLights ();
 	CL_AddLightStyles ();
 }

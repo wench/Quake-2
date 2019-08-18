@@ -2295,4 +2295,5 @@ void CL_ClearEffects (void)
 	CL_ClearParticles ();
 	CL_ClearDlights ();
 	CL_ClearLightStyles ();
+	CL_ClearNewParticles ();
 }

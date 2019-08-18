@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "qcommon.h"
 #include <setjmp.h>
 
-#define	MAXPRINTMSG	4096
+#define	MAXPRINTMSG	8192
 
 #define MAX_NUM_ARGVS	50
 
@@ -104,7 +104,7 @@ void Com_Printf (char *fmt, ...)
 	char		msg[MAXPRINTMSG];
 
 	va_start (argptr,fmt);
-	vsprintf (msg,fmt,argptr);
+	vsprintf_s (msg, MAXPRINTMSG,fmt,argptr);
 	va_end (argptr);
 
 	if (rd_target)
@@ -131,7 +131,10 @@ void Com_Printf (char *fmt, ...)
 		if (!logfile)
 		{
 			Com_sprintf (name, sizeof(name), "%s/qconsole.log", FS_Gamedir ());
-			logfile = fopen (name, "w");
+			if (logfile_active->value > 2)
+				logfile = fopen (name, "a");
+			else
+				logfile = fopen (name, "w");
 		}
 		if (logfile)
 			fprintf (logfile, "%s", msg);
@@ -560,6 +563,28 @@ void MSG_WriteDeltaEntity (entity_state_t *from, entity_state_t *to, sizebuf_t *
 	if (newentity || (to->renderfx & RF_BEAM))
 		bits |= U_OLDORIGIN;
 
+	if ( VectorCompare(to->rgb, from->rgb) == 0 )
+		bits |= U_RGB;
+	if ( VectorCompare(to->scale, from->scale) == 0 )
+		bits |= U_SCALE;
+	if ( VectorCompare(to->offset, from->offset) == 0 )
+		bits |= U_OFFSET;
+
+	// New particles
+	if ( to->np[3] != from->np[3] )
+		bits |= U_NPSIMPLE;
+	if ( to->np[0] != from->np[0] || to->np_tri[0][0] != from->np_tri[0][0] || to->np_tri[0][1] != from->np_tri[0][1] )
+		bits |= U_NP_0;
+	if ( to->np[1] != from->np[1] || to->np_tri[1][0] != from->np_tri[1][0] || to->np_tri[1][1] != from->np_tri[1][1] )
+		bits |= U_NP_1;
+	if ( to->np[2] != from->np[2] || to->np_tri[2][0] != from->np_tri[2][0] || to->np_tri[2][1] != from->np_tri[2][1] )
+		bits |= U_NP_2;
+
+	if ( VectorCompare(to->mins, from->mins) == 0 )
+		bits |= U_MINS_MAXS;
+	if ( VectorCompare(to->maxs, from->maxs) == 0 )
+		bits |= U_MINS_MAXS;
+
 	//
 	// write the message
 	//
@@ -601,13 +626,13 @@ void MSG_WriteDeltaEntity (entity_state_t *from, entity_state_t *to, sizebuf_t *
 		MSG_WriteByte (msg,	to->number);
 
 	if (bits & U_MODEL)
-		MSG_WriteByte (msg,	to->modelindex);
+		MSG_WriteShort (msg,	to->modelindex);
 	if (bits & U_MODEL2)
-		MSG_WriteByte (msg,	to->modelindex2);
+		MSG_WriteShort (msg,	to->modelindex2);
 	if (bits & U_MODEL3)
-		MSG_WriteByte (msg,	to->modelindex3);
+		MSG_WriteShort (msg,	to->modelindex3);
 	if (bits & U_MODEL4)
-		MSG_WriteByte (msg,	to->modelindex4);
+		MSG_WriteShort (msg,	to->modelindex4);
 
 	if (bits & U_FRAME8)
 		MSG_WriteByte (msg, to->frame);
@@ -658,11 +683,62 @@ void MSG_WriteDeltaEntity (entity_state_t *from, entity_state_t *to, sizebuf_t *
 	}
 
 	if (bits & U_SOUND)
-		MSG_WriteByte (msg, to->sound);
+		MSG_WriteShort (msg, to->sound);
 	if (bits & U_EVENT)
 		MSG_WriteByte (msg, to->event);
 	if (bits & U_SOLID)
 		MSG_WriteShort (msg, to->solid);
+
+	if (bits & U_RGB)
+	{
+		MSG_WriteFloat (msg, to->rgb[0]);
+		MSG_WriteFloat (msg, to->rgb[1]);
+		MSG_WriteFloat (msg, to->rgb[2]);
+	}
+	if (bits & U_SCALE)
+	{
+		MSG_WriteFloat (msg, to->scale[0]);
+		MSG_WriteFloat (msg, to->scale[1]);
+		MSG_WriteFloat (msg, to->scale[2]);
+	}
+	if (bits & U_OFFSET)
+	{
+		MSG_WriteFloat (msg, to->offset[0]);
+		MSG_WriteFloat (msg, to->offset[1]);
+		MSG_WriteFloat (msg, to->offset[2]);
+	}
+
+	if (bits & U_NPSIMPLE)
+	{
+		MSG_WriteShort (msg, to->np[3]);
+	}
+	if (bits & U_NP_0)
+	{
+		MSG_WriteShort (msg, to->np[0]);
+		MSG_WriteLong (msg, to->np_tri[0][0]);
+		MSG_WriteLong (msg, to->np_tri[0][1]);
+	}
+	if (bits & U_NP_1)
+	{
+		MSG_WriteShort (msg, to->np[1]);
+		MSG_WriteLong (msg, to->np_tri[1][0]);
+		MSG_WriteLong (msg, to->np_tri[1][1]);
+	}
+	if (bits & U_NP_2)
+	{
+		MSG_WriteShort (msg, to->np[2]);
+		MSG_WriteLong (msg, to->np_tri[2][0]);
+		MSG_WriteLong (msg, to->np_tri[2][1]);
+	}
+	if (bits & U_MINS_MAXS)
+	{
+		MSG_WriteFloat (msg, to->mins[0]);
+		MSG_WriteFloat (msg, to->mins[1]);
+		MSG_WriteFloat (msg, to->mins[2]);
+		MSG_WriteFloat (msg, to->maxs[0]);
+		MSG_WriteFloat (msg, to->maxs[1]);
+		MSG_WriteFloat (msg, to->maxs[2]);
+	}
 }
 
 

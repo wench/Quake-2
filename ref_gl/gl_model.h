@@ -169,6 +169,62 @@ typedef struct mleaf_s
 // Whole model
 //
 
+typedef enum {
+	MDA_UVGEN_BASE			= 0x01,
+	MDA_UVGEN_SPHERE		= 0x02,
+	MDA_UVGEN_PARABXPOS		= 0x04,
+	MDA_UVGEN_PARABXNEG		= 0x08,
+	MDA_RGBGEN_DIFFUSE		= 0x10,
+	MDA_RGBGEN_IDENTITY		= 0x20,
+	MDA_RGBGEN_DIFFUSEZERO	= 0x40,
+	MDA_RGBGEN_AMBIENT		= 0x80
+} mda_gen_t;
+
+typedef struct mda_pass_s
+{
+	char					imagename[MAX_QPATH];
+	struct image_s			*image;
+
+	int						cull_mode;			// Default GL_FRONT
+
+	int						src_blend;			// Default GL_ONE, GL_ZERO
+	int						dest_blend;			
+
+	int						depth_write;		// Default disabled for blended/non first pass
+	int						depth_func;			// Default lequal
+
+	int						alpha_func;			// Default disabled
+	float					alpha_test_ref;	
+
+	mda_gen_t				rgbgen;				// Default diffuse
+
+	mda_gen_t				uvgen;				// Defualt base
+	float					uvscroll[2];		// Default 0,0
+
+	struct mda_pass_s		*next;
+} mda_pass_t;
+
+typedef struct mda_skin_s
+{
+	qboolean				sort_blend;
+
+	mda_pass_t				*passes;	// Unspecified number of passes
+
+	struct mda_skin_s		*next;		// Next Skin for each emit
+} mda_skin_t;
+
+typedef struct mda_profile_s
+{
+	int						name;		// FOURCC code name
+
+	int						opaque_gen_mask;
+	int						alpha_gen_mask;
+
+	mda_skin_t				*skins;		// Linked list of Skins for each emit
+
+	struct mda_profile_s	*next;		// Next profile
+} mda_profile_t;
+
 typedef enum {mod_bad, mod_brush, mod_sprite, mod_alias } modtype_t;
 
 typedef struct model_s
@@ -240,6 +296,12 @@ typedef struct model_s
 
 	int			extradatasize;
 	void		*extradata;
+
+	// MDA Profile. Used by anox
+	mda_profile_t	*profiles;
+	qboolean		mda_opaque;
+	qboolean		mda_blend;
+
 } model_t;
 
 //============================================================================

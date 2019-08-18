@@ -173,7 +173,7 @@ void SP_trigger_once(edict_t *ent)
 	{
 		vec3_t	v;
 
-		VectorMA (ent->mins, 0.5, ent->size, v);
+		VectorMA (ent->s.mins, 0.5, ent->size, v);
 		ent->spawnflags &= ~1;
 		ent->spawnflags |= 4;
 		gi.dprintf("fixed TRIGGERED flag on %s at %s\n", ent->classname, vtos(v));
@@ -595,4 +595,64 @@ void SP_trigger_monsterjump (edict_t *self)
 	self->touch = trigger_monsterjump_touch;
 	self->movedir[2] = st.height;
 }
+
+//
+// Aquakronox
+//
+
+//==========================================================
+
+/*QUAKED trigger_changelevel (1 0 0) ?
+Changes level to "map" when touched
+*/
+void trigger_changelevel_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
+{
+	if (!other->client) return;
+
+	if (level.intermissiontime)
+		return;		// already activated
+
+	if (!deathmatch->value && !coop->value)
+	{
+		if (g_edicts[1].health <= 0)
+			return;
+	}
+
+	// if noexit, do a ton of damage to other
+	if (deathmatch->value && !( (int)dmflags->value & DF_ALLOW_EXIT) && other != world)
+	{
+		T_Damage (other, self, self, vec3_origin, other->s.origin, vec3_origin, 10 * other->max_health, 1000, 0, MOD_EXIT);
+		return;
+	}
+
+	// if multiplayer, let everyone know who hit the exit
+	if (deathmatch->value)
+	{
+		if (other && other->client)
+			gi.bprintf (PRINT_HIGH, "%s exited the level.\n", other->client->pers.netname);
+	}
+
+	// if going to a new unit, clear cross triggers
+	if (strstr(self->map, "*"))	
+		game.serverflags &= ~(SFL_CROSS_TRIGGER_MASK);
+
+	BeginIntermission (self);
+}
+
+extern void use_target_changelevel (edict_t *self, edict_t *other, edict_t *activator);
+
+void SP_trigger_changelevel (edict_t *ent)
+{
+	if (!ent->map)
+	{
+		gi.dprintf("trigger_changelevel with no map at %s\n", vtos(ent->s.origin));
+		G_FreeEdict (ent);
+		return;
+	}
+
+	InitTrigger(ent);
+	ent->touch = trigger_changelevel_touch;
+	ent->use = use_target_changelevel;
+}
+
 

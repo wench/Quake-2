@@ -141,8 +141,8 @@ void CMod_LoadSubmodels (lump_t *l)
 	int			i, j, count;
 
 	in = (void *)(cmod_base + l->fileofs);
-	if (l->filelen % sizeof(*in))
-		Com_Error (ERR_DROP, "MOD_LoadBmodel: funny lump size");
+	//if (l->filelen % sizeof(*in))
+		//Com_Error (ERR_DROP, "MOD_LoadBmodel: funny lump size");
 	count = l->filelen / sizeof(*in);
 
 	if (count < 1)
@@ -179,8 +179,8 @@ void CMod_LoadSurfaces (lump_t *l)
 	int			i, count;
 
 	in = (void *)(cmod_base + l->fileofs);
-	if (l->filelen % sizeof(*in))
-		Com_Error (ERR_DROP, "MOD_LoadBmodel: funny lump size");
+	//if (l->filelen % sizeof(*in))
+		//Com_Error (ERR_DROP, "MOD_LoadBmodel: funny lump size");
 	count = l->filelen / sizeof(*in);
 	if (count < 1)
 		Com_Error (ERR_DROP, "Map with no surfaces");
@@ -214,8 +214,8 @@ void CMod_LoadNodes (lump_t *l)
 	int			i, j, count;
 	
 	in = (void *)(cmod_base + l->fileofs);
-	if (l->filelen % sizeof(*in))
-		Com_Error (ERR_DROP, "MOD_LoadBmodel: funny lump size");
+	//if (l->filelen % sizeof(*in))
+		//Com_Error (ERR_DROP, "MOD_LoadBmodel: funny lump size");
 	count = l->filelen / sizeof(*in);
 
 	if (count < 1)
@@ -252,8 +252,8 @@ void CMod_LoadBrushes (lump_t *l)
 	int			i, count;
 	
 	in = (void *)(cmod_base + l->fileofs);
-	if (l->filelen % sizeof(*in))
-		Com_Error (ERR_DROP, "MOD_LoadBmodel: funny lump size");
+	//if (l->filelen % sizeof(*in))
+		//Com_Error (ERR_DROP, "MOD_LoadBmodel: funny lump size");
 	count = l->filelen / sizeof(*in);
 
 	if (count > MAX_MAP_BRUSHES)
@@ -285,8 +285,8 @@ void CMod_LoadLeafs (lump_t *l)
 	int			count;
 	
 	in = (void *)(cmod_base + l->fileofs);
-	if (l->filelen % sizeof(*in))
-		Com_Error (ERR_DROP, "MOD_LoadBmodel: funny lump size");
+	//if (l->filelen % sizeof(*in))
+		//Com_Error (ERR_DROP, "MOD_LoadBmodel: funny lump size");
 	count = l->filelen / sizeof(*in);
 
 	if (count < 1)
@@ -341,8 +341,8 @@ void CMod_LoadPlanes (lump_t *l)
 	int			bits;
 	
 	in = (void *)(cmod_base + l->fileofs);
-	if (l->filelen % sizeof(*in))
-		Com_Error (ERR_DROP, "MOD_LoadBmodel: funny lump size");
+	//if (l->filelen % sizeof(*in))
+		//Com_Error (ERR_DROP, "MOD_LoadBmodel: funny lump size");
 	count = l->filelen / sizeof(*in);
 
 	if (count < 1)
@@ -383,8 +383,8 @@ void CMod_LoadLeafBrushes (lump_t *l)
 	int			count;
 	
 	in = (void *)(cmod_base + l->fileofs);
-	if (l->filelen % sizeof(*in))
-		Com_Error (ERR_DROP, "MOD_LoadBmodel: funny lump size");
+	//if (l->filelen % sizeof(*in))
+		//Com_Error (ERR_DROP, "MOD_LoadBmodel: funny lump size");
 	count = l->filelen / sizeof(*in);
 
 	if (count < 1)
@@ -414,8 +414,8 @@ void CMod_LoadBrushSides (lump_t *l)
 	int			num;
 
 	in = (void *)(cmod_base + l->fileofs);
-	if (l->filelen % sizeof(*in))
-		Com_Error (ERR_DROP, "MOD_LoadBmodel: funny lump size");
+	//if (l->filelen % sizeof(*in))
+		//Com_Error (ERR_DROP, "MOD_LoadBmodel: funny lump size");
 	count = l->filelen / sizeof(*in);
 
 	// need to save space for box planes
@@ -449,8 +449,8 @@ void CMod_LoadAreas (lump_t *l)
 	int			count;
 
 	in = (void *)(cmod_base + l->fileofs);
-	if (l->filelen % sizeof(*in))
-		Com_Error (ERR_DROP, "MOD_LoadBmodel: funny lump size");
+	//if (l->filelen % sizeof(*in))
+		//Com_Error (ERR_DROP, "MOD_LoadBmodel: funny lump size");
 	count = l->filelen / sizeof(*in);
 
 	if (count > MAX_MAP_AREAS)
@@ -481,8 +481,8 @@ void CMod_LoadAreaPortals (lump_t *l)
 	int			count;
 
 	in = (void *)(cmod_base + l->fileofs);
-	if (l->filelen % sizeof(*in))
-		Com_Error (ERR_DROP, "MOD_LoadBmodel: funny lump size");
+	//if (l->filelen % sizeof(*in))
+		//Com_Error (ERR_DROP, "MOD_LoadBmodel: funny lump size");
 	count = l->filelen / sizeof(*in);
 
 	if (count > MAX_MAP_AREAS)
@@ -599,9 +599,9 @@ cmodel_t *CM_LoadMap (char *name, qboolean clientload, unsigned *checksum)
 	for (i=0 ; i<sizeof(dheader_t)/4 ; i++)
 		((int *)&header)[i] = LittleLong ( ((int *)&header)[i]);
 
-	if (header.version != BSPVERSION)
-		Com_Error (ERR_DROP, "CMod_LoadBrushModel: %s has wrong version number (%i should be %i)"
-		, name, header.version, BSPVERSION);
+	//if (header.version != BSPVERSION)
+		//Com_Error (ERR_DROP, "CMod_LoadBrushModel: %s has wrong version number (%i should be %i)"
+		//, name, header.version, BSPVERSION);
 
 	cmod_base = (byte *)buf;
 

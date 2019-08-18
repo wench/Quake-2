@@ -37,7 +37,7 @@ void Draw_InitLocal (void)
 {
 	// load console characters (don't bilerp characters)
 	draw_chars = GL_FindImage ("pics/conchars.pcx", it_pic);
-	GL_Bind( draw_chars->texnum );
+	GL_BindImage( draw_chars );
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 }
@@ -73,7 +73,9 @@ void Draw_Char (int x, int y, int num)
 	fcol = col*0.0625;
 	size = 0.0625;
 
-	GL_Bind (draw_chars->texnum);
+	GL_DisableAA();
+
+	GL_BindImage (draw_chars);
 
 	qglBegin (GL_QUADS);
 	qglTexCoord2f (fcol, frow);
@@ -85,6 +87,9 @@ void Draw_Char (int x, int y, int num)
 	qglTexCoord2f (fcol, frow + size);
 	qglVertex2f (x, y+8);
 	qglEnd ();
+
+	GL_EnableAA();
+
 }
 
 /*
@@ -95,11 +100,11 @@ Draw_FindPic
 image_t	*Draw_FindPic (char *name)
 {
 	image_t *gl;
-	char	fullname[MAX_QPATH];
 
 	if (name[0] != '/' && name[0] != '\\')
 	{
-		Com_sprintf (fullname, sizeof(fullname), "pics/%s.pcx", name);
+		char	fullname[MAX_QPATH];
+		Com_sprintf (fullname, sizeof(fullname), "pics/%s", name);
 		gl = GL_FindImage (fullname, it_pic);
 	}
 	else
@@ -143,13 +148,15 @@ void Draw_StretchPic (int x, int y, int w, int h, char *pic)
 		return;
 	}
 
+	GL_EnableAA();
+
 	if (scrap_dirty)
 		Scrap_Upload ();
 
 	if ( ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( gl_config.renderer & GL_RENDERER_RENDITION ) ) && !gl->has_alpha)
 		qglDisable (GL_ALPHA_TEST);
 
-	GL_Bind (gl->texnum);
+	GL_BindImage (gl);
 	qglBegin (GL_QUADS);
 	qglTexCoord2f (gl->sl, gl->tl);
 	qglVertex2f (x, y);
@@ -163,6 +170,8 @@ void Draw_StretchPic (int x, int y, int w, int h, char *pic)
 
 	if ( ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( gl_config.renderer & GL_RENDERER_RENDITION ) ) && !gl->has_alpha)
 		qglEnable (GL_ALPHA_TEST);
+
+	GL_EnableAA();
 }
 
 
@@ -181,13 +190,17 @@ void Draw_Pic (int x, int y, char *pic)
 		ri.Con_Printf (PRINT_ALL, "Can't find pic: %s\n", pic);
 		return;
 	}
+
+	GL_DisableAA();
+
 	if (scrap_dirty)
 		Scrap_Upload ();
 
 	if ( ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( gl_config.renderer & GL_RENDERER_RENDITION ) ) && !gl->has_alpha)
 		qglDisable (GL_ALPHA_TEST);
 
-	GL_Bind (gl->texnum);
+	GL_BindImage(gl);
+
 	qglBegin (GL_QUADS);
 	qglTexCoord2f (gl->sl, gl->tl);
 	qglVertex2f (x, y);
@@ -201,6 +214,9 @@ void Draw_Pic (int x, int y, char *pic)
 
 	if ( ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( gl_config.renderer & GL_RENDERER_RENDITION ) )  && !gl->has_alpha)
 		qglEnable (GL_ALPHA_TEST);
+
+	GL_EnableAA();
+
 }
 
 /*
@@ -222,10 +238,12 @@ void Draw_TileClear (int x, int y, int w, int h, char *pic)
 		return;
 	}
 
+	GL_DisableAA();
+
 	if ( ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( gl_config.renderer & GL_RENDERER_RENDITION ) )  && !image->has_alpha)
 		qglDisable (GL_ALPHA_TEST);
 
-	GL_Bind (image->texnum);
+	GL_BindImage(image);
 	qglBegin (GL_QUADS);
 	qglTexCoord2f (x/64.0, y/64.0);
 	qglVertex2f (x, y);
@@ -239,6 +257,8 @@ void Draw_TileClear (int x, int y, int w, int h, char *pic)
 
 	if ( ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( gl_config.renderer & GL_RENDERER_RENDITION ) )  && !image->has_alpha)
 		qglEnable (GL_ALPHA_TEST);
+
+	GL_EnableAA();
 }
 
 
@@ -260,6 +280,8 @@ void Draw_Fill (int x, int y, int w, int h, int c)
 	if ( (unsigned)c > 255)
 		ri.Sys_Error (ERR_FATAL, "Draw_Fill: bad color");
 
+	GL_DisableAA();
+
 	qglDisable (GL_TEXTURE_2D);
 
 	color.c = d_8to24table[c];
@@ -277,6 +299,8 @@ void Draw_Fill (int x, int y, int w, int h, int c)
 	qglEnd ();
 	qglColor3f (1,1,1);
 	qglEnable (GL_TEXTURE_2D);
+
+	GL_EnableAA();
 }
 
 //=============================================================================
@@ -289,6 +313,8 @@ Draw_FadeScreen
 */
 void Draw_FadeScreen (void)
 {
+	GL_DisableAA();
+
 	qglEnable (GL_BLEND);
 	qglDisable (GL_TEXTURE_2D);
 	qglColor4f (0, 0, 0, 0.8);
@@ -303,6 +329,8 @@ void Draw_FadeScreen (void)
 	qglColor4f (1,1,1,1);
 	qglEnable (GL_TEXTURE_2D);
 	qglDisable (GL_BLEND);
+
+	GL_EnableAA();
 }
 
 
@@ -316,7 +344,7 @@ Draw_StretchRaw
 */
 extern unsigned	r_rawpalette[256];
 
-void Draw_StretchRaw (int x, int y, int w, int h, int cols, int rows, byte *data)
+static void Draw_StretchRaw256 (int x, int y, int w, int h, int cols, int rows, byte *data)
 {
 	unsigned	image32[256*256];
 	unsigned char image8[256*256];
@@ -326,6 +354,8 @@ void Draw_StretchRaw (int x, int y, int w, int h, int cols, int rows, byte *data
 	float		hscale;
 	int			row;
 	float		t;
+
+	GL_DisableAA();
 
 	GL_Bind (0);
 
@@ -411,5 +441,158 @@ void Draw_StretchRaw (int x, int y, int w, int h, int cols, int rows, byte *data
 
 	if ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( gl_config.renderer & GL_RENDERER_RENDITION ) ) 
 		qglEnable (GL_ALPHA_TEST);
+
+	GL_EnableAA();
 }
 
+void Draw_StretchRaw (int x, int y, int w, int h, int cols, int rows, byte *data)
+{
+	static unsigned	image32[1024*1024];
+	static unsigned char image8[1024*1024];
+	int			i, j, trows, scols;
+	byte		*source;
+	int			frac, fracstep;
+	float		hscale;
+	float		vscale;
+	int			row;
+	float		t;
+	float		s;
+	int			row_i, col_i;
+	float		row_f, col_f;
+
+	GL_DisableAA();
+
+	GL_Bind (0);
+
+	if (rows <= 256 || gl_config.max_texture_size < 512 || gl_large_cins->value == 0) {
+		row_i = 256;
+		row_f = 256;
+	}
+	else if (rows <= 512 || gl_config.max_texture_size < 1024) {
+		row_i = 512;
+		row_f = 512;
+	}
+	else {
+		row_i = 1024;
+		row_f = 1024;
+	}
+
+	if (cols <= 256 || gl_config.max_texture_size < 512 || gl_large_cins->value == 0) {
+		col_i = 256;
+		col_f = 256;
+	}
+	else if (cols <= 512 || gl_config.max_texture_size < 1024) {
+		col_i = 512;
+		col_f = 512;
+	}
+	else {
+		col_i = 1024;
+		col_f = 1024;
+	}
+	
+	if (rows<=row_i)
+	{
+		hscale = 1;
+		trows = rows;
+	}
+	else
+	{
+		hscale = rows/row_f;
+		trows = row_i;
+	}
+	t = rows*hscale / row_f;
+	if (t>1) t = 1;
+
+	if (cols<=col_i)
+	{
+		vscale = 1;
+		scols = cols;
+	}
+	else
+	{
+		vscale = cols/col_f;
+		scols = col_i;
+	}
+	s = cols*vscale / col_f;
+	if (s>1) s = 1;
+
+	if ( !qglColorTableEXT )
+	{
+		unsigned *dest;
+
+		for (i=0 ; i<trows ; i++)
+		{
+			row = (int)(i*hscale);
+			if (row > rows)
+				break;
+			source = data + cols*row;
+			dest = &image32[i*col_i];
+			fracstep = cols*0x10000/scols;
+			frac = fracstep >> 1;
+			for (j=0 ; j<scols ; j++)
+			{
+				dest[j] = r_rawpalette[source[frac>>16]];
+				frac += fracstep;
+			}
+		}
+
+		qglTexImage2D (GL_TEXTURE_2D, 0, gl_tex_solid_format, col_i, row_i, 0, GL_RGBA, GL_UNSIGNED_BYTE, image32);
+	}
+	else
+	{
+		unsigned char *dest;
+
+		for (i=0 ; i<trows ; i++)
+		{
+			row = (int)(i*hscale);
+			if (row > rows)
+				break;
+			source = data + cols*row;
+			dest = &image8[i*col_i];
+			fracstep = (cols*0x10000)/scols;
+			frac = fracstep >> 1;
+			for (j=0 ; j<scols ; j++)
+			{
+				dest[j] = source[frac>>16];
+				frac += fracstep;
+			}
+		}
+
+		qglTexImage2D( GL_TEXTURE_2D, 
+			           0, 
+					   GL_COLOR_INDEX8_EXT, 
+					   col_i, row_i, 
+					   0, 
+					   GL_COLOR_INDEX, 
+					   GL_UNSIGNED_BYTE, 
+					   image8 );
+	}
+	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_cinfilter_min );
+	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_cinfilter_max );
+
+	if ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( gl_config.renderer & GL_RENDERER_RENDITION ) ) 
+		qglDisable (GL_ALPHA_TEST);
+
+	GL_TexEnv( GL_MODULATE );
+
+	qglColor4f( gl_state.inverse_intensity, 
+			    gl_state.inverse_intensity,
+				gl_state.inverse_intensity,
+				1.0F );
+
+	qglBegin (GL_QUADS);
+	qglTexCoord2f (0, 0);
+	qglVertex2f (x, y);
+	qglTexCoord2f (s, 0);
+	qglVertex2f (x+w, y);
+	qglTexCoord2f (s, t);
+	qglVertex2f (x+w, y+h);
+	qglTexCoord2f (0, t);
+	qglVertex2f (x, y+h);
+	qglEnd ();
+
+	if ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( gl_config.renderer & GL_RENDERER_RENDITION ) ) 
+		qglEnable (GL_ALPHA_TEST);
+
+	GL_EnableAA();
+}

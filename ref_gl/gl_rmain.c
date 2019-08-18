@@ -19,12 +19,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // r_main.c
 #include "gl_local.h"
+#include "../win32/glw_win.h"
 
 void R_Clear (void);
 
 viddef_t	vid;
 
 refimport_t	ri;
+
+int GL_TEXTURE0, GL_TEXTURE1;
 
 model_t		*r_worldmodel;
 
@@ -35,6 +38,8 @@ glstate_t  gl_state;
 
 image_t		*r_notexture;		// use for bad textures
 image_t		*r_particletexture;	// little dot for particles
+image_t		*r_newparticletexture;	// little dot for particles
+image_t		*r_norm_cube;		// normalizing cube map
 
 entity_t	*currententity;
 model_t		*currentmodel;
@@ -97,6 +102,7 @@ cvar_t	*gl_ext_palettedtexture;
 cvar_t	*gl_ext_multitexture;
 cvar_t	*gl_ext_pointparameters;
 cvar_t	*gl_ext_compiled_vertex_array;
+cvar_t	*gl_ext_generate_mipmap;
 
 cvar_t	*gl_log;
 cvar_t	*gl_bitdepth;
@@ -122,16 +128,27 @@ cvar_t	*gl_flashblend;
 cvar_t	*gl_playermip;
 cvar_t  *gl_saturatelighting;
 cvar_t	*gl_swapinterval;
+cvar_t	*gl_texturecinmode;
 cvar_t	*gl_texturemode;
 cvar_t	*gl_texturealphamode;
 cvar_t	*gl_texturesolidmode;
 cvar_t	*gl_lockpvs;
+cvar_t	*gl_hardware_gamma;
 
 cvar_t	*gl_3dlabs_broken;
 
 cvar_t	*vid_fullscreen;
 cvar_t	*vid_gamma;
 cvar_t	*vid_ref;
+
+cvar_t	*gl_large_cins;
+
+cvar_t	*gl_ext_3dfx_multisample;
+cvar_t	*gl_atd_subimage_update;
+
+
+cvar_t	*gl_ext_tex_env_dot3;
+cvar_t	*gl_ext_texture_cube_map;
 
 /*
 =================
@@ -226,7 +243,7 @@ void R_DrawSpriteModel (entity_t *e)
 
 	qglColor4f( 1, 1, 1, alpha );
 
-    GL_Bind(currentmodel->skins[e->frame]->texnum);
+    GL_BindImage(currentmodel->skins[e->frame]);
 
 	GL_TexEnv( GL_MODULATE );
 
@@ -324,11 +341,10 @@ void R_DrawEntitiesOnList (void)
 	for (i=0 ; i<r_newrefdef.num_entities ; i++)
 	{
 		currententity = &r_newrefdef.entities[i];
-		if (currententity->flags & RF_TRANSLUCENT)
-			continue;	// solid
 
 		if ( currententity->flags & RF_BEAM )
 		{
+			if ( currententity->flags & RF_TRANSLUCENT) continue;
 			R_DrawBeam( currententity );
 		}
 		else
@@ -336,13 +352,18 @@ void R_DrawEntitiesOnList (void)
 			currentmodel = currententity->model;
 			if (!currentmodel)
 			{
+				if (currententity->flags & RF_TRANSLUCENT) continue;
 				R_DrawNullModel ();
 				continue;
 			}
+
+			if (!currentmodel->mda_opaque || currententity->flags & RF_TRANSLUCENT)
+				continue;
+
 			switch (currentmodel->type)
 			{
 			case mod_alias:
-				R_DrawAliasModel (currententity);
+				R_DrawAliasModel (currententity, false);
 				break;
 			case mod_brush:
 				R_DrawBrushModel (currententity);
@@ -363,11 +384,10 @@ void R_DrawEntitiesOnList (void)
 	for (i=0 ; i<r_newrefdef.num_entities ; i++)
 	{
 		currententity = &r_newrefdef.entities[i];
-		if (!(currententity->flags & RF_TRANSLUCENT))
-			continue;	// solid
 
 		if ( currententity->flags & RF_BEAM )
 		{
+			if (!(currententity->flags & RF_TRANSLUCENT)) continue;
 			R_DrawBeam( currententity );
 		}
 		else
@@ -376,13 +396,22 @@ void R_DrawEntitiesOnList (void)
 
 			if (!currentmodel)
 			{
+				if (!(currententity->flags & RF_TRANSLUCENT)) continue;
 				R_DrawNullModel ();
 				continue;
 			}
+
+			if (currentmodel->mda_blend)
+			{
+
+			}
+			else if (!((currententity->flags & RF_TRANSLUCENT) || currentmodel->mda_blend))
+				continue;
+
 			switch (currentmodel->type)
 			{
 			case mod_alias:
-				R_DrawAliasModel (currententity);
+				R_DrawAliasModel (currententity, true);
 				break;
 			case mod_brush:
 				R_DrawBrushModel (currententity);
@@ -412,7 +441,7 @@ void GL_DrawParticles( int num_particles, const particle_t particles[], const un
 	float			scale;
 	byte			color[4];
 
-    GL_Bind(r_particletexture->texnum);
+    GL_BindImage(r_particletexture);
 	qglDepthMask( GL_FALSE );		// no z buffering
 	qglEnable( GL_BLEND );
 	GL_TexEnv( GL_MODULATE );
@@ -475,7 +504,7 @@ void R_DrawParticles (void)
 		qglDepthMask( GL_FALSE );
 		qglEnable( GL_BLEND );
 		qglDisable( GL_TEXTURE_2D );
-
+	
 		qglPointSize( gl_particle_size->value );
 
 		qglBegin( GL_POINTS );
@@ -500,6 +529,237 @@ void R_DrawParticles (void)
 	{
 		GL_DrawParticles( r_newrefdef.num_particles, r_newrefdef.particles, d_8to24table );
 	}
+}
+
+/*
+===============
+R_DrawNewParticles
+===============
+*/
+void R_SetNewParticleState(const np_generator_t *gen)
+{
+	qglDepthMask( gen->depth_write );
+	qglDepthFunc( gen->depth_func );
+	qglBlendFunc( gen->src_blend, gen->dest_blend);
+	if (!gen->image) GL_BindImage(r_newparticletexture);
+	else GL_BindImage(gen->image);
+
+}
+
+void R_DrawNewParticles (void)
+{
+	int i;
+	const newparticle_t *p;
+	const np_generator_t *gen;
+
+	if (!r_newrefdef.num_newparticles) return;
+
+	qglDisable( GL_CULL_FACE );
+	qglEnable( GL_BLEND );
+	qglEnable( GL_TEXTURE_2D );
+	GL_TexEnv( GL_MODULATE );
+
+	R_SetNewParticleState(gen = r_newrefdef.newparticles->gen);
+
+	qglBegin( GL_TRIANGLES );
+	for ( i = 0, p = r_newrefdef.newparticles; i < r_newrefdef.num_newparticles; i++, p++ )
+	{
+		if (p->gen->gennorm != GENNORM_SCREEN || p->roll != 0) continue; 
+
+		if (gen != p->gen)
+		{
+			qglEnd();
+			R_SetNewParticleState(gen = p->gen);
+			qglBegin( GL_TRIANGLES );
+		}
+
+		qglColor4fv(p->rgba);
+
+		qglTexCoord2f( p->texcoord[0], p->texcoord[1]);
+		qglVertex3f( p->origin[0] + vup[0]*p->radius - vright[0]*p->radius,
+						p->origin[1] + vup[1]*p->radius - vright[1]*p->radius,
+						p->origin[2] + vup[2]*p->radius - vright[2]*p->radius);
+
+		qglTexCoord2f( p->texcoord[2], p->texcoord[1]);
+		qglVertex3f( p->origin[0] + vup[0]*p->radius + vright[0]*p->radius,
+						p->origin[1] + vup[1]*p->radius + vright[1]*p->radius,
+						p->origin[2] + vup[2]*p->radius + vright[2]*p->radius);
+
+		qglTexCoord2f( p->texcoord[2], p->texcoord[3]);
+		qglVertex3f( p->origin[0] - vup[0]*p->radius + vright[0]*p->radius,
+						p->origin[1] - vup[1]*p->radius + vright[1]*p->radius,
+						p->origin[2] - vup[2]*p->radius + vright[2]*p->radius);
+
+
+		qglTexCoord2f( p->texcoord[0], p->texcoord[1]);
+		qglVertex3f( p->origin[0] + vup[0]*p->radius - vright[0]*p->radius,
+						p->origin[1] + vup[1]*p->radius - vright[1]*p->radius,
+						p->origin[2] + vup[2]*p->radius - vright[2]*p->radius);
+
+		qglTexCoord2f( p->texcoord[2], p->texcoord[3]);
+		qglVertex3f( p->origin[0] - vup[0]*p->radius + vright[0]*p->radius,
+						p->origin[1] - vup[1]*p->radius + vright[1]*p->radius,
+						p->origin[2] - vup[2]*p->radius + vright[2]*p->radius);
+
+		qglTexCoord2f( p->texcoord[0], p->texcoord[3]);
+		qglVertex3f( p->origin[0] - vup[0]*p->radius - vright[0]*p->radius,
+						p->origin[1] - vup[1]*p->radius - vright[1]*p->radius,
+						p->origin[2] - vup[2]*p->radius - vright[2]*p->radius);
+
+	}
+	qglEnd();
+
+	qglMatrixMode(GL_MODELVIEW);
+
+	// Ok, now do the more difficult stuff
+	for ( i = 0, p = r_newrefdef.newparticles; i < r_newrefdef.num_newparticles; i++, p++ )
+	{
+		if (p->gen->gennorm == GENNORM_SCREEN && p->roll == 0) continue; 
+
+		if (gen != p->gen) R_SetNewParticleState(gen = p->gen);
+
+		// Setup difficult annoying matrix stuff
+		qglPushMatrix();
+	    qglTranslatef (p->origin[0],  p->origin[1],  p->origin[2]);
+
+		switch(p->gen->gennorm)
+		{
+		default:
+		case GENNORM_SCREEN:
+			{
+				qglRotatef (r_newrefdef.viewangles[YAW]-180,  0, 0, 1);
+				qglRotatef (-r_newrefdef.viewangles[PITCH],  0, 1, 0);
+			}
+			break;
+
+		case GENNORM_UP:
+			{
+				qglRotatef (-90,  0, 1, 0);
+			}
+			break;
+
+		case GENNORM_SPRITE:
+			{
+				qglRotatef (r_newrefdef.viewangles[YAW]-180,  0, 0, 1);
+			}
+			break;
+
+		case GENNORM_DIR_GEN:
+			{
+				float	matrix[16];
+				float	*dir = p->gen_forward;				// Direction of Generator
+				vec3_t	up = {0,0,1};
+
+				// Forward (direction of generator)
+				VectorNormalize2(dir,matrix);
+
+				// Right. (Up is up if possible)
+				CrossProduct(up, matrix, matrix+4);
+				if(!VectorNormalize(matrix+4)) PerpendicularVector(matrix+4, matrix);
+
+				// Up
+				CrossProduct(matrix, matrix+4, matrix+8);
+
+				matrix[3] = 0;
+				matrix[7] = 0;
+				matrix[11] = 0;
+				matrix[12] = matrix[13] = matrix[14] = 0;
+				matrix[15] = 1;
+
+				qglMultMatrixf(matrix);
+			}
+			break;
+
+		case GENNORM_UP_GEN:
+			{
+				float	matrix[16];
+				float	*dir = p->gen_forward;				// Direction of Generator
+
+				// Up (direction of generator)
+				VectorNormalize2(dir,matrix+8);
+
+				// Right (parallel to screen)
+				CrossProduct(vpn, matrix+8, matrix+4);
+				if(!VectorNormalize(matrix+4)) PerpendicularVector(matrix+4, matrix+8);
+
+				// Forward
+				CrossProduct(matrix+4, matrix+8, matrix);
+
+				matrix[3] = 0;
+				matrix[7] = 0;
+				matrix[11] = 0;
+				matrix[12] = matrix[13] = matrix[14] = 0;
+				matrix[15] = 1;
+
+				qglMultMatrixf(matrix);
+			}
+			break;
+
+		case GENNORM_UP_GEN_FLAT:
+			{
+				float	matrix[16];
+				float	*dir = p->gen_forward;				// Direction of Generator
+
+				// Up (direction of generator)
+				VectorNormalize2(dir,matrix+8);
+
+				// Forward (direction particle faces) -> face up
+				VectorSet(matrix,0,0,1);
+
+				// Right
+				CrossProduct(matrix+8, matrix, matrix+4);
+				VectorNormalize(matrix+4);
+
+				// Forward again
+				CrossProduct(matrix+4, matrix+8, matrix);
+
+				matrix[3] = 0;
+				matrix[7] = 0;
+				matrix[11] = 0;
+				matrix[12] = matrix[13] = matrix[14] = 0;
+				matrix[15] = 1;
+
+				qglMultMatrixf(matrix);
+			}
+			break;
+		};
+
+		qglRotatef (-p->roll, 1, 0, 0);
+
+		qglColor4fv(p->rgba);
+
+		qglBegin( GL_TRIANGLES );
+
+		qglTexCoord2f( p->texcoord[0], p->texcoord[1]);
+		qglVertex3f( 0, - p->radius, - p->radius);
+
+		qglTexCoord2f( p->texcoord[2], p->texcoord[1]);
+		qglVertex3f( 0, + p->radius, - p->radius);
+
+		qglTexCoord2f( p->texcoord[2], p->texcoord[3]);
+		qglVertex3f( 0, + p->radius, + p->radius);
+
+		qglTexCoord2f( p->texcoord[0], p->texcoord[1]);
+		qglVertex3f( 0, - p->radius, - p->radius);
+
+		qglTexCoord2f( p->texcoord[2], p->texcoord[3]);
+		qglVertex3f( 0, + p->radius, + p->radius);
+
+		qglTexCoord2f( p->texcoord[0], p->texcoord[3]);
+		qglVertex3f( 0, - p->radius, + p->radius);
+
+		qglEnd();
+		qglPopMatrix();
+	}
+
+	qglEnable( GL_CULL_FACE );
+	qglDisable( GL_BLEND );
+	qglBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	qglColor4f( 1.0F, 1.0F, 1.0F, 1.0F );
+	qglDepthMask( GL_TRUE );
+	qglDepthFunc( GL_LEQUAL );
+
+	qglEnable( GL_TEXTURE_2D );
 }
 
 /*
@@ -653,7 +913,7 @@ void R_SetupFrame (void)
 	}
 
 	for (i=0 ; i<4 ; i++)
-		v_blend[i] = r_newrefdef.blend[i];
+		v_blend[i] = r_newrefdef.blend[i]*gl_state.inverse_intensity;
 
 	c_brush_polys = 0;
 	c_alias_polys = 0;
@@ -720,7 +980,7 @@ void R_SetupGL (void)
 //	yfov = 2*atan((float)r_newrefdef.height/r_newrefdef.width)*180/M_PI;
 	qglMatrixMode(GL_PROJECTION);
     qglLoadIdentity ();
-    MYgluPerspective (r_newrefdef.fov_y,  screenaspect,  4,  4096);
+    MYgluPerspective (r_newrefdef.fov_y,  screenaspect,  4,  16384);
 
 	qglCullFace(GL_FRONT);
 
@@ -846,6 +1106,7 @@ void R_RenderView (refdef_t *fd)
 
 	R_DrawAlphaSurfaces ();
 
+	R_DrawNewParticles ();
 	R_Flash();
 
 	if (r_speeds->value)
@@ -999,7 +1260,7 @@ void R_Register( void )
 	gl_shadows = ri.Cvar_Get ("gl_shadows", "0", CVAR_ARCHIVE );
 	gl_dynamic = ri.Cvar_Get ("gl_dynamic", "1", 0);
 	gl_nobind = ri.Cvar_Get ("gl_nobind", "0", 0);
-	gl_round_down = ri.Cvar_Get ("gl_round_down", "1", 0);
+	gl_round_down = ri.Cvar_Get ("gl_round_down", "0", 0);
 	gl_picmip = ri.Cvar_Get ("gl_picmip", "0", 0);
 	gl_skymip = ri.Cvar_Get ("gl_skymip", "0", 0);
 	gl_showtris = ri.Cvar_Get ("gl_showtris", "0", 0);
@@ -1013,6 +1274,7 @@ void R_Register( void )
 	gl_monolightmap = ri.Cvar_Get( "gl_monolightmap", "0", 0 );
 	gl_driver = ri.Cvar_Get( "gl_driver", "opengl32", CVAR_ARCHIVE );
 	gl_texturemode = ri.Cvar_Get( "gl_texturemode", "GL_LINEAR_MIPMAP_NEAREST", CVAR_ARCHIVE );
+	gl_texturecinmode = ri.Cvar_Get( "gl_texturecinmode", "GL_LINEAR", CVAR_ARCHIVE );
 	gl_texturealphamode = ri.Cvar_Get( "gl_texturealphamode", "default", CVAR_ARCHIVE );
 	gl_texturesolidmode = ri.Cvar_Get( "gl_texturesolidmode", "default", CVAR_ARCHIVE );
 	gl_lockpvs = ri.Cvar_Get( "gl_lockpvs", "0", 0 );
@@ -1020,10 +1282,11 @@ void R_Register( void )
 	gl_vertex_arrays = ri.Cvar_Get( "gl_vertex_arrays", "0", CVAR_ARCHIVE );
 
 	gl_ext_swapinterval = ri.Cvar_Get( "gl_ext_swapinterval", "1", CVAR_ARCHIVE );
-	gl_ext_palettedtexture = ri.Cvar_Get( "gl_ext_palettedtexture", "1", CVAR_ARCHIVE );
+	gl_ext_palettedtexture = ri.Cvar_Get( "gl_ext_palettedtexture", "0", CVAR_ARCHIVE );
 	gl_ext_multitexture = ri.Cvar_Get( "gl_ext_multitexture", "1", CVAR_ARCHIVE );
 	gl_ext_pointparameters = ri.Cvar_Get( "gl_ext_pointparameters", "1", CVAR_ARCHIVE );
 	gl_ext_compiled_vertex_array = ri.Cvar_Get( "gl_ext_compiled_vertex_array", "1", CVAR_ARCHIVE );
+	gl_ext_generate_mipmap = ri.Cvar_Get( "gl_ext_generate_mipmap", "1", CVAR_ARCHIVE );
 
 	gl_drawbuffer = ri.Cvar_Get( "gl_drawbuffer", "GL_BACK", 0 );
 	gl_swapinterval = ri.Cvar_Get( "gl_swapinterval", "1", CVAR_ARCHIVE );
@@ -1032,9 +1295,19 @@ void R_Register( void )
 
 	gl_3dlabs_broken = ri.Cvar_Get( "gl_3dlabs_broken", "1", CVAR_ARCHIVE );
 
+	gl_large_cins = ri.Cvar_Get( "gl_large_cins", "1", CVAR_ARCHIVE );
+
 	vid_fullscreen = ri.Cvar_Get( "vid_fullscreen", "0", CVAR_ARCHIVE );
 	vid_gamma = ri.Cvar_Get( "vid_gamma", "1.0", CVAR_ARCHIVE );
 	vid_ref = ri.Cvar_Get( "vid_ref", "soft", CVAR_ARCHIVE );
+
+	gl_hardware_gamma = ri.Cvar_Get( "gl_hardware_gamma", "1", CVAR_ARCHIVE );
+	gl_ext_3dfx_multisample = ri.Cvar_Get( "gl_ext_multisample", "0", CVAR_ARCHIVE );
+
+	gl_atd_subimage_update = ri.Cvar_Get( "gl_atd_subimage_update", "1", CVAR_ARCHIVE );
+
+	gl_ext_tex_env_dot3 = ri.Cvar_Get( "gl_ext_tex_env_dot3", "1", CVAR_ARCHIVE );
+	gl_ext_texture_cube_map = ri.Cvar_Get( "gl_ext_texture_cube_map", "1", CVAR_ARCHIVE );
 
 	ri.Cmd_AddCommand( "imagelist", GL_ImageList_f );
 	ri.Cmd_AddCommand( "screenshot", GL_ScreenShot_f );
@@ -1063,6 +1336,7 @@ qboolean R_SetMode (void)
 
 	vid_fullscreen->modified = false;
 	gl_mode->modified = false;
+	gl_ext_3dfx_multisample->modified = false;
 
 	if ( ( err = GLimp_SetMode( &vid.width, &vid.height, gl_mode->value, fullscreen ) ) == rserr_ok )
 	{
@@ -1158,6 +1432,11 @@ int R_Init( void *hinstance, void *hWnd )
 	ri.Con_Printf (PRINT_ALL, "GL_VERSION: %s\n", gl_config.version_string );
 	gl_config.extensions_string = qglGetString (GL_EXTENSIONS);
 	ri.Con_Printf (PRINT_ALL, "GL_EXTENSIONS: %s\n", gl_config.extensions_string );
+	gl_config.wglextensions_string = " ";
+
+	if (qwglGetExtensionsStringARB) {
+		gl_config.wglextensions_string = qwglGetExtensionsStringARB(glw_state.hDC);
+	}
 
 	strcpy( renderer_buffer, gl_config.renderer_string );
 	strlwr( renderer_buffer );
@@ -1167,7 +1446,11 @@ int R_Init( void *hinstance, void *hWnd )
 
 	if ( strstr( renderer_buffer, "voodoo" ) )
 	{
-		if ( !strstr( renderer_buffer, "rush" ) )
+		if ( strstr( renderer_buffer, "voodoo4" ) || strstr( renderer_buffer, "voodoo5" ) )
+			gl_config.renderer = GL_RENDERER_VOODOO_4_5;
+		else if ( strstr( renderer_buffer, "banshee" ) || strstr( renderer_buffer, "voodoo3" ) )
+			gl_config.renderer = GL_RENDERER_VOODOO_BANSHEE;
+		else if ( !strstr( renderer_buffer, "rush" ) )
 			gl_config.renderer = GL_RENDERER_VOODOO;
 		else
 			gl_config.renderer = GL_RENDERER_VOODOO_RUSH;
@@ -1188,6 +1471,22 @@ int R_Init( void *hinstance, void *hWnd )
 		gl_config.renderer = GL_RENDERER_RENDITION;
 	else
 		gl_config.renderer = GL_RENDERER_OTHER;
+
+	/*
+	** max texture size
+	*/
+
+	gl_config.max_texture_size = 256;
+	if (qglGetIntegerv) {
+		GLint mts;
+		qglGetIntegerv(GL_MAX_TEXTURE_SIZE, &mts);
+		gl_config.max_texture_size = mts;
+	}
+	if (gl_config.max_texture_size > 2048)
+		gl_config.max_texture_size = 2048;	// Max size otherwise we will kill some funcs
+
+	ri.Con_Printf( PRINT_ALL, "...max_texture_size: %i\n", gl_config.max_texture_size );
+
 
 	if ( toupper( gl_monolightmap->string[1] ) != 'F' )
 	{
@@ -1217,6 +1516,10 @@ int R_Init( void *hinstance, void *hWnd )
 		ri.Cvar_Set( "scr_drawall", "0" );
 	}
 
+#ifdef __linux__
+	ri.Cvar_SetValue( "gl_finish", 1 );
+#endif
+
 	// MCD has buffering issues
 	if ( gl_config.renderer == GL_RENDERER_MCD )
 	{
@@ -1243,7 +1546,6 @@ int R_Init( void *hinstance, void *hWnd )
 	/*
 	** grab extensions
 	*/
-#ifdef WIN32
 	if ( strstr( gl_config.extensions_string, "GL_EXT_compiled_vertex_array" ) || 
 		 strstr( gl_config.extensions_string, "GL_SGI_compiled_vertex_array" ) )
 	{
@@ -1256,6 +1558,7 @@ int R_Init( void *hinstance, void *hWnd )
 		ri.Con_Printf( PRINT_ALL, "...GL_EXT_compiled_vertex_array not found\n" );
 	}
 
+#ifdef _WIN32
 	if ( strstr( gl_config.extensions_string, "WGL_EXT_swap_control" ) )
 	{
 		qwglSwapIntervalEXT = ( BOOL (WINAPI *)(int)) qwglGetProcAddress( "wglSwapIntervalEXT" );
@@ -1265,6 +1568,7 @@ int R_Init( void *hinstance, void *hWnd )
 	{
 		ri.Con_Printf( PRINT_ALL, "...WGL_EXT_swap_control not found\n" );
 	}
+#endif
 
 	if ( strstr( gl_config.extensions_string, "GL_EXT_point_parameters" ) )
 	{
@@ -1284,8 +1588,30 @@ int R_Init( void *hinstance, void *hWnd )
 		ri.Con_Printf( PRINT_ALL, "...GL_EXT_point_parameters not found\n" );
 	}
 
-	if ( strstr( gl_config.extensions_string, "GL_EXT_paletted_texture" ) && 
-		 strstr( gl_config.extensions_string, "GL_EXT_shared_texture_palette" ) )
+#if 0
+#ifdef __linux__
+	if ( strstr( gl_config.extensions_string, "3DFX_set_global_palette" ))
+	{
+		if ( gl_ext_palettedtexture->value )
+		{
+			ri.Con_Printf( PRINT_ALL, "...using 3DFX_set_global_palette\n" );
+			qgl3DfxSetPaletteEXT = ( void ( APIENTRY * ) (GLuint *) )qwglGetProcAddress( "gl3DfxSetPaletteEXT" );
+			qglColorTableEXT = Fake_glColorTableEXT;
+		}
+		else
+		{
+			ri.Con_Printf( PRINT_ALL, "...ignoring 3DFX_set_global_palette\n" );
+		}
+	}
+	else
+	{
+		ri.Con_Printf( PRINT_ALL, "...3DFX_set_global_palette not found\n" );
+	}
+#endif
+
+	if ( !qglColorTableEXT &&
+		(strstr( gl_config.extensions_string, "GL_EXT_paletted_texture" ) && 
+		strstr( gl_config.extensions_string, "GL_EXT_shared_texture_palette" )) )
 	{
 		if ( gl_ext_palettedtexture->value )
 		{
@@ -1301,14 +1627,45 @@ int R_Init( void *hinstance, void *hWnd )
 	{
 		ri.Con_Printf( PRINT_ALL, "...GL_EXT_shared_texture_palette not found\n" );
 	}
+#else
+	// No NEVER!
+	qglColorTableEXT = 0;
+#endif
+
+	if ( strstr( gl_config.extensions_string, "GL_ARB_multitexture" ) )
+	{
+		if ( gl_ext_multitexture->value )
+		{
+			ri.Con_Printf( PRINT_ALL, "...using GL_ARB_multitexture\n" );
+			qglMTexCoord2fSGIS = ( void * ) qwglGetProcAddress( "glMultiTexCoord2fARB" );
+			qglActiveTextureARB = ( void * ) qwglGetProcAddress( "glActiveTextureARB" );
+			qglClientActiveTextureARB = ( void * ) qwglGetProcAddress( "glClientActiveTextureARB" );
+			GL_TEXTURE0 = GL_TEXTURE0_ARB;
+			GL_TEXTURE1 = GL_TEXTURE1_ARB;
+		}
+		else
+		{
+			ri.Con_Printf( PRINT_ALL, "...ignoring GL_ARB_multitexture\n" );
+		}
+	}
+	else
+	{
+		ri.Con_Printf( PRINT_ALL, "...GL_ARB_multitexture not found\n" );
+	}
 
 	if ( strstr( gl_config.extensions_string, "GL_SGIS_multitexture" ) )
 	{
-		if ( gl_ext_multitexture->value )
+		if ( qglActiveTextureARB )
+		{
+			ri.Con_Printf( PRINT_ALL, "...GL_SGIS_multitexture deprecated in favor of ARB_multitexture\n" );
+		}
+		else if ( gl_ext_multitexture->value )
 		{
 			ri.Con_Printf( PRINT_ALL, "...using GL_SGIS_multitexture\n" );
 			qglMTexCoord2fSGIS = ( void * ) qwglGetProcAddress( "glMTexCoord2fSGIS" );
 			qglSelectTextureSGIS = ( void * ) qwglGetProcAddress( "glSelectTextureSGIS" );
+			GL_TEXTURE0 = GL_TEXTURE0_SGIS;
+			GL_TEXTURE1 = GL_TEXTURE1_SGIS;
 		}
 		else
 		{
@@ -1319,7 +1676,203 @@ int R_Init( void *hinstance, void *hWnd )
 	{
 		ri.Con_Printf( PRINT_ALL, "...GL_SGIS_multitexture not found\n" );
 	}
+
+	qwglGetDeviceGammaRamp = 0;
+	qwglSetDeviceGammaRamp = 0;
+	ri.Cvar_Get("gl_using_hardware_gamma","0",CVAR_NOSET);	// Make sure it has CVAR_NOSET
+	ri.Cvar_ForceSet("gl_using_hardware_gamma","0");				// Make sure it is set to 0
+
+	if ( strstr( gl_config.extensions_string, "WGL_3DFX_gamma_control" ))
+	{
+		if ( gl_hardware_gamma->value )
+		{
+			ri.Con_Printf( PRINT_ALL, "...using WGL_3DFX_gamma_control\n" );
+			qwglGetDeviceGammaRamp = (void *) qwglGetProcAddress("wglGetDeviceGammaRamp3DFX");
+			qwglSetDeviceGammaRamp = (void *) qwglGetProcAddress("wglSetDeviceGammaRamp3DFX");
+			ri.Cvar_ForceSet("gl_using_hardware_gamma","1");
+		}
+		else
+		{
+			ri.Con_Printf( PRINT_ALL, "...ignoring WGL_3DFX_gamma_control\n" );
+		}
+	}
+	else
+	{
+		ri.Con_Printf( PRINT_ALL, "...WGL_3DFX_gamma_control not found\n" );
+		if (gl_hardware_gamma->value) {
+			qwglGetDeviceGammaRamp = GetDeviceGammaRamp;
+			qwglSetDeviceGammaRamp = SetDeviceGammaRamp;
+			ri.Cvar_ForceSet("gl_using_hardware_gamma","1");
+		}
+	}
+
+	// Ok, set the number of samples to 0
+	gl_config.multisample_samples = 0;
+	gl_config.multisample_type = MULTISAMPLE_TYPE_NONE;
+
+	if ( strstr( gl_config.extensions_string, "GL_ARB_multisample" ) )
+	{
+		GLint enabled, samples;
+		qglGetIntegerv(GL_SAMPLE_BUFFERS_ARB, &enabled);
+		qglGetIntegerv(GL_SAMPLES_ARB, &samples);
+
+		if ( samples > 1)
+		{
+			ri.Con_Printf( PRINT_ALL, "...using GL_ARB_multisample: %i samples\n", samples );
+			gl_config.multisample_samples = samples;
+			gl_config.multisample_type = MULTISAMPLE_TYPE_ARB;
+		}
+		else
+		{
+			ri.Con_Printf( PRINT_ALL, "...ignoring GL_ARB_multisample\n" );
+		}
+	}
+	else
+	{
+		ri.Con_Printf( PRINT_ALL, "...GL_ARB_multisample not found\n" );
+	}
+
+	if ( strstr( gl_config.extensions_string, "GL_3DFX_multisample" ) )
+	{
+		if ( gl_config.multisample_type = MULTISAMPLE_TYPE_ARB ) 
+		{
+			ri.Con_Printf( PRINT_ALL, "...GL_3DFX_multisample deprecated in favor of GL_ARB_multisample\n" );
+		}
+		else 
+		{
+			GLint enabled, samples;
+			qglGetIntegerv(SAMPLE_BUFFERS_3DFX, &enabled);
+			qglGetIntegerv(SAMPLES_3DFX, &samples);
+
+			if ( samples > 1)
+			{
+				ri.Con_Printf( PRINT_ALL, "...using GL_3DFX_multisample: %i samples\n", samples );
+				gl_config.multisample_samples = samples;
+				gl_config.multisample_type = MULTISAMPLE_TYPE_3DFX;
+			}
+			else
+			{
+				ri.Con_Printf( PRINT_ALL, "...ignoring GL_3DFX_multisample\n" );
+			}
+		}
+	}
+	else
+	{
+		ri.Con_Printf( PRINT_ALL, "...GL_3DFX_multisample not found\n" );
+	}
+
+	qglTBufferMask3DFX = 0;
+	qgrTBufferWriteMaskExt = 0;
+#if 0
+	if ( strstr( gl_config.extensions_string, "GL_3DFX_tbuffer" ) )
+	{
+		if ( gl_config.multisample_samples )
+		{
+			ri.Con_Printf( PRINT_ALL, "...using GL_3DFX_tbuffer\n" );
+			qglTBufferMask3DFX = ( void ( APIENTRY * ) ( GLuint ) ) qwglGetProcAddress( "glTBufferMask3DFX" );
+		}
+		else
+		{
+			ri.Con_Printf( PRINT_ALL, "...ignoring GL_3DFX_tbuffer\n" );
+			qglTBufferMask3DFX = 0;
+		}
+	}
+	else
+	{
+		ri.Con_Printf( PRINT_ALL, "...GL_3DFX_tbuffer not found\n" );
+	}
+
+	// If have a Voodoo 4 or Voodoo 5 we should be able to load from Glide3x.dll
+//#ifdef WIN32
+	if ((gl_config.renderer & GL_RENDERER_VOODOO_4_5) && gl_config.multisample_samples && !qglTBufferMask3DFX)
+	{
+		HMODULE glide3x = NULL; 
+		glide3x = GetModuleHandle( "glide3x.dll" );      
+
+		ri.Con_Printf( PRINT_ALL, "...Attempting to get TBuffer support from Glide3x for Vodooo 4 and 5\n" );
+
+		if (glide3x) {
+			const char * (APIENTRY * qgrGetString) (unsigned int pname);
+			void * (APIENTRY * qgrGetProcAddress) (char *procName);
+			const char * glide3x_extensions;
+
+			qgrGetString =  ( void * ) GetProcAddress(glide3x, "_grGetString@4");
+			qgrGetProcAddress =  ( void * ) GetProcAddress(glide3x, "_grGetProcAddress@4");
+
+			//strings = qgrGetString(GR_EXTENSION);
+			glide3x_extensions = qgrGetString(0xa0);
+
+			if ( strstr( glide3x_extensions, "PIXEXT" ) )
+			{
+				ri.Con_Printf( PRINT_ALL, "...using Glide3x PIXEXT for TBuffer\n" );
+				qgrTBufferWriteMaskExt =  ( void * ) qgrGetProcAddress("grTBufferWriteMaskExt");
+			}
+			else
+			{
+				ri.Con_Printf( PRINT_ALL, "...PIXEXT Glide Extension not found\n" );
+			}
+		}
+		else
+		{
+			ri.Con_Printf( PRINT_ALL, "...Glide3x not resident\n" );
+		}
+	}
 #endif
+
+	gl_config.have_generate_mipmap = false;
+	if ( strstr( gl_config.extensions_string, "GL_SGIS_generate_mipmap" ) )
+	{
+		if ( gl_ext_generate_mipmap->value )
+		{
+			ri.Con_Printf( PRINT_ALL, "...using GL_SGIS_generate_mipmap\n" );
+			gl_config.have_generate_mipmap = true;
+			qglHint(GL_GENERATE_MIPMAP_HINT_SGIS,GL_NICEST);
+		}
+		else
+		{
+			ri.Con_Printf( PRINT_ALL, "...ignoring GL_SGIS_generate_mipmap\n" );
+		}
+	}
+	else
+	{
+		ri.Con_Printf( PRINT_ALL, "...GL_SGIS_generate_mipmap not found\n" );
+	}
+
+	gl_config.have_cube_map = false;
+	if ( strstr( gl_config.extensions_string, "GL_ARB_texture_cube_map" ) )
+	{
+		if ( gl_ext_texture_cube_map->value )
+		{
+			ri.Con_Printf( PRINT_ALL, "...using GL_ARB_texture_cube_map\n" );
+			gl_config.have_cube_map = true;
+		}
+		else
+		{
+			ri.Con_Printf( PRINT_ALL, "...ignoring GL_ARB_texture_cube_map\n" );
+		}
+	}
+	else
+	{
+		ri.Con_Printf( PRINT_ALL, "...GL_ARB_texture_cube_map not found\n" );
+	}
+
+	gl_config.have_dot3 = false;
+	if ( strstr( gl_config.extensions_string, "GL_ARB_texture_env_dot3" ) )
+	{
+		if ( gl_ext_tex_env_dot3->value )
+		{
+			ri.Con_Printf( PRINT_ALL, "...using GL_ARB_texture_env_dot3\n" );
+			gl_config.have_dot3 = true;
+		}
+		else
+		{
+			ri.Con_Printf( PRINT_ALL, "...ignoring GL_ARB_texture_env_dot3\n" );
+		}
+	}
+	else
+	{
+		ri.Con_Printf( PRINT_ALL, "...GL_ARB_texture_env_dot3 not found\n" );
+	}
 
 	GL_SetDefaultState();
 
@@ -1338,6 +1891,8 @@ int R_Init( void *hinstance, void *hWnd )
 	err = qglGetError();
 	if ( err != GL_NO_ERROR )
 		ri.Con_Printf (PRINT_ALL, "glGetError() = 0x%x\n", err);
+
+	return 0;
 }
 
 /*
@@ -1347,10 +1902,12 @@ R_Shutdown
 */
 void R_Shutdown (void)
 {	
+
 	ri.Cmd_RemoveCommand ("modellist");
 	ri.Cmd_RemoveCommand ("screenshot");
 	ri.Cmd_RemoveCommand ("imagelist");
 	ri.Cmd_RemoveCommand ("gl_strings");
+	ri.Cvar_ForceSet("gl_using_hardware_gamma","0");
 
 	Mod_FreeAll ();
 
@@ -1382,7 +1939,7 @@ void R_BeginFrame( float camera_separation )
 	/*
 	** change modes if necessary
 	*/
-	if ( gl_mode->modified || vid_fullscreen->modified )
+	if ( gl_mode->modified || vid_fullscreen->modified || gl_ext_3dfx_multisample->modified )
 	{	// FIXME: only restart if CDS is required
 		cvar_t	*ref;
 
@@ -1405,21 +1962,12 @@ void R_BeginFrame( float camera_separation )
 	** update 3Dfx gamma -- it is expected that a user will do a vid_restart
 	** after tweaking this value
 	*/
-	if ( vid_gamma->modified )
+	if ( vid_gamma->modified || intensity->modified )
 	{
 		vid_gamma->modified = false;
+		intensity->modified = false;
 
-		if ( gl_config.renderer & ( GL_RENDERER_VOODOO ) )
-		{
-			char envbuffer[1024];
-			float g;
-
-			g = 2.00 * ( 0.8 - ( vid_gamma->value - 0.5 ) ) + 1.0F;
-			Com_sprintf( envbuffer, sizeof(envbuffer), "SSTV2_GAMMA=%f", g );
-			putenv( envbuffer );
-			Com_sprintf( envbuffer, sizeof(envbuffer), "SST_GAMMA=%f", g );
-			putenv( envbuffer );
-		}
+		GL_UpdateGamma();
 	}
 
 	GLimp_BeginFrame( camera_separation );
@@ -1464,6 +2012,12 @@ void R_BeginFrame( float camera_separation )
 		gl_texturemode->modified = false;
 	}
 
+	if ( gl_texturecinmode->modified )
+	{
+		GL_TextureCinMode( gl_texturecinmode->string );
+		gl_texturecinmode->modified = false;
+	}
+
 	if ( gl_texturealphamode->modified )
 	{
 		GL_TextureAlphaMode( gl_texturealphamode->string );
@@ -1485,6 +2039,55 @@ void R_BeginFrame( float camera_separation )
 	// clear screen if desired
 	//
 	R_Clear ();
+}
+
+/*
+===========
+GL_UpdateGamma
+===========
+*/
+void GL_UpdateGamma(void)
+{
+	if (qwglSetDeviceGammaRamp) {
+		unsigned short new_gamma[768];
+
+		float g, intens = 1;
+		int i;
+		g = 2.00 * ( 0.8 - ( vid_gamma->value - 0.5 ) ) + 1.0F;
+
+		if (g <= 0) g = 0.00001;
+		ri.Con_Printf (PRINT_ALL, "Setting gamma to %f real gamma\n", g);
+
+
+		// init intensity conversions
+		intensity = ri.Cvar_Get ("intensity", "2", 0);
+
+		if ( intensity->value <= 1 ) ri.Cvar_Set( "intensity", "1" );
+		else intens = intensity->value;
+
+		gl_state.inverse_intensity = 1 / intens;
+
+		for (i = 0; i < 256; i++) {
+			int val = i*intens;
+			if (val > 255) val = 255;
+			val = (int) (pow((val / 255.0), 1/g) * 65535);
+			new_gamma[i+512] = new_gamma[i+256] = new_gamma[i] = val;
+		}
+
+		qwglSetDeviceGammaRamp (glw_state.hDC, new_gamma);
+	}
+	else if ( gl_config.renderer & ( GL_RENDERER_VOODOO ) )
+	{
+		char envbuffer[1024];
+		float g;
+
+		g = 2.00 * ( 0.8 - ( vid_gamma->value - 0.5 ) ) + 1.0F;
+		Com_sprintf( envbuffer, sizeof(envbuffer), "SSTV2_GAMMA=%f", g );
+		putenv( envbuffer );
+		Com_sprintf( envbuffer, sizeof(envbuffer), "SST_GAMMA=%f", g );
+		putenv( envbuffer );
+	}
+
 }
 
 /*
@@ -1632,6 +2235,7 @@ refexport_t GetRefAPI (refimport_t rimp )
 	re.BeginRegistration = R_BeginRegistration;
 	re.RegisterModel = R_RegisterModel;
 	re.RegisterSkin = R_RegisterSkin;
+	re.RegisterClamped = R_RegisterClamped;
 	re.RegisterPic = Draw_FindPic;
 	re.SetSky = R_SetSky;
 	re.EndRegistration = R_EndRegistration;

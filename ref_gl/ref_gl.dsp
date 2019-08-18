@@ -38,7 +38,7 @@ CFG=ref_gl - Win32 Debug Alpha
 # PROP BASE Target_Dir "."
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 0
-# PROP Output_Dir "..\release"
+# PROP Output_Dir "c:/games/quake2"
 # PROP Intermediate_Dir ".\release"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir "."
@@ -68,7 +68,7 @@ LINK32=link.exe
 # PROP BASE Target_Dir "."
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 1
-# PROP Output_Dir "..\debug"
+# PROP Output_Dir "c:/games/quake2"
 # PROP Intermediate_Dir ".\debug"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir "."
@@ -700,6 +700,21 @@ NODEP_CPP_QGL_W=\
 !ENDIF 
 
 # End Source File
+# Begin Source File
+
+SOURCE=..\win32\qlw_trick.c
+
+!IF  "$(CFG)" == "ref_gl - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "ref_gl - Win32 Debug"
+
+!ELSEIF  "$(CFG)" == "ref_gl - Win32 Debug Alpha"
+
+!ELSEIF  "$(CFG)" == "ref_gl - Win32 Release Alpha"
+
+!ENDIF 
+
+# End Source File
 # End Group
 # Begin Group "Header Files"
 
@@ -742,15 +757,7 @@ SOURCE=.\qgl.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\qmenu.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\client\ref.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\ref_gl.h
 # End Source File
 # Begin Source File
 

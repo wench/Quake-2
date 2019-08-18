@@ -30,6 +30,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <GL/gl.h>
 
+#ifdef __linux__
+//#include <GL/fxmesa.h>
+#include <GL/glx.h>
+#endif
+
 qboolean QGL_Init( const char *dllname );
 void     QGL_Shutdown( void );
 
@@ -384,6 +389,9 @@ extern	void ( APIENTRY * qglUnlockArraysEXT) (void);
 extern	void ( APIENTRY * qglMTexCoord2fSGIS)( GLenum, GLfloat, GLfloat );
 extern	void ( APIENTRY * qglSelectTextureSGIS)( GLenum );
 
+extern	void ( APIENTRY * qglActiveTextureARB)( GLenum );
+extern	void ( APIENTRY * qglClientActiveTextureARB)( GLenum );
+
 #ifdef _WIN32
 
 extern  int   ( WINAPI * qwglChoosePixelFormat )(HDC, CONST PIXELFORMATDESCRIPTOR *);
@@ -417,10 +425,227 @@ extern BOOL ( WINAPI * qwglSwapLayerBuffers)(HDC, UINT);
 
 extern BOOL ( WINAPI * qwglSwapIntervalEXT)( int interval );
 
-extern BOOL ( WINAPI * qwglGetDeviceGammaRampEXT ) ( unsigned char *pRed, unsigned char *pGreen, unsigned char *pBlue );
-extern BOOL ( WINAPI * qwglSetDeviceGammaRampEXT ) ( const unsigned char *pRed, const unsigned char *pGreen, const unsigned char *pBlue );
+extern BOOL (APIENTRY * qwglGetDeviceGammaRamp) (HDC, LPVOID);
+extern BOOL (APIENTRY * qwglSetDeviceGammaRamp) (HDC, LPVOID);
+
+/*
+** WGL_ARB_extensions_string
+*/
+extern  const char *( WINAPI * qwglGetExtensionsStringARB)(HDC);
+
+/*
+** WGL_ARB_pixel_format
+*/
+#define	WGL_NUMBER_PIXEL_FORMATS_ARB	0x2000
+#define	WGL_DRAW_TO_WINDOW_ARB			0x2001
+#define	WGL_DRAW_TO_BITMAP_ARB			0x2002
+#define	WGL_ACCELERATION_ARB			0x2003
+#define	WGL_NEED_PALETTE_ARB			0x2004
+#define	WGL_NEED_SYSTEM_PALETTE_ARB		0x2005
+#define	WGL_SWAP_LAYER_BUFFERS_ARB		0x2006
+#define	WGL_SWAP_METHOD_ARB				0x2007
+#define	WGL_NUMBER_OVERLAYS_ARB			0x2008
+#define	WGL_NUMBER_UNDERLAYS_ARB		0x2009
+#define	WGL_TRANSPARENT_ARB				0x200A
+#define	WGL_TRANSPARENT_RED_VALUE_ARB	0x2037
+#define	WGL_TRANSPARENT_GREEN_VALUE_ARB	0x2038
+#define	WGL_TRANSPARENT_BLUE_VALUE_ARB	0x2039
+#define	WGL_TRANSPARENT_ALPHA_VALUE_ARB	0x203A
+#define	WGL_TRANSPARENT_INDEX_VALUE_ARB	0x203B
+#define	WGL_SHARE_DEPTH_ARB				0x200C
+#define	WGL_SHARE_STENCIL_ARB			0x200D
+#define	WGL_SHARE_ACCUM_ARB				0x200E
+#define	WGL_SUPPORT_GDI_ARB				0x200F
+#define	WGL_SUPPORT_OPENGL_ARB			0x2010
+#define	WGL_DOUBLE_BUFFER_ARB			0x2011
+#define	WGL_STEREO_ARB					0x2012
+#define	WGL_PIXEL_TYPE_ARB				0x2013
+#define	WGL_COLOR_BITS_ARB				0x2014
+#define	WGL_RED_BITS_ARB				0x2015
+#define	WGL_RED_SHIFT_ARB				0x2016
+#define	WGL_GREEN_BITS_ARB				0x2017
+#define	WGL_GREEN_SHIFT_ARB				0x2018
+#define	WGL_BLUE_BITS_ARB				0x2019
+#define	WGL_BLUE_SHIFT_ARB				0x201A
+#define	WGL_ALPHA_BITS_ARB				0x201B
+#define	WGL_ALPHA_SHIFT_ARB				0x201C
+#define	WGL_ACCUM_BITS_ARB				0x201D
+#define	WGL_ACCUM_RED_BITS_ARB			0x201E
+#define	WGL_ACCUM_GREEN_BITS_ARB		0x201F
+#define	WGL_ACCUM_BLUE_BITS_ARB			0x2020
+#define	WGL_ACCUM_ALPHA_BITS_ARB		0x2021
+#define	WGL_DEPTH_BITS_ARB				0x2022
+#define	WGL_STENCIL_BITS_ARB			0x2023
+#define	WGL_AUX_BUFFERS_ARB				0x2024
+#define	WGL_NO_ACCELERATION_ARB			0x2025
+#define	WGL_GENERIC_ACCELERATION_ARB	0x2026
+#define	WGL_FULL_ACCELERATION_ARB		0x2027
+#define	WGL_SWAP_EXCHANGE_ARB			0x2028
+#define	WGL_SWAP_COPY_ARB				0x2029
+#define	WGL_SWAP_UNDEFINED_ARB			0x202A
+#define	WGL_TYPE_RGBA_ARB				0x202B
+#define	WGL_TYPE_COLORINDEX_ARB			0x202C
+
+extern  BOOL ( APIENTRY * qwglGetPixelFormatAttribivARB ) (HDC, GLint, GLint, GLuint,
+													const GLint *, GLint *);
+extern  BOOL ( APIENTRY * qwglGetPixelFormatAttribfvARB ) (HDC, GLint, GLint, GLuint,
+													const GLint *, GLfloat *);
+extern  BOOL ( APIENTRY * qwglChoosePixelFormatARB ) (HDC hdc, const GLint *,
+													const GLfloat *, GLuint,
+													GLint *, GLuint *);
+/*
+** WGL_3DFX_multisample
+*/
+#define	WGL_SAMPLE_BUFFERS_3DFX			0x2060
+#define	WGL_SAMPLES_3DFX				0x2061
+extern qboolean use_WGL_3DFX_multisample;
 
 #endif
+
+/*
+** GL_3DFX_multisample
+*/
+#define	MULTISAMPLE_3DFX				0x86B2
+#define	SAMPLE_BUFFERS_3DFX				0x86B3
+#define	SAMPLES_3DFX					0x86B4
+#define	MULTISAMPLE_BIT_3DFX			0x20000000
+
+/*
+** GL_3DFX_tbuffer
+*/
+extern  void ( APIENTRY * qglTBufferMask3DFX) (GLuint mask);
+extern  void ( __stdcall * qgrTBufferWriteMaskExt) (unsigned int);
+
+
+/*
+** GL_SGIS_generate_mipmap
+*/
+#ifndef GL_SGIS_generate_mipmap
+#define GL_SGIS_generate_mipmap 1
+#define GL_GENERATE_MIPMAP_SGIS           0x8191
+#define GL_GENERATE_MIPMAP_HINT_SGIS      0x8192
+#endif
+
+
+/*
+** WGL_ARB_multisample
+*/
+#ifndef WGL_ARB_multisample
+#define WGL_ARB_multisample 1
+#define WGL_SAMPLE_BUFFERS_ARB         0x2041
+#define WGL_SAMPLES_ARB                0x2042
+#endif
+extern qboolean use_WGL_ARB_multisample;
+
+
+/*
+** GL_ARB_multisample
+*/
+#ifndef GL_ARB_multisample
+#define GL_ARB_multisample 1
+#define GL_MULTISAMPLE_ARB                0x809D
+#define GL_SAMPLE_ALPHA_TO_COVERAGE_ARB   0x809E
+#define GL_SAMPLE_ALPHA_TO_ONE_ARB        0x809F
+#define GL_SAMPLE_COVERAGE_ARB            0x80A0
+#define GL_SAMPLE_BUFFERS_ARB             0x80A8
+#define GL_SAMPLES_ARB                    0x80A9
+#define GL_SAMPLE_COVERAGE_VALUE_ARB      0x80AA
+#define GL_SAMPLE_COVERAGE_INVERT_ARB     0x80AB
+#define GL_MULTISAMPLE_BIT_ARB            0x20000000
+typedef void (APIENTRY * PFNGLSAMPLECOVERAGEARBPROC) (GLclampf value, GLboolean invert);
+#endif
+
+
+/*
+** GL_ARB_texture_cube_map
+*/
+#ifndef GL_ARB_texture_cube_map
+#define GL_ARB_texture_cube_map 1
+#define GL_NORMAL_MAP_ARB                 0x8511
+#define GL_REFLECTION_MAP_ARB             0x8512
+#define GL_TEXTURE_CUBE_MAP_ARB           0x8513
+#define GL_TEXTURE_BINDING_CUBE_MAP_ARB   0x8514
+#define GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB 0x8515
+#define GL_TEXTURE_CUBE_MAP_NEGATIVE_X_ARB 0x8516
+#define GL_TEXTURE_CUBE_MAP_POSITIVE_Y_ARB 0x8517
+#define GL_TEXTURE_CUBE_MAP_NEGATIVE_Y_ARB 0x8518
+#define GL_TEXTURE_CUBE_MAP_POSITIVE_Z_ARB 0x8519
+#define GL_TEXTURE_CUBE_MAP_NEGATIVE_Z_ARB 0x851A
+#define GL_PROXY_TEXTURE_CUBE_MAP_ARB     0x851B
+#define GL_MAX_CUBE_MAP_TEXTURE_SIZE_ARB  0x851C
+#endif
+
+
+/*
+** GL_ARB_texture_env_combine
+*/
+#ifndef GL_ARB_texture_env_combine
+#define GL_ARB_texture_env_combine 1
+#define GL_COMBINE_ARB                    0x8570
+#define GL_COMBINE_RGB_ARB                0x8571
+#define GL_COMBINE_ALPHA_ARB              0x8572
+#define GL_SOURCE0_RGB_ARB                0x8580
+#define GL_SOURCE1_RGB_ARB                0x8581
+#define GL_SOURCE2_RGB_ARB                0x8582
+#define GL_SOURCE0_ALPHA_ARB              0x8588
+#define GL_SOURCE1_ALPHA_ARB              0x8589
+#define GL_SOURCE2_ALPHA_ARB              0x858A
+#define GL_OPERAND0_RGB_ARB               0x8590
+#define GL_OPERAND1_RGB_ARB               0x8591
+#define GL_OPERAND2_RGB_ARB               0x8592
+#define GL_OPERAND0_ALPHA_ARB             0x8598
+#define GL_OPERAND1_ALPHA_ARB             0x8599
+#define GL_OPERAND2_ALPHA_ARB             0x859A
+#define GL_RGB_SCALE_ARB                  0x8573
+#define GL_ADD_SIGNED_ARB                 0x8574
+#define GL_INTERPOLATE_ARB                0x8575
+#define GL_SUBTRACT_ARB                   0x84E7
+#define GL_CONSTANT_ARB                   0x8576
+#define GL_PRIMARY_COLOR_ARB              0x8577
+#define GL_PREVIOUS_ARB                   0x8578
+#endif
+
+
+/*
+** GL_ARB_texture_env_dot3
+*/
+#ifndef GL_ARB_texture_env_dot3
+#define GL_ARB_texture_env_dot3 1
+#define GL_DOT3_RGB_ARB                   0x86AE
+#define GL_DOT3_RGBA_ARB                  0x86AF
+#endif
+
+#ifdef __linux__
+
+// local function in dll
+extern void *qwglGetProcAddress(char *symbol);
+
+extern void (*qgl3DfxSetPaletteEXT)(GLuint *);
+
+/*
+//FX Mesa Functions
+extern fxMesaContext (*qfxMesaCreateContext)(GLuint win, GrScreenResolution_t, GrScreenRefresh_t, const GLint attribList[]);
+extern fxMesaContext (*qfxMesaCreateBestContext)(GLuint win, GLint width, GLint height, const GLint attribList[]);
+extern void (*qfxMesaDestroyContext)(fxMesaContext ctx);
+extern void (*qfxMesaMakeCurrent)(fxMesaContext ctx);
+extern fxMesaContext (*qfxMesaGetCurrentContext)(void);
+extern void (*qfxMesaSwapBuffers)(void);
+*/
+
+//GLX Functions
+extern XVisualInfo * (*qglXChooseVisual)( Display *dpy, int screen, int *attribList );
+extern GLXContext (*qglXCreateContext)( Display *dpy, XVisualInfo *vis, GLXContext shareList, Bool direct );
+extern void (*qglXDestroyContext)( Display *dpy, GLXContext ctx );
+extern Bool (*qglXMakeCurrent)( Display *dpy, GLXDrawable drawable, GLXContext ctx);
+extern void (*qglXCopyContext)( Display *dpy, GLXContext src, GLXContext dst, GLuint mask );
+extern void (*qglXSwapBuffers)( Display *dpy, GLXDrawable drawable );
+
+// 3dfxSetPaletteEXT shunt
+void Fake_glColorTableEXT( GLenum target, GLenum internalformat,
+                             GLsizei width, GLenum format, GLenum type,
+                             const GLvoid *table );
+
+#endif // linux
 
 /*
 ** extension constants
@@ -438,5 +663,9 @@ extern BOOL ( WINAPI * qwglSetDeviceGammaRampEXT ) ( const unsigned char *pRed, 
 
 #define GL_TEXTURE0_SGIS					0x835E
 #define GL_TEXTURE1_SGIS					0x835F
+#define GL_TEXTURE0_ARB						0x84C0
+#define GL_TEXTURE1_ARB						0x84C1
+
+extern int GL_TEXTURE0, GL_TEXTURE1;
 
 #endif

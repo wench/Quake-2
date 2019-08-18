@@ -1115,24 +1115,17 @@ static void ControlsResetDefaultsFunc( void *unused )
 
 static void InvertMouseFunc( void *unused )
 {
-	if ( s_options_invertmouse_box.curvalue == 0 )
-	{
-		Cvar_SetValue( "m_pitch", fabs( m_pitch->value ) );
-	}
-	else
-	{
-		Cvar_SetValue( "m_pitch", -fabs( m_pitch->value ) );
-	}
+	Cvar_SetValue( "m_pitch", -m_pitch->value );
 }
 
 static void LookspringFunc( void *unused )
 {
-	Cvar_SetValue( "lookspring", s_options_lookspring_box.curvalue );
+	Cvar_SetValue( "lookspring", !lookspring->value );
 }
 
 static void LookstrafeFunc( void *unused )
 {
-	Cvar_SetValue( "lookstrafe", s_options_lookstrafe_box.curvalue );
+	Cvar_SetValue( "lookstrafe", !lookstrafe->value );
 }
 
 static void UpdateVolumeFunc( void *unused )
@@ -3796,6 +3789,7 @@ void PlayerConfig_MenuDraw( void )
 		entity.origin[0] = 80;
 		entity.origin[1] = 0;
 		entity.origin[2] = 0;
+		VectorSet(entity.scale,1,1,1);
 		VectorCopy( entity.origin, entity.oldorigin );
 		entity.frame = 0;
 		entity.oldframe = 0;
@@ -3803,6 +3797,9 @@ void PlayerConfig_MenuDraw( void )
 		entity.angles[1] = yaw++;
 		if ( ++yaw > 360 )
 			yaw -= 360;
+
+		VectorSet(entity.scale,1,1,1);
+		VectorSet(entity.rgb,1,1,1);
 
 		refdef.areabits = 0;
 		refdef.num_entities = 1;

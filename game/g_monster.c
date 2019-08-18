@@ -157,7 +157,7 @@ void M_CheckGround (edict_t *ent)
 	point[1] = ent->s.origin[1];
 	point[2] = ent->s.origin[2] - 0.25;
 
-	trace = gi.trace (ent->s.origin, ent->mins, ent->maxs, point, ent, MASK_MONSTERSOLID);
+	trace = gi.trace (ent->s.origin, ent->s.mins, ent->s.maxs, point, ent, ent->clipmask);
 
 	// check steepness
 	if ( trace.plane.normal[2] < 0.7 && !trace.startsolid)
@@ -190,7 +190,7 @@ void M_CatagorizePosition (edict_t *ent)
 //
 	point[0] = ent->s.origin[0];
 	point[1] = ent->s.origin[1];
-	point[2] = ent->s.origin[2] + ent->mins[2] + 1;	
+	point[2] = ent->s.origin[2] + ent->s.mins[2] + 1;	
 	cont = gi.pointcontents (point);
 
 	if (!(cont & MASK_WATER))
@@ -316,7 +316,7 @@ void M_droptofloor (edict_t *ent)
 	VectorCopy (ent->s.origin, end);
 	end[2] -= 256;
 	
-	trace = gi.trace (ent->s.origin, ent->mins, ent->maxs, end, ent, MASK_MONSTERSOLID);
+	trace = gi.trace (ent->s.origin, ent->s.mins, ent->s.maxs, end, ent, ent->clipmask);
 
 	if (trace.fraction == 1 || trace.allsolid)
 		return;
@@ -363,7 +363,7 @@ void M_MoveFrame (edict_t *self)
 	mmove_t	*move;
 	int		index;
 
-	move = self->monsterinfo.currentmove;
+	move = self->monsterinfo.get_currentmove(self);
 	self->nextthink = level.time + FRAMETIME;
 
 	if ((self->monsterinfo.nextframe) && (self->monsterinfo.nextframe >= move->firstframe) && (self->monsterinfo.nextframe <= move->lastframe))
@@ -380,7 +380,7 @@ void M_MoveFrame (edict_t *self)
 				move->endfunc (self);
 
 				// regrab move, endfunc is very likely to change it
-				move = self->monsterinfo.currentmove;
+				move = self->monsterinfo.get_currentmove(self);
 
 				// check for death
 				if (self->svflags & SVF_DEADMONSTER)
@@ -556,7 +556,7 @@ qboolean monster_start (edict_t *self)
 	self->air_finished = level.time + 12;
 	self->use = monster_use;
 	self->max_health = self->health;
-	self->clipmask = MASK_MONSTERSOLID;
+	self->clipmask |= MASK_MONSTERSOLID;
 
 	self->s.skinnum = 0;
 	self->deadflag = DEAD_NO;
@@ -575,7 +575,10 @@ qboolean monster_start (edict_t *self)
 
 	// randomize what frame they start on
 	if (self->monsterinfo.currentmove)
-		self->s.frame = self->monsterinfo.currentmove->firstframe + (rand() % (self->monsterinfo.currentmove->lastframe - self->monsterinfo.currentmove->firstframe + 1));
+	{
+		mmove_t *currentmove = self->monsterinfo.get_currentmove(self);
+		self->s.frame = currentmove->firstframe + (rand() % (currentmove->lastframe - currentmove->firstframe + 1));
+	}
 
 	return true;
 }

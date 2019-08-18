@@ -79,16 +79,16 @@ void PlayerNoise(edict_t *who, vec3_t where, int type)
 	{
 		noise = G_Spawn();
 		noise->classname = "player_noise";
-		VectorSet (noise->mins, -8, -8, -8);
-		VectorSet (noise->maxs, 8, 8, 8);
+		VectorSet (noise->s.mins, -8, -8, -8);
+		VectorSet (noise->s.maxs, 8, 8, 8);
 		noise->owner = who;
 		noise->svflags = SVF_NOCLIENT;
 		who->mynoise = noise;
 
 		noise = G_Spawn();
 		noise->classname = "player_noise";
-		VectorSet (noise->mins, -8, -8, -8);
-		VectorSet (noise->maxs, 8, 8, 8);
+		VectorSet (noise->s.mins, -8, -8, -8);
+		VectorSet (noise->s.maxs, 8, 8, 8);
 		noise->owner = who;
 		noise->svflags = SVF_NOCLIENT;
 		who->mynoise2 = noise;
@@ -108,8 +108,8 @@ void PlayerNoise(edict_t *who, vec3_t where, int type)
 	}
 
 	VectorCopy (where, noise->s.origin);
-	VectorSubtract (where, noise->maxs, noise->absmin);
-	VectorAdd (where, noise->maxs, noise->absmax);
+	VectorSubtract (where, noise->s.maxs, noise->absmin);
+	VectorAdd (where, noise->s.maxs, noise->absmax);
 	noise->teleport_time = level.time;
 	gi.linkentity (noise);
 }
@@ -189,7 +189,7 @@ void ChangeWeapon (edict_t *ent)
 	ent->client->machinegun_shots = 0;
 
 	// set visible model
-	if (ent->s.modelindex == 255) {
+	if (ent->s.modelindex == -1) {
 		if (ent->client->pers.weapon)
 			i = ((ent->client->pers.weapon->weapmodel & 0xff) << 8);
 		else
@@ -215,13 +215,13 @@ void ChangeWeapon (edict_t *ent)
 	ent->client->anim_priority = ANIM_PAIN;
 	if(ent->client->ps.pmove.pm_flags & PMF_DUCKED)
 	{
-			ent->s.frame = FRAME_crpain1;
-			ent->client->anim_end = FRAME_crpain4;
+			ent->s.frame = ent->client->frame_crpain1;
+			ent->client->anim_end = ent->client->frame_crpain4;
 	}
 	else
 	{
-			ent->s.frame = FRAME_pain301;
-			ent->client->anim_end = FRAME_pain304;
+			ent->s.frame = ent->client->frame_pain301;
+			ent->client->anim_end = ent->client->frame_pain304;
 			
 	}
 }
@@ -381,7 +381,7 @@ void Weapon_Generic (edict_t *ent, int FRAME_ACTIVATE_LAST, int FRAME_FIRE_LAST,
 {
 	int		n;
 
-	if(ent->deadflag || ent->s.modelindex != 255) // VWep animations screw up corpses
+	if(ent->deadflag || !ent->client) // VWep animations screw up corpses
 	{
 		return;
 	}
@@ -398,13 +398,13 @@ void Weapon_Generic (edict_t *ent, int FRAME_ACTIVATE_LAST, int FRAME_FIRE_LAST,
 			ent->client->anim_priority = ANIM_REVERSE;
 			if(ent->client->ps.pmove.pm_flags & PMF_DUCKED)
 			{
-				ent->s.frame = FRAME_crpain4+1;
-				ent->client->anim_end = FRAME_crpain1;
+				ent->s.frame = ent->client->frame_crpain4+1;
+				ent->client->anim_end = ent->client->frame_crpain1;
 			}
 			else
 			{
-				ent->s.frame = FRAME_pain304+1;
-				ent->client->anim_end = FRAME_pain301;
+				ent->s.frame = ent->client->frame_pain304+1;
+				ent->client->anim_end = ent->client->frame_pain301;
 				
 			}
 		}
@@ -436,13 +436,13 @@ void Weapon_Generic (edict_t *ent, int FRAME_ACTIVATE_LAST, int FRAME_FIRE_LAST,
 			ent->client->anim_priority = ANIM_REVERSE;
 			if(ent->client->ps.pmove.pm_flags & PMF_DUCKED)
 			{
-				ent->s.frame = FRAME_crpain4+1;
-				ent->client->anim_end = FRAME_crpain1;
+				ent->s.frame = ent->client->frame_crpain4+1;
+				ent->client->anim_end = ent->client->frame_crpain1;
 			}
 			else
 			{
-				ent->s.frame = FRAME_pain304+1;
-				ent->client->anim_end = FRAME_pain301;
+				ent->s.frame = ent->client->frame_pain304+1;
+				ent->client->anim_end = ent->client->frame_pain301;
 				
 			}
 		}
@@ -464,13 +464,13 @@ void Weapon_Generic (edict_t *ent, int FRAME_ACTIVATE_LAST, int FRAME_FIRE_LAST,
 				ent->client->anim_priority = ANIM_ATTACK;
 				if (ent->client->ps.pmove.pm_flags & PMF_DUCKED)
 				{
-					ent->s.frame = FRAME_crattak1-1;
-					ent->client->anim_end = FRAME_crattak9;
+					ent->s.frame = ent->client->frame_crattak1-1;
+					ent->client->anim_end = ent->client->frame_crattak9;
 				}
 				else
 				{
-					ent->s.frame = FRAME_attack1-1;
-					ent->client->anim_end = FRAME_attack8;
+					ent->s.frame = ent->client->frame_attack1-1;
+					ent->client->anim_end = ent->client->frame_attack8;
 				}
 			}
 			else
@@ -570,7 +570,7 @@ void weapon_grenade_fire (edict_t *ent, qboolean held)
 
 	ent->client->grenade_time = level.time + 1.0;
 
-	if(ent->deadflag || ent->s.modelindex != 255) // VWep animations screw up corpses
+	if(ent->deadflag || !ent->client) // VWep animations screw up corpses
 	{
 		return;
 	}
@@ -581,14 +581,14 @@ void weapon_grenade_fire (edict_t *ent, qboolean held)
 	if (ent->client->ps.pmove.pm_flags & PMF_DUCKED)
 	{
 		ent->client->anim_priority = ANIM_ATTACK;
-		ent->s.frame = FRAME_crattak1-1;
-		ent->client->anim_end = FRAME_crattak3;
+		ent->s.frame = ent->client->frame_crattak1-1;
+		ent->client->anim_end = ent->client->frame_crattak1+2;
 	}
 	else
 	{
 		ent->client->anim_priority = ANIM_REVERSE;
-		ent->s.frame = FRAME_wave08;
-		ent->client->anim_end = FRAME_wave01;
+		ent->s.frame = ent->client->frame_wave01+7;
+		ent->client->anim_end = ent->client->frame_wave01;
 	}
 }
 
@@ -911,13 +911,13 @@ void Weapon_HyperBlaster_Fire (edict_t *ent)
 			ent->client->anim_priority = ANIM_ATTACK;
 			if (ent->client->ps.pmove.pm_flags & PMF_DUCKED)
 			{
-				ent->s.frame = FRAME_crattak1 - 1;
-				ent->client->anim_end = FRAME_crattak9;
+				ent->s.frame = ent->client->frame_crattak1 - 1;
+				ent->client->anim_end = ent->client->frame_crattak9;
 			}
 			else
 			{
-				ent->s.frame = FRAME_attack1 - 1;
-				ent->client->anim_end = FRAME_attack8;
+				ent->s.frame = ent->client->frame_attack1 - 1;
+				ent->client->anim_end = ent->client->frame_attack8;
 			}
 		}
 
@@ -1026,13 +1026,13 @@ void Machinegun_Fire (edict_t *ent)
 	ent->client->anim_priority = ANIM_ATTACK;
 	if (ent->client->ps.pmove.pm_flags & PMF_DUCKED)
 	{
-		ent->s.frame = FRAME_crattak1 - (int) (random()+0.25);
-		ent->client->anim_end = FRAME_crattak9;
+		ent->s.frame = ent->client->frame_crattak1 - (int) (random()+0.25);
+		ent->client->anim_end = ent->client->frame_crattak9;
 	}
 	else
 	{
-		ent->s.frame = FRAME_attack1 - (int) (random()+0.25);
-		ent->client->anim_end = FRAME_attack8;
+		ent->s.frame = ent->client->frame_attack1 - (int) (random()+0.25);
+		ent->client->anim_end = ent->client->frame_attack8;
 	}
 }
 
@@ -1092,13 +1092,13 @@ void Chaingun_Fire (edict_t *ent)
 	ent->client->anim_priority = ANIM_ATTACK;
 	if (ent->client->ps.pmove.pm_flags & PMF_DUCKED)
 	{
-		ent->s.frame = FRAME_crattak1 - (ent->client->ps.gunframe & 1);
-		ent->client->anim_end = FRAME_crattak9;
+		ent->s.frame = ent->client->frame_crattak1 - (ent->client->ps.gunframe & 1);
+		ent->client->anim_end = ent->client->frame_crattak9;
 	}
 	else
 	{
-		ent->s.frame = FRAME_attack1 - (ent->client->ps.gunframe & 1);
-		ent->client->anim_end = FRAME_attack8;
+		ent->s.frame = ent->client->frame_attack1 - (ent->client->ps.gunframe & 1);
+		ent->client->anim_end = ent->client->frame_attack8;
 	}
 
 	if (ent->client->ps.gunframe <= 9)
@@ -1386,7 +1386,7 @@ void weapon_bfg_fire (edict_t *ent)
 
 		ent->client->ps.gunframe++;
 
-		PlayerNoise(ent, ent->s.origin, PNOISE_WEAPON);
+		PlayerNoise(ent, start, PNOISE_WEAPON);
 		return;
 	}
 

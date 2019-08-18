@@ -268,7 +268,7 @@ PM_StepSlideMove
 
 ==================
 */
-void PM_StepSlideMove (void)
+void PM_StepSlideMove (qboolean step_down)
 {
 	vec3_t		start_o, start_v;
 	vec3_t		down_o, down_v;
@@ -281,6 +281,19 @@ void PM_StepSlideMove (void)
 	VectorCopy (pml.velocity, start_v);
 
 	PM_StepSlideMove_ ();
+
+	// Try step down
+	if (step_down) 
+	{
+		VectorCopy (pml.origin, down);
+		down[2] -= STEPSIZE+1;
+		trace = pm->trace (pml.origin, pm->mins, pm->maxs, down);
+		// Only go down IF we actually will land on something
+		if (!trace.allsolid && trace.surface)
+		{
+			VectorCopy (trace.endpos, pml.origin);
+		}
+	}
 
 	VectorCopy (pml.origin, down_o);
 	VectorCopy (pml.velocity, down_v);
@@ -562,7 +575,7 @@ void PM_WaterMove (void)
 
 	PM_Accelerate (wishdir, wishspeed, pm_wateraccelerate);
 
-	PM_StepSlideMove ();
+	PM_StepSlideMove (false);
 }
 
 
@@ -630,7 +643,7 @@ void PM_AirMove (void)
 					pml.velocity[2]  = 0;
 			}
 		}
-		PM_StepSlideMove ();
+		PM_StepSlideMove (false);
 	}
 	else if ( pm->groundentity )
 	{	// walking on ground
@@ -647,7 +660,7 @@ void PM_AirMove (void)
 
 		if (!pml.velocity[0] && !pml.velocity[1])
 			return;
-		PM_StepSlideMove ();
+		PM_StepSlideMove (pml.velocity[2] <= 0);
 	}
 	else
 	{	// not on ground, so little effect on velocity
@@ -657,7 +670,7 @@ void PM_AirMove (void)
 			PM_Accelerate (wishdir, wishspeed, 1);
 		// add gravity
 		pml.velocity[2] -= pm->s.gravity * pml.frametime;
-		PM_StepSlideMove ();
+		PM_StepSlideMove (false);
 	}
 }
 
@@ -976,22 +989,25 @@ Sets mins, maxs, and pm->viewheight
 void PM_CheckDuck (void)
 {
 	trace_t	trace;
+	vec3_t mins, maxs;
 
-	pm->mins[0] = -16;
-	pm->mins[1] = -16;
+	mins[0] = pm->mins[0];
+	mins[1] = pm->mins[1];
 
-	pm->maxs[0] = 16;
-	pm->maxs[1] = 16;
+	maxs[0] = pm->maxs[0];
+	maxs[1] = pm->maxs[1];
 
 	if (pm->s.pm_type == PM_GIB)
 	{
-		pm->mins[2] = 0;
-		pm->maxs[2] = 16;
+		mins[2] = 0;
+		maxs[2] = 16;
 		pm->viewheight = 8;
+		VectorCopy(mins,pm->mins);
+		VectorCopy(maxs,pm->maxs);
 		return;
 	}
 
-	pm->mins[2] = -24;
+	mins[2] = pm->mins[2];
 
 	if (pm->s.pm_type == PM_DEAD)
 	{
@@ -1006,8 +1022,8 @@ void PM_CheckDuck (void)
 		if (pm->s.pm_flags & PMF_DUCKED)
 		{
 			// try to stand up
-			pm->maxs[2] = 32;
-			trace = pm->trace (pml.origin, pm->mins, pm->maxs, pml.origin);
+			maxs[2] = pm->maxs[2];
+			trace = pm->trace (pml.origin, mins, maxs, pml.origin);
 			if (!trace.allsolid)
 				pm->s.pm_flags &= ~PMF_DUCKED;
 		}
@@ -1015,14 +1031,17 @@ void PM_CheckDuck (void)
 
 	if (pm->s.pm_flags & PMF_DUCKED)
 	{
-		pm->maxs[2] = 4;
-		pm->viewheight = -2;
+		maxs[2] = pm->mins[2]+28;
+		pm->viewheight = maxs[2]-6;
 	}
 	else
 	{
-		pm->maxs[2] = 32;
-		pm->viewheight = 22;
+		maxs[2] = pm->maxs[2];
+		pm->viewheight = maxs[2]-10;
 	}
+
+	VectorCopy(mins,pm->mins);
+	VectorCopy(maxs,pm->maxs);
 }
 
 
@@ -1249,6 +1268,9 @@ void Pmove (pmove_t *pmove)
 	pm->watertype = 0;
 	pm->waterlevel = 0;
 
+	pm_maxspeed = pm->run_speed;
+	pm_duckspeed = pm->duck_speed;
+
 	// clear all pmove local vars
 	memset (&pml, 0, sizeof(pml));
 
@@ -1328,7 +1350,7 @@ void Pmove (pmove_t *pmove)
 			pm->s.pm_time = 0;
 		}
 
-		PM_StepSlideMove ();
+		PM_StepSlideMove (false);
 	}
 	else
 	{

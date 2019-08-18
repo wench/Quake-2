@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "../game/q_shared.h"
 
 
-#define	VERSION		3.19
+#define	VERSION		3.21
 
 #define	BASEDIRNAME	"baseq2"
 
@@ -177,7 +177,7 @@ PROTOCOL
 
 // protocol.h -- communications protocols
 
-#define	PROTOCOL_VERSION	34
+#define	PROTOCOL_VERSION	('ANOX')
 
 //=========================================
 
@@ -263,6 +263,7 @@ enum clc_ops_e
 #define	PS_WEAPONINDEX		(1<<12)
 #define	PS_WEAPONFRAME		(1<<13)
 #define	PS_RDFLAGS			(1<<14)
+#define	PS_MINMAX			(1<<15)
 
 //==============================================
 
@@ -328,6 +329,14 @@ enum clc_ops_e
 #define	U_SKIN16	(1<<25)
 #define	U_SOUND		(1<<26)
 #define	U_SOLID		(1<<27)
+#define	U_RGB		(1<<28)		// Yes, these are all the same. If one is sent all are sent
+#define	U_SCALE		(1<<28)
+#define	U_OFFSET	(1<<28)
+#define	U_NPSIMPLE	(1<<29)		// 
+#define	U_NP_0		(1<<30)		// 
+#define	U_NP_1		(1<<30)		// 
+#define	U_NP_2		(1<<30)		// 
+#define U_MINS_MAXS	(1<<31)
 
 
 /*
@@ -524,7 +533,7 @@ NET
 
 #define	PORT_ANY	-1
 
-#define	MAX_MSGLEN		1400		// max length of a message
+#define	MAX_MSGLEN		4096		// max length of a message
 #define	PACKET_HEADER	10			// two ints and a short
 
 typedef enum {NA_LOOPBACK, NA_BROADCAST, NA_IP, NA_IPX, NA_BROADCAST_IPX} netadrtype_t;

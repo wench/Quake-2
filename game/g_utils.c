@@ -91,7 +91,7 @@ edict_t *findradius (edict_t *from, vec3_t org, float rad)
 		if (from->solid == SOLID_NOT)
 			continue;
 		for (j=0 ; j<3 ; j++)
-			eorg[j] = org[j] - (from->s.origin[j] + (from->mins[j] + from->maxs[j])*0.5);
+			eorg[j] = org[j] - (from->s.origin[j] + (from->s.mins[j] + from->s.maxs[j])*0.5);
 		if (VectorLength(eorg) > rad)
 			continue;
 		return from;
@@ -120,6 +120,8 @@ edict_t *G_PickTarget (char *targetname)
 	edict_t	*ent = NULL;
 	int		num_choices = 0;
 	edict_t	*choice[MAXCHOICES];
+	char	*next = NULL;
+	char	tn[MAX_QPATH];
 
 	if (!targetname)
 	{
@@ -127,12 +129,33 @@ edict_t *G_PickTarget (char *targetname)
 		return NULL;
 	}
 
-	while(1)
+	next = targetname;
+
+	while (next != NULL)
 	{
-		ent = G_Find (ent, FOFS(targetname), targetname);
-		if (!ent)
-			break;
-		choice[num_choices++] = ent;
+		char *found = strchr(next, ';');
+		if (found)
+		{
+			memcpy(tn, next, found-next);
+			tn[found-next] = 0;
+			next = found+1;
+		}
+		else 
+		{
+			strcpy (tn, next);
+			next = NULL;
+		}
+
+		while(1)
+		{
+			ent = G_Find (ent, FOFS(targetname), tn);
+			if (!ent)
+				break;
+			choice[num_choices++] = ent;
+			if (num_choices == MAXCHOICES)
+				break;
+		}
+
 		if (num_choices == MAXCHOICES)
 			break;
 	}
@@ -404,6 +427,8 @@ void G_InitEdict (edict_t *e)
 	e->classname = "noclass";
 	e->gravity = 1.0;
 	e->s.number = e - g_edicts;
+	VectorSet(e->s.rgb, 1, 1, 1);
+	VectorSet(e->s.scale, 1, 1, 1);
 }
 
 /*
@@ -552,7 +577,7 @@ qboolean KillBox (edict_t *ent)
 
 	while (1)
 	{
-		tr = gi.trace (ent->s.origin, ent->mins, ent->maxs, ent->s.origin, NULL, MASK_PLAYERSOLID);
+		tr = gi.trace (ent->s.origin, ent->s.mins, ent->s.maxs, ent->s.origin, NULL, MASK_PLAYERSOLID);
 		if (!tr.ent)
 			break;
 

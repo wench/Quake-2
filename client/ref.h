@@ -17,11 +17,13 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
+#ifndef __REF_H
+#define __REF_H
 
 #include "../qcommon/qcommon.h"
 
 #define	MAX_DLIGHTS		32
-#define	MAX_ENTITIES	128
+#define	MAX_ENTITIES	512
 #define	MAX_PARTICLES	4096
 #define	MAX_LIGHTSTYLES	256
 
@@ -54,6 +56,8 @@ typedef struct entity_s
 	*/
 	float				origin[3];		// also used as RF_BEAM's "from"
 	int					frame;			// also used as RF_BEAM's diameter
+	float				scale[3];
+	float				rgb[3];
 
 	/*
 	** previous data for lerping
@@ -97,6 +101,36 @@ typedef struct
 	float		white;			// highest of rgb
 } lightstyle_t;
 
+typedef enum np_gennorm_s {
+	GENNORM_SCREEN		= 0,	// Face screen always
+	GENNORM_UP			= 1,	// Face up in world
+	GENNORM_DIR_GEN		= 2,	// Particle normal is direction of generator
+	GENNORM_SPRITE		= 3,	// Face screen in yaw only. Pitch is always 0
+	GENNORM_UP_GEN		= 4,	// Particles top is always in gen dir, attempt to rotate around axis and face screen
+	GENNORM_UP_GEN_FLAT	= 5		// Particles top is always in gen dir, is vertically flat
+} np_gennorm_t;
+
+typedef struct
+{
+	int						src_blend;		// GL_ONE
+	int						dest_blend;		// GL_ONE
+	int						depth_write;	// 0
+	int						depth_func;		// GL_LESS
+	int						gennorm;		// GENNORM_SCREEN
+	struct image_s			*image;			// Image to use
+} np_generator_t;
+
+typedef struct
+{
+	np_generator_t			*gen;			// Generator properties
+	vec3_t					gen_forward;	// Normal of the generator
+	vec3_t					origin;	
+	float					radius;
+	float					rgba[4];		
+	float					texcoord[4];	//  (l=0,t=0,r=1,b=1)
+	float					roll;
+} newparticle_t;
+
 typedef struct
 {
 	int			x, y, width, height;// in virtual screen coordinates
@@ -119,11 +153,14 @@ typedef struct
 
 	int			num_particles;
 	particle_t	*particles;
+
+	int			num_newparticles;
+	newparticle_t	*newparticles;
 } refdef_t;
 
 
 
-#define	API_VERSION		3
+#define	API_VERSION		('ANOX')
 
 //
 // these are the functions exported by the refresh module
@@ -156,6 +193,7 @@ typedef struct
 	struct model_s *(*RegisterModel) (char *name);
 	struct image_s *(*RegisterSkin) (char *name);
 	struct image_s *(*RegisterPic) (char *name);
+	struct image_s *(*RegisterClamped) (char *name);
 	void	(*SetSky) (char *name, float rotate, vec3_t axis);
 	void	(*EndRegistration) (void);
 
@@ -213,6 +251,7 @@ typedef struct
 	cvar_t	*(*Cvar_Get) (char *name, char *value, int flags);
 	cvar_t	*(*Cvar_Set)( char *name, char *value );
 	void	 (*Cvar_SetValue)( char *name, float value );
+	cvar_t	*(*Cvar_ForceSet)( char *name, char *value );
 
 	qboolean	(*Vid_GetModeInfo)( int *width, int *height, int mode );
 	void		(*Vid_MenuInit)( void );
@@ -222,3 +261,5 @@ typedef struct
 
 // this is the only function actually exported at the linker level
 typedef	refexport_t	(*GetRefAPI_t) (refimport_t);
+
+#endif // __REF_H

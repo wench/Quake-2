@@ -752,29 +752,29 @@ void Cmd_Wave_f (edict_t *ent)
 	{
 	case 0:
 		gi.cprintf (ent, PRINT_HIGH, "flipoff\n");
-		ent->s.frame = FRAME_flip01-1;
-		ent->client->anim_end = FRAME_flip12;
+		ent->s.frame = ent->client->frame_flip01-1;
+		ent->client->anim_end = ent->client->frame_flip12;
 		break;
 	case 1:
 		gi.cprintf (ent, PRINT_HIGH, "salute\n");
-		ent->s.frame = FRAME_salute01-1;
-		ent->client->anim_end = FRAME_salute11;
+		ent->s.frame = ent->client->frame_salute01-1;
+		ent->client->anim_end = ent->client->frame_salute11;
 		break;
 	case 2:
 		gi.cprintf (ent, PRINT_HIGH, "taunt\n");
-		ent->s.frame = FRAME_taunt01-1;
-		ent->client->anim_end = FRAME_taunt17;
+		ent->s.frame = ent->client->frame_taunt01-1;
+		ent->client->anim_end = ent->client->frame_taunt17;
 		break;
 	case 3:
 		gi.cprintf (ent, PRINT_HIGH, "wave\n");
-		ent->s.frame = FRAME_wave01-1;
-		ent->client->anim_end = FRAME_wave11;
+		ent->s.frame = ent->client->frame_wave01-1;
+		ent->client->anim_end = ent->client->frame_wave11;
 		break;
 	case 4:
 	default:
 		gi.cprintf (ent, PRINT_HIGH, "point\n");
-		ent->s.frame = FRAME_point01-1;
-		ent->client->anim_end = FRAME_point12;
+		ent->s.frame = ent->client->frame_point01-1;
+		ent->client->anim_end = ent->client->frame_point12;
 		break;
 	}
 }
@@ -882,7 +882,7 @@ void Cmd_PlayerList_f(edict_t *ent)
 		if (!e2->inuse)
 			continue;
 
-		sprintf(st, "%02d:%02d %4d %3d %s%s\n",
+		Com_sprintf(st, sizeof(st), "%02d:%02d %4d %3d %s%s\n",
 			(level.framenum - e2->client->resp.enterframe) / 600,
 			((level.framenum - e2->client->resp.enterframe) % 600)/10,
 			e2->client->ping,
@@ -898,7 +898,6 @@ void Cmd_PlayerList_f(edict_t *ent)
 	}
 	gi.cprintf(ent, PRINT_HIGH, "%s", text);
 }
-
 
 /*
 =================

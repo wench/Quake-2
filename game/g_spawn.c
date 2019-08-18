@@ -144,6 +144,9 @@ void SP_turret_breach (edict_t *self);
 void SP_turret_base (edict_t *self);
 void SP_turret_driver (edict_t *self);
 
+// Aquakronox
+qboolean SP_misc_anox_spawn (edict_t *self);
+void SP_trigger_changelevel (edict_t *ent);
 
 spawn_t	spawns[] = {
 	{"item_health", SP_item_health},
@@ -265,6 +268,9 @@ spawn_t	spawns[] = {
 	{"turret_base", SP_turret_base},
 	{"turret_driver", SP_turret_driver},
 
+	// "Aquakronox
+	{"trigger_changelevel", SP_trigger_changelevel },
+
 	{NULL, NULL}
 };
 
@@ -279,12 +285,28 @@ void ED_CallSpawn (edict_t *ent)
 {
 	spawn_t	*s;
 	gitem_t	*item;
+	anox_entity_desc_t *anox;
 	int		i;
 
 	if (!ent->classname)
 	{
 		gi.dprintf ("ED_CallSpawn: NULL classname\n");
 		return;
+	}
+
+	// check anox spawn functions
+	for (anox = anox_entities; anox != NULL; anox = anox->next) 
+	{
+		if (!anox->classname)
+			continue;
+		if (!Q_strcasecmp(anox->classname, ent->classname))
+		{	// found it
+			//gi.dprintf ("Anoxspawn: %s\n", ent->classname);
+
+			ent->anox = anox;
+			SP_misc_anox_spawn (ent);
+			return;
+		}
 	}
 
 	// check item spawn functions
@@ -308,7 +330,8 @@ void ED_CallSpawn (edict_t *ent)
 			return;
 		}
 	}
-	gi.dprintf ("%s doesn't have a spawn function\n", ent->classname);
+	if (!SP_misc_anox_spawn(ent) && ent->inuse)
+		gi.dprintf ("%s doesn't have a spawn function\n", ent->classname);
 }
 
 /*
@@ -344,6 +367,29 @@ char *ED_NewString (char *string)
 	return newb;
 }
 
+/*
+=============
+ED_NewString2
+=============
+*/
+char *ED_NewString2 (char *string)
+{
+	char	*newb, *new_p;
+	int		i,l;
+	
+	l = strlen(string) + 1;
+
+	newb = gi.TagMalloc (l, TAG_LEVEL);
+
+	new_p = newb;
+
+	for (i=0 ; i< l ; i++)
+	{
+		*new_p++ = string[i];
+	}
+	
+	return newb;
+}
 
 
 
@@ -376,6 +422,9 @@ void ED_ParseField (char *key, char *value, edict_t *ent)
 			case F_LSTRING:
 				*(char **)(b+f->ofs) = ED_NewString (value);
 				break;
+			case F_LSTRING2:
+				*(char **)(b+f->ofs) = ED_NewString2 (value);
+				break;
 			case F_VECTOR:
 				sscanf (value, "%f %f %f", &vec[0], &vec[1], &vec[2]);
 				((float *)(b+f->ofs))[0] = vec[0];
@@ -400,7 +449,7 @@ void ED_ParseField (char *key, char *value, edict_t *ent)
 			return;
 		}
 	}
-	gi.dprintf ("%s is not a field\n", key);
+	gi.dprintf ("%s is not a field (%s)\n", key, value);
 }
 
 /*

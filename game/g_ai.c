@@ -1049,7 +1049,7 @@ void ai_run (edict_t *self, float dist)
 	{
 //		gi.dprintf("checking for course correction\n");
 
-		tr = gi.trace(self->s.origin, self->mins, self->maxs, self->monsterinfo.last_sighting, self, MASK_PLAYERSOLID);
+		tr = gi.trace(self->s.origin, self->s.mins, self->s.maxs, self->monsterinfo.last_sighting, self, MASK_PLAYERSOLID);
 		if (tr.fraction < 1)
 		{
 			VectorSubtract (self->goalentity->s.origin, self->s.origin, v);
@@ -1061,12 +1061,12 @@ void ai_run (edict_t *self, float dist)
 
 			VectorSet(v, d2, -16, 0);
 			G_ProjectSource (self->s.origin, v, v_forward, v_right, left_target);
-			tr = gi.trace(self->s.origin, self->mins, self->maxs, left_target, self, MASK_PLAYERSOLID);
+			tr = gi.trace(self->s.origin, self->s.mins, self->s.maxs, left_target, self, MASK_PLAYERSOLID);
 			left = tr.fraction;
 
 			VectorSet(v, d2, 16, 0);
 			G_ProjectSource (self->s.origin, v, v_forward, v_right, right_target);
-			tr = gi.trace(self->s.origin, self->mins, self->maxs, right_target, self, MASK_PLAYERSOLID);
+			tr = gi.trace(self->s.origin, self->s.mins, self->s.maxs, right_target, self, MASK_PLAYERSOLID);
 			right = tr.fraction;
 
 			center = (d1*center)/d2;

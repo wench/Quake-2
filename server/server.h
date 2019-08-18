@@ -52,6 +52,7 @@ typedef struct
 
 	char		name[MAX_QPATH];			// map name, or cinematic name
 	struct cmodel_s		*models[MAX_MODELS];
+	md2_info_t	*md2_info[MAX_MODELS];	// MD2 info
 
 	char		configstrings[MAX_CONFIGSTRINGS][MAX_QPATH];
 	entity_state_t	baselines[MAX_EDICTS];
@@ -64,6 +65,7 @@ typedef struct
 	// demo server information
 	FILE		*demofile;
 	qboolean	timedemo;		// don't time sync
+
 } server_t;
 
 #define EDICT_NUM(n) ((edict_t *)((byte *)ge->edicts + ge->edict_size*(n)))
@@ -211,6 +213,8 @@ void SV_DropClient (client_t *drop);
 int SV_ModelIndex (char *name);
 int SV_SoundIndex (char *name);
 int SV_ImageIndex (char *name);
+int SV_APDIndex (char *name);
+md2_info_t *SV_MD2Info (int index);
 
 void SV_WriteClientdataToMessage (client_t *client, sizebuf_t *msg);
 

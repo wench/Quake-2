@@ -36,6 +36,10 @@ byte	*membase;
 int		hunkmaxsize;
 int		cursize;
 
+byte	*membase2;
+int		hunkmaxsize2;
+int		cursize2;
+
 #define	VIRTUAL_ALLOC
 
 void *Hunk_Begin (int maxsize)
@@ -52,6 +56,28 @@ void *Hunk_Begin (int maxsize)
 	if (!membase)
 		Sys_Error ("VirtualAlloc reserve failed");
 	return (void *)membase;
+}
+
+void *Hunk_Begin2 (int maxsize)
+{
+	// reserve a huge chunk of memory, but don't commit any yet
+	cursize2 = 0;
+	hunkmaxsize2 = maxsize;
+#ifdef VIRTUAL_ALLOC
+	membase2 = VirtualAlloc (NULL, maxsize, MEM_RESERVE, PAGE_NOACCESS);
+	if (FAILED(GetLastError()))
+	{
+		void	*buf;
+		FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR) &buf, 0, NULL);
+		Sys_Error ("VirtualAlloc commit failed.\n%s", buf);
+	}
+#else
+	membase2 = malloc (maxsize);
+	memset (membase2, 0, maxsize);
+#endif
+	if (!membase2)
+		Sys_Error ("VirtualAlloc reserve failed");
+	return (void *)membase2;
 }
 
 void *Hunk_Alloc (int size)
@@ -78,10 +104,34 @@ void *Hunk_Alloc (int size)
 	return (void *)(membase+cursize-size);
 }
 
+void *Hunk_Alloc2 (int size)
+{
+	void	*buf;
+
+	// round to cacheline
+	size = (size+31)&~31;
+
+#ifdef VIRTUAL_ALLOC
+	// commit pages as needed
+	buf = VirtualAlloc (membase2, cursize2+size, MEM_COMMIT, PAGE_READWRITE);
+	if (!buf)
+	{
+		FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR) &buf, 0, NULL);
+		Sys_Error ("VirtualAlloc commit failed.\n%s", buf);
+	}
+#endif
+	cursize2 += size;
+	if (cursize2 > hunkmaxsize2)
+		Sys_Error ("Hunk_Alloc overflow");
+
+	return (void *)(membase2+cursize2-size);
+}
+
 int Hunk_End (void)
 {
 
 	// free the remaining unused virtual memory
+#ifdef VIRTUAL_ALLOC
 #if 0
 	void	*buf;
 
@@ -90,13 +140,49 @@ int Hunk_End (void)
 	if (!buf)
 		Sys_Error ("VirtualAlloc commit failed");
 #endif
+#else
+	realloc(membase,cursize);
+#endif
 
 	hunkcount++;
 //Com_Printf ("hunkcount: %i\n", hunkcount);
 	return cursize;
 }
 
+int Hunk_End2 (void)
+{
+	// free the remaining unused virtual memory
+#ifdef VIRTUAL_ALLOC
+#if 0
+	void	*buf;
+
+	// write protect it
+	buf = VirtualAlloc (membase2, cursize2, MEM_COMMIT, PAGE_READONLY);
+	if (!buf)
+		Sys_Error ("VirtualAlloc commit failed");
+#endif
+#else
+	realloc(membase2,cursize2);
+#endif
+
+	hunkcount++;
+//Com_Printf ("hunkcount: %i\n", hunkcount);
+	return cursize2;
+}
+
 void Hunk_Free (void *base)
+{
+	if ( base )
+#ifdef VIRTUAL_ALLOC
+		VirtualFree (base, 0, MEM_RELEASE);
+#else
+		free (base);
+#endif
+
+	hunkcount--;
+}
+
+void Hunk_Free2 (void *base)
 {
 	if ( base )
 #ifdef VIRTUAL_ALLOC

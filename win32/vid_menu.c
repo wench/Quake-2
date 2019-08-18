@@ -20,11 +20,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "../client/client.h"
 #include "../client/qmenu.h"
 
-#define REF_SOFT	0
-#define REF_OPENGL	1
-#define REF_3DFX	2
-#define REF_POWERVR	3
-#define REF_VERITE	4
+#define REF_OPENGL	0
+#define REF_3DFX	1
+#define REF_POWERVR	2
+#define REF_VERITE	3
+#define REF_SOFT	4
 
 extern cvar_t *vid_ref;
 extern cvar_t *vid_fullscreen;
@@ -135,7 +135,7 @@ static void ApplyChanges( void *unused )
 	Cvar_SetValue( "sw_stipplealpha", s_stipple_box.curvalue );
 	Cvar_SetValue( "gl_picmip", 3 - s_tq_slider.curvalue );
 	Cvar_SetValue( "vid_fullscreen", s_fs_box[s_current_menu_index].curvalue );
-	Cvar_SetValue( "gl_ext_palettedtexture", s_paletted_texture_box.curvalue );
+	//Cvar_SetValue( "gl_ext_palettedtexture", s_paletted_texture_box.curvalue );
 	Cvar_SetValue( "gl_finish", s_finish_box.curvalue );
 	Cvar_SetValue( "sw_mode", s_mode_list[SOFTWARE_MENU].curvalue );
 	Cvar_SetValue( "gl_mode", s_mode_list[OPENGL_MENU].curvalue );
@@ -169,7 +169,7 @@ static void ApplyChanges( void *unused )
 	*/
 	if ( stricmp( vid_ref->string, "gl" ) == 0 )
 	{
-		if ( vid_gamma->modified )
+		if ( vid_gamma->modified && Cvar_Get("gl_using_hardware_gamma","0",CVAR_NOSET)->value == 0 )
 		{
 			vid_ref->modified = true;
 			if ( stricmp( gl_driver->string, "3dfxgl" ) == 0 )
@@ -220,15 +220,16 @@ void VID_MenuInit( void )
 		"[1152 864 ]",
 		"[1280 960 ]",
 		"[1600 1200]",
+		"[2048 1536]",
 		0
 	};
 	static const char *refs[] =
 	{
-		"[software      ]",
 		"[default OpenGL]",
 		"[3Dfx OpenGL   ]",
 		"[PowerVR OpenGL]",
 //		"[Rendition OpenGL]",
+//		"[software      ]",
 		0
 	};
 	static const char *yesno_names[] =
@@ -382,7 +383,7 @@ void VID_MenuInit( void )
 	Menu_AddItem( &s_opengl_menu, ( void * ) &s_brightness_slider[OPENGL_MENU] );
 	Menu_AddItem( &s_opengl_menu, ( void * ) &s_fs_box[OPENGL_MENU] );
 	Menu_AddItem( &s_opengl_menu, ( void * ) &s_tq_slider );
-	Menu_AddItem( &s_opengl_menu, ( void * ) &s_paletted_texture_box );
+	//Menu_AddItem( &s_opengl_menu, ( void * ) &s_paletted_texture_box );
 	Menu_AddItem( &s_opengl_menu, ( void * ) &s_finish_box );
 
 	Menu_AddItem( &s_software_menu, ( void * ) &s_defaults_action[SOFTWARE_MENU] );

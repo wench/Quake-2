@@ -401,13 +401,17 @@ void ( APIENTRY * qglLockArraysEXT)( int, int);
 void ( APIENTRY * qglUnlockArraysEXT) ( void );
 
 BOOL ( WINAPI * qwglSwapIntervalEXT)( int interval );
-BOOL ( WINAPI * qwglGetDeviceGammaRampEXT)( unsigned char *, unsigned char *, unsigned char * );
-BOOL ( WINAPI * qwglSetDeviceGammaRampEXT)( const unsigned char *, const unsigned char *, const unsigned char * );
+BOOL (APIENTRY * qwglGetDeviceGammaRamp) (HDC, LPVOID);
+BOOL (APIENTRY * qwglSetDeviceGammaRamp) (HDC, LPVOID);
 void ( APIENTRY * qglPointParameterfEXT)( GLenum param, GLfloat value );
 void ( APIENTRY * qglPointParameterfvEXT)( GLenum param, const GLfloat *value );
 void ( APIENTRY * qglColorTableEXT)( int, int, int, int, int, const void * );
 void ( APIENTRY * qglSelectTextureSGIS)( GLenum );
 void ( APIENTRY * qglMTexCoord2fSGIS)( GLenum, GLfloat, GLfloat );
+void ( APIENTRY * qglActiveTextureARB) ( GLenum );
+void ( APIENTRY * qglClientActiveTextureARB) ( GLenum );
+void ( APIENTRY * qglTBufferMask3DFX) (GLuint);
+void ( __stdcall * qgrTBufferWriteMaskExt) (unsigned int);
 
 static void ( APIENTRY * dllAccum )(GLenum op, GLfloat value);
 static void ( APIENTRY * dllAlphaFunc )(GLenum func, GLclampf ref);
@@ -3010,8 +3014,8 @@ void QGL_Shutdown( void )
 
 	qwglSwapIntervalEXT	= NULL;
 
-	qwglGetDeviceGammaRampEXT = NULL;
-	qwglSetDeviceGammaRampEXT = NULL;
+	qwglGetDeviceGammaRamp = NULL;
+	qwglSetDeviceGammaRamp = NULL;
 }
 
 #	pragma warning (disable : 4113 4133 4047 )

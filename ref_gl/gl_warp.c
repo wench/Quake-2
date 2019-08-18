@@ -219,6 +219,10 @@ void EmitWaterPolys (msurface_t *fa)
 
 	if (fa->texinfo->flags & SURF_FLOWING)
 		scroll = -64 * ( (r_newrefdef.time*0.5) - (int)(r_newrefdef.time*0.5) );
+	else if (fa->texinfo->flags & SURF_HALF_SCROLL)
+		scroll = -32 * ( (r_newrefdef.time*0.5) - (int)(r_newrefdef.time*0.5) );
+	else if (fa->texinfo->flags & SURF_QUART_SCROLL)
+		scroll = -16 * ( (r_newrefdef.time*0.5) - (int)(r_newrefdef.time*0.5) );
 	else
 		scroll = 0;
 	for (bp=fa->polys ; bp ; bp=bp->next)
@@ -522,9 +526,9 @@ void MakeSkyVec (float s, float t, int axis)
 	vec3_t		v, b;
 	int			j, k;
 
-	b[0] = s*2300;
-	b[1] = t*2300;
-	b[2] = 2300;
+	b[0] = s*8192;
+	b[1] = t*8192;
+	b[2] = 8192;
 
 	for (j=0 ; j<3 ; j++)
 	{
@@ -597,7 +601,7 @@ qglRotatef (r_newrefdef.time * skyrotate, skyaxis[0], skyaxis[1], skyaxis[2]);
 		|| skymins[1][i] >= skymaxs[1][i])
 			continue;
 
-		GL_Bind (sky_images[skytexorder[i]]->texnum);
+		GL_BindImage(sky_images[skytexorder[i]]);
 
 		qglBegin (GL_QUADS);
 		MakeSkyVec (skymins[0][i], skymins[1][i], i);
@@ -635,28 +639,19 @@ void R_SetSky (char *name, float rotate, vec3_t axis)
 	for (i=0 ; i<6 ; i++)
 	{
 		// chop down rotating skies for less memory
-		if (gl_skymip->value || skyrotate)
-			gl_picmip->value++;
 
-		if ( qglColorTableEXT && gl_ext_palettedtexture->value )
-			Com_sprintf (pathname, sizeof(pathname), "env/%s%s.pcx", skyname, suf[i]);
-		else
-			Com_sprintf (pathname, sizeof(pathname), "env/%s%s.tga", skyname, suf[i]);
-
+		Com_sprintf (pathname, sizeof(pathname), "env/%s%s.tga", skyname, suf[i]);
 		sky_images[i] = GL_FindImage (pathname, it_sky);
+		if (!sky_images[i] || sky_images[i] == r_notexture) 
+		{
+			Com_sprintf (pathname, sizeof(pathname), "graphics/sky/%s%s", skyname, suf[i]);
+			sky_images[i] = GL_FindImage (pathname, it_sky);
+		}
+
 		if (!sky_images[i])
 			sky_images[i] = r_notexture;
 
-		if (gl_skymip->value || skyrotate)
-		{	// take less memory
-			gl_picmip->value--;
-			sky_min = 1.0/256;
-			sky_max = 255.0/256;
-		}
-		else	
-		{
-			sky_min = 1.0/512;
-			sky_max = 511.0/512;
-		}
+		sky_min = 1.0/512;
+		sky_max = 511.0/512;
 	}
 }

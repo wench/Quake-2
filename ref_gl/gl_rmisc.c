@@ -38,6 +38,12 @@ byte	dottexture[8][8] =
 	{0,0,0,0,0,0,0,0},
 };
 
+#define VectorPOW(v,p) do {\
+	(v)[0] = pow((v)[0], (p)*2); \
+	(v)[1] = pow((v)[1], (p)*2); \
+	(v)[2] = pow((v)[2], (p)*2); \
+} while(0)
+
 void R_InitParticleTexture (void)
 {
 	int		x,y;
@@ -65,13 +71,146 @@ void R_InitParticleTexture (void)
 	{
 		for (y=0 ; y<8 ; y++)
 		{
-			data[y][x][0] = dottexture[x&3][y&3]*255;
-			data[y][x][1] = 0; // dottexture[x&3][y&3]*255;
-			data[y][x][2] = 0; //dottexture[x&3][y&3]*255;
+			data[y][x][0] = dottexture[x&3][y&3]*192+63;
+			data[y][x][1] = dottexture[x&3][y&3]*192+63;
+			data[y][x][2] = dottexture[x&3][y&3]*192+63;
 			data[y][x][3] = 255;
 		}
 	}
 	r_notexture = GL_LoadPic ("***r_notexture***", (byte *)data, 8, 8, it_wall, 32);
+
+	if (gl_config.have_cube_map && gl_config.have_dot3)
+	{
+		#define PackFloatInByte(in)  (byte) ((((in)+1.0f) / 2.0f) * 255.0f)
+
+		int x,y,z,i;
+		vec3_t	v;
+		const int mapSize = 128;
+		const float halfMapSize = mapSize/2.0F;
+
+		byte	cube[6][128][128][4];
+
+		// Positive X face
+		for (y = 0; y < mapSize; y++) 
+		{
+			for (z = 0; z < mapSize; z++) 
+			{
+				v[0] = halfMapSize;
+				v[1] = halfMapSize - y;
+				v[2] = halfMapSize - z;
+				VectorNormalize(v);
+				VectorPOW(v,8);
+				for (i = 0; i < 3; i++)
+					cube[0][y][z][i] = PackFloatInByte(v[i]);
+			}
+		}
+
+		// Negative X face
+		for (y = 0; y < mapSize; y++) 
+		{
+			for (z = 0; z < mapSize; z++) 
+			{
+				v[0] = -halfMapSize;
+				v[1] = halfMapSize - y;
+				v[2] = z - halfMapSize;
+				VectorNormalize(v);
+				VectorPOW(v,8);
+				for (i = 0; i < 3; i++)
+					cube[1][y][z][i] = PackFloatInByte(v[i]);
+			}
+		}
+
+		// Positive Y face
+		for (z = 0; z < mapSize; z++) 
+		{
+			for (x = 0; x < mapSize; x++) 
+			{
+				v[0] = x - halfMapSize;
+				v[1] = halfMapSize;
+				v[2] = z - halfMapSize;
+				VectorNormalize(v);
+				VectorPOW(v,8);
+				for (i = 0; i < 3; i++)
+					cube[2][z][x][i] = PackFloatInByte(v[i]);
+			}
+		}
+
+		// Negative Y face
+		for (z = 0; z < mapSize; z++) 
+		{
+			for (x = 0; x < mapSize; x++) 
+			{
+				v[0] = x - halfMapSize;
+				v[1] = -halfMapSize;
+				v[2] = halfMapSize - z;
+				VectorNormalize(v);
+				VectorPOW(v,8);
+				for (i = 0; i < 3; i++)
+					cube[3][z][x][i] = PackFloatInByte(v[i]);
+			}
+		}
+
+		// Positive Z face
+		for (y = 0; y < mapSize; y++) 
+		{
+			for (x = 0; x < mapSize; x++) 
+			{
+				v[0] = x - halfMapSize;
+				v[1] = halfMapSize - y;
+				v[2] = halfMapSize;
+				VectorNormalize(v);
+				VectorPOW(v,8);
+				for (i = 0; i < 3; i++)
+					cube[4][y][x][i] = PackFloatInByte(v[i]);
+			}
+		}
+
+		// Negative Z face
+		for (y = 0; y < mapSize; y++) 
+		{
+			for (x = 0; x < mapSize; x++) 
+			{
+				v[0] = halfMapSize - x;
+				v[1] = halfMapSize - y;
+				v[2] = -halfMapSize;
+				VectorNormalize(v);
+				VectorPOW(v,8);
+				for (i = 0; i < 3; i++)
+					cube[5][y][x][i] = PackFloatInByte(v[i]);
+			}
+		}
+
+		r_norm_cube = GL_LoadPic ("***r_norm_cube***", &cube[0][0][0][0], mapSize, mapSize, it_cubemap_ext, 32);
+
+		GL_BindImage(r_notexture);
+	}
+
+	//
+	// newparticle texture
+	//
+	{
+		byte	data[16][16][4];
+		float	f, fx, fy;
+
+		for (x=0 ; x<16 ; x++)
+		{
+			for (y=0 ; y<16 ; y++)
+			{
+				data[y][x][0] = 255;
+				data[y][x][1] = 255;
+				data[y][x][2] = 255;
+				fx = (x-7.5)/7.5;
+				fy = (y-7.5)/7.5;
+
+				f = sqrt(fx*fx + fy*fy);
+				if (f > 1) f = 0;
+				else f = 1-f;
+				data[y][x][3] = (int) (255*f);
+			}
+		}
+		r_newparticletexture = GL_LoadPic ("***newparticle***", (byte *)data, 16, 16, it_clamped, 32);
+	}
+
 }
 
 
@@ -227,6 +366,7 @@ void GL_SetDefaultState( void )
 	}
 
 	GL_UpdateSwapInterval();
+	GL_UpdateGamma();
 }
 
 void GL_UpdateSwapInterval( void )
@@ -244,3 +384,32 @@ void GL_UpdateSwapInterval( void )
 		}
 	}
 }
+
+void GL_MultisampleAABitMask(GLuint mask) {
+
+	if (qglTBufferMask3DFX) {
+		qglTBufferMask3DFX(mask);
+	}
+	else if (qgrTBufferWriteMaskExt) {
+		qgrTBufferWriteMaskExt(mask);
+	}
+}
+
+void GL_DisableAA() {
+	if (gl_config.multisample_samples < 2) return;
+	
+	if (gl_config.multisample_type == MULTISAMPLE_TYPE_ARB)
+		qglDisable(GL_MULTISAMPLE_ARB);
+	else if (gl_config.multisample_type == MULTISAMPLE_TYPE_3DFX)
+		qglDisable(MULTISAMPLE_3DFX);
+}
+
+void GL_EnableAA() {
+	if (gl_config.multisample_samples < 2) return;
+
+	if (gl_config.multisample_type == MULTISAMPLE_TYPE_ARB)
+		qglEnable(GL_MULTISAMPLE_ARB);
+	else if (gl_config.multisample_type == MULTISAMPLE_TYPE_3DFX)
+		qglEnable(MULTISAMPLE_3DFX);
+}
+

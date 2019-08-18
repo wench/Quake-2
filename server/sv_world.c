@@ -182,26 +182,26 @@ void SV_LinkEdict (edict_t *ent)
 		return;
 
 	// set the size
-	VectorSubtract (ent->maxs, ent->mins, ent->size);
+	VectorSubtract (ent->s.maxs, ent->s.mins, ent->size);
 	
 	// encode the size into the entity_state for client prediction
 	if (ent->solid == SOLID_BBOX && !(ent->svflags & SVF_DEADMONSTER))
 	{	// assume that x/y are equal and symetric
-		i = ent->maxs[0]/8;
+		i = ent->s.maxs[0]/8;
 		if (i<1)
 			i = 1;
 		if (i>31)
 			i = 31;
 
 		// z is not symetric
-		j = (-ent->mins[2])/8;
+		j = (-ent->s.mins[2])/8;
 		if (j<1)
 			j = 1;
 		if (j>31)
 			j = 31;
 
 		// and z maxs can be negative...
-		k = (ent->maxs[2]+32)/8;
+		k = (ent->s.maxs[2]+32)/8;
 		if (k<1)
 			k = 1;
 		if (k>63)
@@ -226,10 +226,10 @@ void SV_LinkEdict (edict_t *ent)
 		max = 0;
 		for (i=0 ; i<3 ; i++)
 		{
-			v =fabs( ent->mins[i]);
+			v =fabs( ent->s.mins[i]);
 			if (v > max)
 				max = v;
-			v =fabs( ent->maxs[i]);
+			v =fabs( ent->s.maxs[i]);
 			if (v > max)
 				max = v;
 		}
@@ -241,8 +241,8 @@ void SV_LinkEdict (edict_t *ent)
 	}
 	else
 	{	// normal
-		VectorAdd (ent->s.origin, ent->mins, ent->absmin);	
-		VectorAdd (ent->s.origin, ent->maxs, ent->absmax);
+		VectorAdd (ent->s.origin, ent->s.mins, ent->absmin);	
+		VectorAdd (ent->s.origin, ent->s.maxs, ent->absmax);
 	}
 
 	// because movement is clipped an epsilon away from an actual edge,
@@ -502,7 +502,7 @@ int SV_HullForEntity (edict_t *ent)
 
 	// create a temp hull from bounding box sizes
 
-	return CM_HeadnodeForBox (ent->mins, ent->maxs);
+	return CM_HeadnodeForBox (ent->s.mins, ent->s.maxs);
 }
 
 

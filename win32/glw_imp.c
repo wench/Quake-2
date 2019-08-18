@@ -44,6 +44,8 @@ glwstate_t glw_state;
 extern cvar_t *vid_fullscreen;
 extern cvar_t *vid_ref;
 
+void WGL_InitGL( void );
+
 static qboolean VerifyDriver( void )
 {
 	char buffer[1024];
@@ -69,6 +71,9 @@ qboolean VID_CreateWindow( int width, int height, qboolean fullscreen )
 	int				stylebits;
 	int				x, y, w, h;
 	int				exstyle;
+
+	/* Do the Trick Init */
+	WGL_InitGL();
 
 	/* Register the frame class */
     wc.style         = 0;
@@ -136,6 +141,9 @@ qboolean VID_CreateWindow( int width, int height, qboolean fullscreen )
 	ShowWindow( glw_state.hWnd, SW_SHOW );
 	UpdateWindow( glw_state.hWnd );
 
+	/*
+	** Need to do trick first before doing anything else.
+	*/
 	// init all the gl stuff for the window
 	if (!GLimp_InitGL ())
 	{
@@ -151,7 +159,6 @@ qboolean VID_CreateWindow( int width, int height, qboolean fullscreen )
 
 	return true;
 }
-
 
 /*
 ** GLimp_SetMode
@@ -387,6 +394,27 @@ qboolean GLimp_Init( void *hinstance, void *wndproc )
 	return true;
 }
 
+static void wglCPFDAGB_AddSetting(GLint iAttributes[], GLint iMaxAttribs, GLint iAttrib, GLint iVal)
+{
+	int i;
+
+	for (i = 0; i < iMaxAttribs; i++)
+	{
+		if (iAttributes[i*2] == 0 && iAttributes[i*2+1] == 0) {
+			iAttributes[i*2] = iAttrib;
+			iAttributes[i*2+1] = iVal;
+			iAttributes[i*2+2] = 0;
+			iAttributes[i*2+3] = 0;
+			return;
+		}
+		else if (iAttributes[i*2] == iAttrib) {
+			iAttributes[i*2+1] = iVal;
+			return;
+		}
+	}
+	ri.Con_Printf( PRINT_ALL, "wglCPFDAGB_AddSetting() - Buffer too small\n" );
+}
+
 qboolean GLimp_InitGL (void)
 {
     PIXELFORMATDESCRIPTOR pfd = 
@@ -412,7 +440,7 @@ qboolean GLimp_InitGL (void)
     };
     int  pixelformat;
 	cvar_t *stereo;
-	
+
 	stereo = ri.Cvar_Get( "cl_stereo", "0", 0 );
 
 	/*
@@ -449,12 +477,77 @@ qboolean GLimp_InitGL (void)
 		return false;
 	}
 
+	/*
+	** Firstly we will attempt to use wglChoosePixelFormatARB
+	*/
+	if (qwglChoosePixelFormatARB)
+	{
+		BOOL status;
+		unsigned int numFormats = 0;
+		float fAttributes[] = {0, 0};
+		int iAttributes[32] = {0, 0};
+		int bitspixel = GetDeviceCaps( glw_state.hDC, BITSPIXEL );
+
+		wglCPFDAGB_AddSetting(iAttributes,15, WGL_DRAW_TO_WINDOW_ARB, GL_TRUE);
+
+		if (bitspixel == 16) {
+			wglCPFDAGB_AddSetting(iAttributes,15, WGL_COLOR_BITS_ARB, 16);
+			wglCPFDAGB_AddSetting(iAttributes,15, WGL_DEPTH_BITS_ARB, 16);
+		}
+		else if (bitspixel == 15) {
+			wglCPFDAGB_AddSetting(iAttributes,15, WGL_COLOR_BITS_ARB, 15);
+			wglCPFDAGB_AddSetting(iAttributes,15, WGL_DEPTH_BITS_ARB, 16);
+		}
+		else {
+			wglCPFDAGB_AddSetting(iAttributes,15, WGL_COLOR_BITS_ARB, 24);
+			wglCPFDAGB_AddSetting(iAttributes,15, WGL_DEPTH_BITS_ARB, 24);
+		}
+
+		wglCPFDAGB_AddSetting(iAttributes,15, WGL_DOUBLE_BUFFER_ARB, GL_TRUE);
+		wglCPFDAGB_AddSetting(iAttributes,15, WGL_PIXEL_TYPE_ARB, WGL_TYPE_RGBA_ARB);
+				
+		if (gl_state.stereo_enabled)
+		{
+			wglCPFDAGB_AddSetting(iAttributes,15, WGL_STEREO_ARB, GL_TRUE);
+		}
+
+		if (use_WGL_ARB_multisample)
+		{
+			wglCPFDAGB_AddSetting(iAttributes,15, WGL_SAMPLE_BUFFERS_ARB, 1);
+			wglCPFDAGB_AddSetting(iAttributes,15, WGL_SAMPLES_ARB, gl_ext_3dfx_multisample->value);
+		}
+		else if (use_WGL_3DFX_multisample)
+		{
+			wglCPFDAGB_AddSetting(iAttributes,15, WGL_SAMPLE_BUFFERS_3DFX, 1);
+			wglCPFDAGB_AddSetting(iAttributes,15, WGL_SAMPLES_3DFX, gl_ext_3dfx_multisample->value);
+		}
+
+		status = qwglChoosePixelFormatARB(glw_state.hDC, iAttributes, fAttributes, 1,
+			&pixelformat, &numFormats);
+
+		if (status == GL_FALSE || numFormats == 0)
+		{
+			ri.Con_Printf (PRINT_ALL, "GLimp_Init() - wglChoosePixelFormatARB failed\n");
+
+			pixelformat	= 0;
+		}
+		else
+		{
+		}
+	}
+	else
+	{
+		pixelformat	= 0;
+	}
+
 	if ( glw_state.minidriver )
 	{
-		if ( (pixelformat = qwglChoosePixelFormat( glw_state.hDC, &pfd)) == 0 )
-		{
-			ri.Con_Printf (PRINT_ALL, "GLimp_Init() - qwglChoosePixelFormat failed\n");
-			return false;
+		if (!pixelformat) {
+			if ( (pixelformat = qwglChoosePixelFormat( glw_state.hDC, &pfd)) == 0 )
+			{
+				ri.Con_Printf (PRINT_ALL, "GLimp_Init() - qwglChoosePixelFormat failed\n");
+				return false;
+			}
 		}
 		if ( qwglSetPixelFormat( glw_state.hDC, pixelformat, &pfd) == FALSE )
 		{
@@ -465,10 +558,12 @@ qboolean GLimp_InitGL (void)
 	}
 	else
 	{
-		if ( ( pixelformat = ChoosePixelFormat( glw_state.hDC, &pfd)) == 0 )
-		{
-			ri.Con_Printf (PRINT_ALL, "GLimp_Init() - ChoosePixelFormat failed\n");
-			return false;
+		if (!pixelformat) {
+			if ( ( pixelformat = ChoosePixelFormat( glw_state.hDC, &pfd)) == 0 )
+			{
+				ri.Con_Printf (PRINT_ALL, "GLimp_Init() - ChoosePixelFormat failed\n");
+				return false;
+			}
 		}
 		if ( SetPixelFormat( glw_state.hDC, pixelformat, &pfd) == FALSE )
 		{
@@ -530,7 +625,6 @@ qboolean GLimp_InitGL (void)
 	** print out PFD specifics 
 	*/
 	ri.Con_Printf( PRINT_ALL, "GL PFD: color(%d-bits) Z(%d-bit)\n", ( int ) pfd.cColorBits, ( int ) pfd.cDepthBits );
-
 	return true;
 
 fail:

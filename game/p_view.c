@@ -19,7 +19,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "g_local.h"
-#include "m_player.h"
 
 
 
@@ -94,15 +93,15 @@ void P_DamageFeedback (edict_t *player)
 		return;		// didn't take any damage
 
 	// start a pain animation if still in the player model
-	if (client->anim_priority < ANIM_PAIN && player->s.modelindex == 255)
+	if (client->anim_priority < ANIM_PAIN && !player->deadflag)
 	{
 		static int		i;
 
 		client->anim_priority = ANIM_PAIN;
 		if (client->ps.pmove.pm_flags & PMF_DUCKED)
 		{
-			player->s.frame = FRAME_crpain1-1;
-			client->anim_end = FRAME_crpain4;
+			player->s.frame = client->frame_crpain1-1;
+			client->anim_end = client->frame_crpain4;
 		}
 		else
 		{
@@ -110,16 +109,16 @@ void P_DamageFeedback (edict_t *player)
 			switch (i)
 			{
 			case 0:
-				player->s.frame = FRAME_pain101-1;
-				client->anim_end = FRAME_pain104;
+				player->s.frame = client->frame_pain101-1;
+				client->anim_end = client->frame_pain104;
 				break;
 			case 1:
-				player->s.frame = FRAME_pain201-1;
-				client->anim_end = FRAME_pain204;
+				player->s.frame = client->frame_pain201-1;
+				client->anim_end = client->frame_pain204;
 				break;
 			case 2:
-				player->s.frame = FRAME_pain301-1;
-				client->anim_end = FRAME_pain304;
+				player->s.frame = client->frame_pain301-1;
+				client->anim_end = client->frame_pain304;
 				break;
 			}
 		}
@@ -219,17 +218,24 @@ Auto pitching on slopes?
 
 ===============
 */
+#define DEG2RAD( a ) ( a * M_PI ) / 180.0F
+
 void SV_CalcViewOffset (edict_t *ent)
 {
 	float		*angles;
 	float		bob;
 	float		ratio;
 	float		delta;
-	vec3_t		v;
+	float		zcheck;
+	float		xycheck;
+	float		xyzratio;
+	float		scale;
+	vec3_t		v, tempv, tempv2, offset, origin;
+	int		i;
+
 
 
 //===================================
-
 	// base angles
 	angles = ent->client->ps.kick_angles;
 
@@ -504,7 +510,7 @@ void P_FallingDamage (edict_t *ent)
 	int		damage;
 	vec3_t	dir;
 
-	if (ent->s.modelindex != 255)
+	if (!ent->client || ent->deadflag)
 		return;		// not in the player model
 
 	if (ent->movetype == MOVETYPE_NOCLIP)
@@ -800,7 +806,7 @@ void G_SetClientEvent (edict_t *ent)
 	if (ent->s.event)
 		return;
 
-	if ( ent->groundentity && xyspeed > 225)
+	if ( ent->groundentity && xyspeed > (ent->client->ps.walk_speed+ent->client->ps.run_speed)/2)
 	{
 		if ( (int)(current_client->bobtime+bobmove) != bobcycle )
 			ent->s.event = EV_FOOTSTEP;
@@ -857,7 +863,7 @@ void G_SetClientFrame (edict_t *ent)
 	gclient_t	*client;
 	qboolean	duck, run;
 
-	if (ent->s.modelindex != 255)
+	if (!ent->client || ent->deadflag)
 		return;		// not in the player model
 
 	client = ent->client;
@@ -878,6 +884,23 @@ void G_SetClientFrame (edict_t *ent)
 		goto newanim;
 	if (!ent->groundentity && client->anim_priority <= ANIM_WAVE)
 		goto newanim;
+
+	// Do we want walk or run?
+	if (run && !duck && client->anim_priority == ANIM_BASIC)
+	{
+		// We want walk
+		if (xyspeed <= (ent->client->ps.walk_speed+ent->client->ps.run_speed)/2)
+		{
+			if (ent->s.frame != client->frame_walk1 &&  client->anim_end != client->frame_walk6)
+				goto newanim;
+		}
+		// We want run
+		else
+		{
+			if (ent->s.frame != client->frame_run1 &&  client->anim_end != client->frame_run6)
+				goto newanim;
+		}
+	}
 
 	if(client->anim_priority == ANIM_REVERSE)
 	{
@@ -900,8 +923,8 @@ void G_SetClientFrame (edict_t *ent)
 		if (!ent->groundentity)
 			return;		// stay there
 		ent->client->anim_priority = ANIM_WAVE;
-		ent->s.frame = FRAME_jump3;
-		ent->client->anim_end = FRAME_jump6;
+		ent->s.frame = client->frame_jump3;
+		ent->client->anim_end = client->frame_jump6;
 		return;
 	}
 
@@ -914,34 +937,41 @@ newanim:
 	if (!ent->groundentity)
 	{
 		client->anim_priority = ANIM_JUMP;
-		if (ent->s.frame != FRAME_jump2)
-			ent->s.frame = FRAME_jump1;
-		client->anim_end = FRAME_jump2;
+		if (ent->s.frame != client->frame_jump2)
+			ent->s.frame = client->frame_jump1;
+		client->anim_end = client->frame_jump2;
 	}
 	else if (run)
 	{	// running
 		if (duck)
 		{
-			ent->s.frame = FRAME_crwalk1;
-			client->anim_end = FRAME_crwalk6;
+			ent->s.frame = client->frame_crwalk1;
+			client->anim_end = client->frame_crwalk6;
 		}
 		else
 		{
-			ent->s.frame = FRAME_run1;
-			client->anim_end = FRAME_run6;
+			ent->s.frame = client->frame_run1;
+			client->anim_end = client->frame_run6;
+
+			if (xyspeed <= (ent->client->ps.walk_speed+ent->client->ps.run_speed)/2)
+			{
+				ent->s.frame = client->frame_walk1;
+				client->anim_end = client->frame_walk6;
+			}
+
 		}
 	}
 	else
 	{	// standing
 		if (duck)
 		{
-			ent->s.frame = FRAME_crstnd01;
-			client->anim_end = FRAME_crstnd19;
+			ent->s.frame = client->frame_crstnd01;
+			client->anim_end = client->frame_crstnd19;
 		}
 		else
 		{
-			ent->s.frame = FRAME_stand01;
-			client->anim_end = FRAME_stand40;
+			ent->s.frame = client->frame_stand01;
+			client->anim_end = client->frame_stand40;
 		}
 	}
 }

@@ -253,6 +253,16 @@ void CL_PredictMovement (void)
 		cmd = &cl.cmds[frame];
 
 		pm.cmd = *cmd;
+
+		VectorCopy(cl.frame.playerstate.stand_mins, pm.mins);
+		VectorCopy(cl.frame.playerstate.stand_maxs, pm.maxs);
+
+		if (cmd->buttons & BUTTON_WALKING)
+			pm.run_speed = cl.frame.playerstate.walk_speed;
+		else
+			pm.run_speed = cl.frame.playerstate.run_speed;
+		pm.duck_speed = cl.frame.playerstate.duck_speed;
+
 		Pmove (&pm);
 
 		// save for debug checking

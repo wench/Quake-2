@@ -57,6 +57,12 @@ field_t fields[] = {
 	{"origin", FOFS(s.origin), F_VECTOR},
 	{"angles", FOFS(s.angles), F_VECTOR},
 	{"angle", FOFS(s.angles), F_ANGLEHACK},
+	{"scale", FOFS(s.scale), F_VECTOR},
+	{"r", FOFS(s.rgb[0]), F_FLOAT},
+	{"g", FOFS(s.rgb[1]), F_FLOAT},
+	{"b", FOFS(s.rgb[2]), F_FLOAT},
+	{"rgb", FOFS(s.rgb), F_VECTOR},
+	{"offset", FOFS(s.offset), F_VECTOR},
 
 	{"goalentity", FOFS(goalentity), F_EDICT, FFL_NOSPAWN},
 	{"movetarget", FOFS(movetarget), F_EDICT, FFL_NOSPAWN},
@@ -90,7 +96,8 @@ field_t fields[] = {
 	{"melee", FOFS(monsterinfo.melee), F_FUNCTION, FFL_NOSPAWN},
 	{"sight", FOFS(monsterinfo.sight), F_FUNCTION, FFL_NOSPAWN},
 	{"checkattack", FOFS(monsterinfo.checkattack), F_FUNCTION, FFL_NOSPAWN},
-	{"currentmove", FOFS(monsterinfo.currentmove), F_MMOVE, FFL_NOSPAWN},
+	{"get_currentmove", FOFS(monsterinfo.get_currentmove), F_FUNCTION, FFL_NOSPAWN},
+	{"custom_anim", FOFS(monsterinfo.custom_anim), F_FUNCTION, FFL_NOSPAWN},
 
 	{"endfunc", FOFS(moveinfo.endfunc), F_FUNCTION, FFL_NOSPAWN},
 
@@ -115,6 +122,25 @@ field_t fields[] = {
 	{"maxpitch", STOFS(maxpitch), F_FLOAT, FFL_SPAWNTEMP},
 	{"nextmap", STOFS(nextmap), F_LSTRING, FFL_SPAWNTEMP},
 
+	// Aquakronox fields
+
+	// New Particles stuff
+
+	// Simple: filename
+	{"npsimple", STOFS(npsimple), F_LSTRING2, FFL_SPAWNTEMP  },	
+	// Complex: id,submodel,surf,flags,filename
+	{"np", STOFS(np_0), F_LSTRING2, FFL_SPAWNTEMP },		
+	{"np_1", STOFS(np_1), F_LSTRING2, FFL_SPAWNTEMP },
+	{"np_2", STOFS(np_2), F_LSTRING2, FFL_SPAWNTEMP },
+    
+	{"newscaling", FOFS(newscaling), F_INT },
+	{"pathanim", FOFS(pathanim), F_LSTRING2 },		// Anim to play when reached pathh
+	{"sequence", FOFS(sequence), F_LSTRING2 },		// APE Sequence 
+	{"falloff", FOFS(falloff), F_FLOAT },			// Sound Falloff
+	{"spawncondition", STOFS(spawncondition), F_LSTRING2, FFL_SPAWNTEMP} ,
+	{"default_anim", FOFS(default_anim), F_LSTRING2 },
+	{"defualt_anim", FOFS(default_anim), F_LSTRING2, FFL_NOSAVE },
+	
 	{0, 0, 0, 0}
 
 };
@@ -127,6 +153,8 @@ field_t		levelfields[] =
 	{"sight_entity", LLOFS(sight_entity), F_EDICT},
 	{"sound_entity", LLOFS(sound_entity), F_EDICT},
 	{"sound2_entity", LLOFS(sound2_entity), F_EDICT},
+
+	{"changemap_target", LLOFS(changemap_target), F_LSTRING},
 
 	{NULL, 0, F_INT}
 };
@@ -184,6 +212,7 @@ void InitGame (void)
 	timelimit = gi.cvar ("timelimit", "0", CVAR_SERVERINFO);
 	password = gi.cvar ("password", "", CVAR_USERINFO);
 	spectator_password = gi.cvar ("spectator_password", "", CVAR_USERINFO);
+	needpass = gi.cvar ("needpass", "0", CVAR_SERVERINFO);
 	filterban = gi.cvar ("filterban", "1", 0);
 
 	g_select_empty = gi.cvar ("g_select_empty", "0", CVAR_ARCHIVE);
@@ -219,6 +248,9 @@ void InitGame (void)
 	game.maxclients = maxclients->value;
 	game.clients = gi.TagMalloc (game.maxclients * sizeof(game.clients[0]), TAG_GAME);
 	globals.num_edicts = game.maxclients+1;
+
+	// Make sure anox entities are loaded
+	ANOX_load_entity_descs();
 }
 
 //=========================================================
@@ -229,7 +261,7 @@ void WriteField1 (FILE *f, field_t *field, byte *base)
 	int			len;
 	int			index;
 
-	if (field->flags & FFL_SPAWNTEMP)
+	if (field->flags & (FFL_NOSAVE|FFL_SPAWNTEMP))
 		return;
 
 	p = (void *)(base + field->ofs);
@@ -243,6 +275,7 @@ void WriteField1 (FILE *f, field_t *field, byte *base)
 		break;
 
 	case F_LSTRING:
+	case F_LSTRING2:
 	case F_GSTRING:
 		if ( *(char **)p )
 			len = strlen(*(char **)p) + 1;
@@ -301,13 +334,14 @@ void WriteField2 (FILE *f, field_t *field, byte *base)
 	int			len;
 	void		*p;
 
-	if (field->flags & FFL_SPAWNTEMP)
+	if (field->flags & (FFL_NOSAVE|FFL_SPAWNTEMP) )
 		return;
 
 	p = (void *)(base + field->ofs);
 	switch (field->type)
 	{
 	case F_LSTRING:
+	case F_LSTRING2:
 		if ( *(char **)p )
 		{
 			len = strlen(*(char **)p) + 1;
@@ -323,7 +357,7 @@ void ReadField (FILE *f, field_t *field, byte *base)
 	int			len;
 	int			index;
 
-	if (field->flags & FFL_SPAWNTEMP)
+	if (field->flags & (FFL_NOSAVE|FFL_SPAWNTEMP) )
 		return;
 
 	p = (void *)(base + field->ofs);
@@ -337,6 +371,7 @@ void ReadField (FILE *f, field_t *field, byte *base)
 		break;
 
 	case F_LSTRING:
+	case F_LSTRING2:
 		len = *(int *)p;
 		if (!len)
 			*(char **)p = NULL;
@@ -686,6 +721,7 @@ void ReadLevel (char *filename)
 	int		i;
 	void	*base;
 	edict_t	*ent;
+	anox_entity_desc_t *anox;
 
 	f = fopen (filename, "rb");
 	if (!f)
@@ -693,6 +729,7 @@ void ReadLevel (char *filename)
 
 	// free any dynamic memory allocated by loading the level
 	// base state
+	gi.WipeModelInfo();
 	gi.FreeTags (TAG_LEVEL);
 
 	// wipe all the entities
@@ -761,9 +798,35 @@ void ReadLevel (char *filename)
 		if (!ent->inuse)
 			continue;
 
-		// fire any cross-level triggers
+		ent->anox = 0;
 		if (ent->classname)
+		{
+			// fire any cross-level triggers
 			if (strcmp(ent->classname, "target_crosslevel_target") == 0)
 				ent->nextthink = level.time + ent->delay;
+
+			for (anox = anox_entities; anox != NULL; anox = anox->next) 
+			{
+				if (!anox->classname) continue;
+				if (!Q_strcasecmp(anox->classname, ent->classname)) 
+				{
+					ent->anox = anox;
+					// Resetup monsters
+					if (Q_strcasecmp(anox->entity_type, "char") == 0 || 
+						Q_strcasecmp(anox->entity_type, "charhover") == 0 ||
+						Q_strcasecmp(anox->entity_type, "charroll") == 0 ||
+						Q_strcasecmp(anox->entity_type, "charfly") == 0 ||
+						Q_strcasecmp(anox->entity_type, "scavenger") == 0 ||
+						Q_strcasecmp(anox->entity_type, "bipidri") == 0 ||
+						Q_strcasecmp(anox->entity_type, "floater") == 0 ||
+						Q_strcasecmp(anox->entity_type, "playerchar") == 0) 
+					{
+						anox_setup_moves(anox);
+					}
+
+					break;
+				}
+			}
+		}
 	}
 }

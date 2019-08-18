@@ -76,6 +76,360 @@ int SV_ImageIndex (char *name)
 	return SV_FindIndex (name, CS_IMAGES, MAX_IMAGES, true);
 }
 
+int SV_APDIndex (char *name)
+{
+	return SV_FindIndex (name, CS_APD, MAX_APD, true);
+}
+
+// For an MDA we just go find the MD2 file, then pass it onto SV_LoadAliasInfo
+static md2_info_t *SV_LoadAliasInfo (void *buffer, int modfilelen)
+{
+	int					i, j;
+	dmdl_anox_t			*header;
+	int					version;
+	md2_info_t			*info;
+	md2_frameset_t		*f;
+	daliasframe_t		*pinframe;
+	int					num_frames;
+	int					framesize;
+	int					ofs_frames;
+	int					len;
+	char				prevname[17];
+	int					prevlen;
+	
+	// Note anox header will work, just the extra anox fields wont be valid for Q2 MD2s
+	header = (dmdl_anox_t *)buffer;
+
+	version = LittleLong (header->version);
+
+	// Just verify version
+	if (version != ALIAS_VERSION && version != ALIAS_VERSION_ANOX_3_BYTE && 
+		version != ALIAS_VERSION_ANOX_4_BYTE && version != ALIAS_VERSION_ANOX_6_BYTE &&
+		version != ALIAS_VERSION_ANOX_OLD )
+		return NULL;
+
+	// Number of frames
+	num_frames = LittleLong (header->num_frames);
+	if (num_frames <= 0) return NULL;
+
+	framesize = LittleLong (header->framesize);
+	// If it's less than 44 bytes, it can't possibly be a valid model (even 1 point needs more bytes)
+	if (framesize < 44) return NULL;
+
+	ofs_frames = LittleLong (header->ofs_frames);
+
+	info = Z_TagMalloc(sizeof(md2_info_t), 766);
+	info->num_framesets = 0;
+	info->num_frames = num_frames;
+	info->framename = Z_TagMalloc(num_frames*sizeof(char*), 766);
+
+	//
+	// Pass 1.... Ickness going through each frame to count animation sets
+	//
+
+	prevname[0] = 0;
+	prevlen = 0;
+	for (i = 0; i < num_frames; i++)
+	{
+		pinframe = (daliasframe_t*) ((byte*)header + ofs_frames + i*framesize);
+
+		pinframe->name[16] = 0;
+		len = strlen(pinframe->name);
+		info->framename[i] = Z_TagMalloc((len+1)*sizeof(char), 766);
+		memcpy(info->framename[i], pinframe->name, len+1);
+
+		// Get find first character of the number
+		if (len > 4)
+		{
+			// Anox and Quake 2 use different methods for their numbers. 
+			// Anox uses ANIM_t_001 while quake 2 uses ANIMt01 (where t is the type if it's a number)
+
+			if (version != ALIAS_VERSION)
+			{
+				// Anox, length must be greater than 7
+				if (len > 7)
+				{
+					char a,b,c,u1,t,u2;
+					a = pinframe->name[len-1];
+					b = pinframe->name[len-2];
+					c = pinframe->name[len-3];
+					u1 = pinframe->name[len-4];
+					t = pinframe->name[len-5];
+					u2 = pinframe->name[len-6];
+
+					// Make sure all are correct
+					if (a >= '0' && a <= '9' &&
+						b >= '0' && b <= '9' &&
+						c >= '0' && c <= '9' &&
+						t >= 'a' && t <= 'z' &&
+						u1 == '_' && u2 == '_')
+					{
+						len -= 4;
+					}
+				}
+			}
+			else
+			{
+				//Quake 2 must be more than 3
+				char a,b;
+				a = pinframe->name[len-1];
+				b = pinframe->name[len-2];
+				if (a >= '0' && a <= '9')
+				{
+					len --;
+					if (b >= '0' && b <= '9') len --;
+				}
+			}
+		}
+
+		// New set?
+		if (prevlen != len || memcmp(prevname, pinframe->name, len))
+		{
+			prevlen = len;
+			memcpy(prevname, pinframe->name, len);
+			prevname[len] = 0;
+			info->num_framesets++;
+		}
+	}
+
+	//
+	// Pass 2.... actually copy the info
+	//
+	info->frameset = Z_TagMalloc(info->num_framesets * sizeof(md2_frameset_t), 766);
+
+	prevname[0] = 0;
+	prevlen = 0;
+	f = 0;
+	j = 0;
+	for (i = 0; i < num_frames; i++)
+	{
+		char type = 0;
+		int anim_name_len;
+
+		pinframe = (daliasframe_t*) ((byte*)header + ofs_frames + i*framesize);
+
+		anim_name_len = len = strlen(info->framename[i]);
+
+		// Get find first character of the number
+		if (len > 4)
+		{
+			// Anox and Quake 2 use different methods for their numbers. 
+			// Anox uses ANIM_t_001 while quake 2 uses ANIMt01 (where t is the type if it's a number)
+
+			if (version != ALIAS_VERSION)
+			{
+				// Anox, length must be greater than 7
+				if (len > 7)
+				{
+					char a,b,c,u1,t,u2;
+					a = pinframe->name[len-1];
+					b = pinframe->name[len-2];
+					c = pinframe->name[len-3];
+					u1 = pinframe->name[len-4];
+					t = pinframe->name[len-5];
+					u2 = pinframe->name[len-6];
+
+					// Make sure all are correct
+					if (a >= '0' && a <= '9' &&
+						b >= '0' && b <= '9' &&
+						c >= '0' && c <= '9' &&
+						t >= 'a' && t <= 'z' &&
+						u1 == '_' && u2 == '_')
+					{
+						anim_name_len = len-6;
+						type = t;
+						len -= 4;
+					}
+				}
+			}
+			else
+			{
+				//Quake 2 must be more than 3
+				char a,b,c;
+				a = pinframe->name[len-1];
+				b = pinframe->name[len-2];
+				c = pinframe->name[len-3];
+				if (a >= '0' && a <= '9')
+				{
+					len --;
+					anim_name_len--;
+					if (b >= '0' && b <= '9') 
+					{
+						len --;
+						anim_name_len--;
+						if (c >= '0' && c <= '9') 
+						{
+							type = c;
+							anim_name_len--;
+						}
+					}
+				}
+			}
+		}
+
+		// New set?
+		if (prevlen != len || memcmp(prevname, pinframe->name, len))
+		{
+			// Finish off prev frameset, now set up new
+			if (f) f->num_frames = i - f->first_frame;
+			
+			// Start new one
+			f = info->frameset + j;
+			f->first_frame = i;
+			f->subtype = type;
+			memcpy(f->name, pinframe->name, len);
+			f->name[len] = 0;
+			memcpy(f->anim, pinframe->name, anim_name_len);
+			f->anim[anim_name_len] = 0;
+
+			prevlen = len;
+			memcpy(prevname, pinframe->name, len);
+			prevname[len] = 0;
+			j++;
+		}
+	}
+
+	// Finish off final frameset
+	f->num_frames = i - f->first_frame;
+
+	return info;
+}
+
+// For an MDA we just go find the MD2 file, then pass it onto SV_LoadAliasInfo
+static md2_info_t *SV_LoadMDAInfo (void *buffer, int modfilelen)
+{
+	char		*data, *mdastring;
+	char		*token;
+	qboolean	loaded_md2 = false;
+	qboolean	dead = true;
+	qboolean	profiles_generated = false;
+	md2_info_t *info = 0;
+
+	// We need to make the MDA file into a NULL terminated string
+	mdastring = malloc (modfilelen+1);
+	memcpy(mdastring, buffer, modfilelen);
+	mdastring[modfilelen] = 0;
+
+	//
+	// Parse file for MD2 name
+	//
+
+	data = mdastring;
+	while (1) 
+	{
+		token = COM_Parse2 (&data);
+		if (!data) break;
+
+		// Basemodel specifies the MD2
+		if (Q_stricmp(token, "basemodel") == 0)
+		{
+			int			size;
+			unsigned	*md2buf;
+
+			token = COM_Parse2 (&data);
+
+			// Corrupt MDA
+			if (!data) break;		// Screwed
+
+			// Load the md2
+			size = FS_LoadFile (token, &md2buf);
+
+			// Dead
+			if (md2buf)
+			{
+				info = SV_LoadAliasInfo (md2buf,size);
+				FS_FreeFile(md2buf);
+			}
+
+			break;
+		}
+	}
+
+	// Free the MDA string
+	free (mdastring);
+
+	return info;
+}
+
+void SV_WipeModelInfo()
+{
+	memset(&sv.md2_info[0], 0, MAX_MODELS * sizeof(md2_info_t*));
+}
+
+md2_info_t *SV_GetModelInfo (int index)
+{
+	int size;
+	char *name;
+	byte *buf;
+	md2_info_t *info = NULL;
+
+	// Out of range, return NULL
+	if (index < 0 || index >= MAX_MODELS) return NULL;
+
+	// Already loaded so return it
+	if (sv.md2_info[index]) return sv.md2_info[index];
+
+	// Get filename
+	name = sv.configstrings[CS_MODELS+index];
+
+	// Doesn't have a filename, return NULL
+	if (!name[0]) return NULL;
+
+	// Is a cmodel
+	if (name[0] == '*')
+	{
+		int i;
+		extern int numcmodels;
+		static char *cmodel_frame_name = "cmodel";
+		i = atoi(name+1);
+
+		// we really shouldn't really fail here
+		if (i < 1 || i >= numcmodels) return NULL;
+
+		sv.md2_info[i] = info = Z_TagMalloc(sizeof(md2_info_t), 766);
+		VectorCopy(sv.models[i+1]->mins, info->mins);
+		VectorCopy(sv.models[i+1]->maxs, info->maxs);
+		info->num_frames = 1;
+		info->framename = &cmodel_frame_name;
+		info->num_framesets = 1;
+		info->frameset = Z_TagMalloc(sizeof(md2_frameset_t), 766);
+		info->frameset->anim[0] = 0;
+		info->frameset->first_frame = 0;
+		info->frameset->subtype = 0;
+		info->frameset->num_frames = 1;
+		strcpy(info->frameset->name,cmodel_frame_name);
+		return info;
+	}
+
+	size = FS_LoadFile(name, &buf);
+
+	// Doesn't exist?!?!
+	if (size == -1) return NULL;
+
+	// If header is not MD2, oh well we can't do anything 
+	switch (LittleLong(*(unsigned *)buf))
+	{
+	case IDALIASHEADER:
+		info = SV_LoadAliasInfo (buf, size);
+		break;
+		
+	case IDMDAHEADER:
+		info = SV_LoadMDAInfo (buf, size);
+		break;
+		
+	case IDSPRITEHEADER:
+		// Can't be bothered at the moment
+		break;
+	
+	default:
+		break;
+	}
+
+	FS_FreeFile(buf);
+	sv.md2_info[index] = info;
+	return info;
+}
+
 
 /*
 ================
@@ -351,7 +705,7 @@ void SV_InitGame (void)
 
 	svs.spawncount = rand();
 	svs.clients = Z_Malloc (sizeof(client_t)*maxclients->value);
-	svs.num_client_entities = maxclients->value*UPDATE_BACKUP*64;
+	svs.num_client_entities = maxclients->value*UPDATE_BACKUP*128;
 	svs.client_entities = Z_Malloc (sizeof(entity_state_t)*svs.num_client_entities);
 
 	// init network stuff

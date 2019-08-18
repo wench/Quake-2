@@ -42,6 +42,28 @@ static int	sound_sight;
 static int	sound_windup;
 static int	sound_strike;
 
+enum {
+	tank_move_stand = 1,
+	tank_move_start_walk,
+	tank_move_walk,
+	tank_move_stop_walk,
+	tank_move_start_run,
+	tank_move_run,
+	tank_move_stop_run,
+	tank_move_pain1,
+	tank_move_pain2,
+	tank_move_pain3,
+	tank_move_attack_blast,
+	tank_move_reattack_blast,
+	tank_move_attack_post_blast,
+	tank_move_attack_strike,
+	tank_move_attack_pre_rocket,
+	tank_move_attack_fire_rocket,
+	tank_move_attack_post_rocket,
+	tank_move_attack_chain,
+	tank_move_death,
+};
+
 //
 // misc
 //
@@ -110,11 +132,10 @@ mframe_t tank_frames_stand []=
 	ai_stand, 0, NULL,
 	ai_stand, 0, NULL
 };
-mmove_t	tank_move_stand = {FRAME_stand01, FRAME_stand30, tank_frames_stand, NULL};
 	
 void tank_stand (edict_t *self)
 {
-	self->monsterinfo.currentmove = &tank_move_stand;
+	self->monsterinfo.currentmove = tank_move_stand;
 }
 
 
@@ -131,7 +152,6 @@ mframe_t tank_frames_start_walk [] =
 	ai_walk,  6, NULL,
 	ai_walk, 11, tank_footstep
 };
-mmove_t	tank_move_start_walk = {FRAME_walk01, FRAME_walk04, tank_frames_start_walk, tank_walk};
 
 mframe_t tank_frames_walk [] =
 {
@@ -152,7 +172,6 @@ mframe_t tank_frames_walk [] =
 	ai_walk, 6,	NULL,
 	ai_walk, 6,	tank_footstep
 };
-mmove_t	tank_move_walk = {FRAME_walk05, FRAME_walk20, tank_frames_walk, NULL};
 
 mframe_t tank_frames_stop_walk [] =
 {
@@ -162,11 +181,10 @@ mframe_t tank_frames_stop_walk [] =
 	ai_walk,  2, NULL,
 	ai_walk,  4, tank_footstep
 };
-mmove_t	tank_move_stop_walk = {FRAME_walk21, FRAME_walk25, tank_frames_stop_walk, tank_stand};
 
 void tank_walk (edict_t *self)
 {
-		self->monsterinfo.currentmove = &tank_move_walk;
+		self->monsterinfo.currentmove = tank_move_walk;
 }
 
 
@@ -183,7 +201,6 @@ mframe_t tank_frames_start_run [] =
 	ai_run,  6, NULL,
 	ai_run, 11, tank_footstep
 };
-mmove_t	tank_move_start_run = {FRAME_walk01, FRAME_walk04, tank_frames_start_run, tank_run};
 
 mframe_t tank_frames_run [] =
 {
@@ -204,7 +221,6 @@ mframe_t tank_frames_run [] =
 	ai_run, 6,	NULL,
 	ai_run, 6,	tank_footstep
 };
-mmove_t	tank_move_run = {FRAME_walk05, FRAME_walk20, tank_frames_run, NULL};
 
 mframe_t tank_frames_stop_run [] =
 {
@@ -214,7 +230,6 @@ mframe_t tank_frames_stop_run [] =
 	ai_run,  2, NULL,
 	ai_run,  4, tank_footstep
 };
-mmove_t	tank_move_stop_run = {FRAME_walk21, FRAME_walk25, tank_frames_stop_run, tank_walk};
 
 void tank_run (edict_t *self)
 {
@@ -225,18 +240,18 @@ void tank_run (edict_t *self)
 
 	if (self->monsterinfo.aiflags & AI_STAND_GROUND)
 	{
-		self->monsterinfo.currentmove = &tank_move_stand;
+		self->monsterinfo.currentmove = tank_move_stand;
 		return;
 	}
 
-	if (self->monsterinfo.currentmove == &tank_move_walk ||
-		self->monsterinfo.currentmove == &tank_move_start_run)
+	if (self->monsterinfo.currentmove == tank_move_walk ||
+		self->monsterinfo.currentmove == tank_move_start_run)
 	{
-		self->monsterinfo.currentmove = &tank_move_run;
+		self->monsterinfo.currentmove = tank_move_run;
 	}
 	else
 	{
-		self->monsterinfo.currentmove = &tank_move_start_run;
+		self->monsterinfo.currentmove = tank_move_start_run;
 	}
 }
 
@@ -251,7 +266,6 @@ mframe_t tank_frames_pain1 [] =
 	ai_move, 0, NULL,
 	ai_move, 0, NULL
 };
-mmove_t tank_move_pain1 = {FRAME_pain101, FRAME_pain104, tank_frames_pain1, tank_run};
 
 mframe_t tank_frames_pain2 [] =
 {
@@ -261,7 +275,6 @@ mframe_t tank_frames_pain2 [] =
 	ai_move, 0, NULL,
 	ai_move, 0, NULL
 };
-mmove_t tank_move_pain2 = {FRAME_pain201, FRAME_pain205, tank_frames_pain2, tank_run};
 
 mframe_t tank_frames_pain3 [] =
 {
@@ -282,7 +295,6 @@ mframe_t tank_frames_pain3 [] =
 	ai_move, 0,  NULL,
 	ai_move, 0,  tank_footstep
 };
-mmove_t	tank_move_pain3 = {FRAME_pain301, FRAME_pain316, tank_frames_pain3, tank_run};
 
 
 void tank_pain (edict_t *self, edict_t *other, float kick, int damage)
@@ -316,11 +328,11 @@ void tank_pain (edict_t *self, edict_t *other, float kick, int damage)
 		return;		// no pain anims in nightmare
 
 	if (damage <= 30)
-		self->monsterinfo.currentmove = &tank_move_pain1;
+		self->monsterinfo.currentmove = tank_move_pain1;
 	else if (damage <= 60)
-		self->monsterinfo.currentmove = &tank_move_pain2;
+		self->monsterinfo.currentmove = tank_move_pain2;
 	else
-		self->monsterinfo.currentmove = &tank_move_pain3;
+		self->monsterinfo.currentmove = tank_move_pain3;
 };
 
 
@@ -440,7 +452,6 @@ mframe_t tank_frames_attack_blast [] =
 	ai_charge, 0,	NULL,
 	ai_charge, 0,	TankBlaster			// 16
 };
-mmove_t tank_move_attack_blast = {FRAME_attak101, FRAME_attak116, tank_frames_attack_blast, tank_reattack_blaster};
 
 mframe_t tank_frames_reattack_blast [] =
 {
@@ -451,7 +462,6 @@ mframe_t tank_frames_reattack_blast [] =
 	ai_charge, 0,	NULL,
 	ai_charge, 0,	TankBlaster			// 16
 };
-mmove_t tank_move_reattack_blast = {FRAME_attak111, FRAME_attak116, tank_frames_reattack_blast, tank_reattack_blaster};
 
 mframe_t tank_frames_attack_post_blast [] =	
 {
@@ -462,7 +472,6 @@ mframe_t tank_frames_attack_post_blast [] =
 	ai_move, 2,		NULL,
 	ai_move, -2,	tank_footstep		// 22
 };
-mmove_t tank_move_attack_post_blast = {FRAME_attak117, FRAME_attak122, tank_frames_attack_post_blast, tank_run};
 
 void tank_reattack_blaster (edict_t *self)
 {
@@ -471,10 +480,10 @@ void tank_reattack_blaster (edict_t *self)
 			if (self->enemy->health > 0)
 				if (random() <= 0.6)
 				{
-					self->monsterinfo.currentmove = &tank_move_reattack_blast;
+					self->monsterinfo.currentmove = tank_move_reattack_blast;
 					return;
 				}
-	self->monsterinfo.currentmove = &tank_move_attack_post_blast;
+	self->monsterinfo.currentmove = tank_move_attack_post_blast;
 }
 
 
@@ -525,7 +534,6 @@ mframe_t tank_frames_attack_strike [] =
 	ai_move, -3,  NULL,
 	ai_move, -2,  tank_footstep
 };
-mmove_t tank_move_attack_strike = {FRAME_attak201, FRAME_attak238, tank_frames_attack_strike, tank_poststrike};
 
 mframe_t tank_frames_attack_pre_rocket [] =
 {
@@ -553,7 +561,6 @@ mframe_t tank_frames_attack_pre_rocket [] =
 
 	ai_charge, -3, NULL
 };
-mmove_t tank_move_attack_pre_rocket = {FRAME_attak301, FRAME_attak321, tank_frames_attack_pre_rocket, tank_doattack_rocket};
 
 mframe_t tank_frames_attack_fire_rocket [] =
 {
@@ -567,7 +574,6 @@ mframe_t tank_frames_attack_fire_rocket [] =
 	ai_charge, 0,  NULL,
 	ai_charge, -1, TankRocket		// 30	Loop End
 };
-mmove_t tank_move_attack_fire_rocket = {FRAME_attak322, FRAME_attak330, tank_frames_attack_fire_rocket, tank_refire_rocket};
 
 mframe_t tank_frames_attack_post_rocket [] =
 {	
@@ -597,7 +603,6 @@ mframe_t tank_frames_attack_post_rocket [] =
 	ai_charge, 0,  NULL,
 	ai_charge, 0,  NULL
 };
-mmove_t tank_move_attack_post_rocket = {FRAME_attak331, FRAME_attak353, tank_frames_attack_post_rocket, tank_run};
 
 mframe_t tank_frames_attack_chain [] =
 {
@@ -631,7 +636,6 @@ mframe_t tank_frames_attack_chain [] =
 	ai_charge, 0, NULL,
 	ai_charge, 0, NULL
 };
-mmove_t tank_move_attack_chain = {FRAME_attak401, FRAME_attak429, tank_frames_attack_chain, tank_run};
 
 void tank_refire_rocket (edict_t *self)
 {
@@ -641,15 +645,15 @@ void tank_refire_rocket (edict_t *self)
 			if (visible(self, self->enemy) )
 				if (random() <= 0.4)
 				{
-					self->monsterinfo.currentmove = &tank_move_attack_fire_rocket;
+					self->monsterinfo.currentmove = tank_move_attack_fire_rocket;
 					return;
 				}
-	self->monsterinfo.currentmove = &tank_move_attack_post_rocket;
+	self->monsterinfo.currentmove = tank_move_attack_post_rocket;
 }
 
 void tank_doattack_rocket (edict_t *self)
 {
-	self->monsterinfo.currentmove = &tank_move_attack_fire_rocket;
+	self->monsterinfo.currentmove = tank_move_attack_fire_rocket;
 }
 
 void tank_attack(edict_t *self)
@@ -660,7 +664,7 @@ void tank_attack(edict_t *self)
 
 	if (self->enemy->health < 0)
 	{
-		self->monsterinfo.currentmove = &tank_move_attack_strike;
+		self->monsterinfo.currentmove = tank_move_attack_strike;
 		self->monsterinfo.aiflags &= ~AI_BRUTAL;
 		return;
 	}
@@ -673,28 +677,28 @@ void tank_attack(edict_t *self)
 	if (range <= 125)
 	{
 		if (r < 0.4)
-			self->monsterinfo.currentmove = &tank_move_attack_chain;
+			self->monsterinfo.currentmove = tank_move_attack_chain;
 		else 
-			self->monsterinfo.currentmove = &tank_move_attack_blast;
+			self->monsterinfo.currentmove = tank_move_attack_blast;
 	}
 	else if (range <= 250)
 	{
 		if (r < 0.5)
-			self->monsterinfo.currentmove = &tank_move_attack_chain;
+			self->monsterinfo.currentmove = tank_move_attack_chain;
 		else
-			self->monsterinfo.currentmove = &tank_move_attack_blast;
+			self->monsterinfo.currentmove = tank_move_attack_blast;
 	}
 	else
 	{
 		if (r < 0.33)
-			self->monsterinfo.currentmove = &tank_move_attack_chain;
+			self->monsterinfo.currentmove = tank_move_attack_chain;
 		else if (r < 0.66)
 		{
-			self->monsterinfo.currentmove = &tank_move_attack_pre_rocket;
+			self->monsterinfo.currentmove = tank_move_attack_pre_rocket;
 			self->pain_debounce_time = level.time + 5.0;	// no pain for a while
 		}
 		else
-			self->monsterinfo.currentmove = &tank_move_attack_blast;
+			self->monsterinfo.currentmove = tank_move_attack_blast;
 	}
 }
 
@@ -705,8 +709,8 @@ void tank_attack(edict_t *self)
 
 void tank_dead (edict_t *self)
 {
-	VectorSet (self->mins, -16, -16, -16);
-	VectorSet (self->maxs, 16, 16, -0);
+	VectorSet (self->s.mins, -16, -16, -16);
+	VectorSet (self->s.maxs, 16, 16, -0);
 	self->movetype = MOVETYPE_TOSS;
 	self->svflags |= SVF_DEADMONSTER;
 	self->nextthink = 0;
@@ -748,7 +752,34 @@ mframe_t tank_frames_death1 [] =
 	ai_move, 0,   NULL,
 	ai_move, 0,   NULL
 };
-mmove_t	tank_move_death = {FRAME_death101, FRAME_death132, tank_frames_death1, tank_dead};
+
+mmove_t	tank_moves[] = {
+	{FRAME_stand01, FRAME_stand30, tank_frames_stand, NULL},
+	{FRAME_walk01, FRAME_walk04, tank_frames_start_walk, tank_walk},
+	{FRAME_walk05, FRAME_walk20, tank_frames_walk, NULL},
+	{FRAME_walk21, FRAME_walk25, tank_frames_stop_walk, tank_stand},
+	{FRAME_walk01, FRAME_walk04, tank_frames_start_run, tank_run},
+	{FRAME_walk05, FRAME_walk20, tank_frames_run, NULL},
+	{FRAME_walk21, FRAME_walk25, tank_frames_stop_run, tank_walk},
+	{FRAME_pain101, FRAME_pain104, tank_frames_pain1, tank_run},
+	{FRAME_pain201, FRAME_pain205, tank_frames_pain2, tank_run},
+	{FRAME_pain301, FRAME_pain316, tank_frames_pain3, tank_run},
+	{FRAME_attak101, FRAME_attak116, tank_frames_attack_blast, tank_reattack_blaster},
+	{FRAME_attak111, FRAME_attak116, tank_frames_reattack_blast, tank_reattack_blaster},
+	{FRAME_attak117, FRAME_attak122, tank_frames_attack_post_blast, tank_run},
+	{FRAME_attak201, FRAME_attak238, tank_frames_attack_strike, tank_poststrike},
+	{FRAME_attak301, FRAME_attak321, tank_frames_attack_pre_rocket, tank_doattack_rocket},
+	{FRAME_attak322, FRAME_attak330, tank_frames_attack_fire_rocket, tank_refire_rocket},
+	{FRAME_attak331, FRAME_attak353, tank_frames_attack_post_rocket, tank_run},
+	{FRAME_attak401, FRAME_attak429, tank_frames_attack_chain, tank_run},
+	{FRAME_death101, FRAME_death132, tank_frames_death1, tank_dead}
+};
+
+mmove_t * tank_get_currentmove(edict_t *self)
+{
+	if (!self->monsterinfo.currentmove) return NULL;
+	return &tank_moves[self->monsterinfo.currentmove-1];
+}
 
 void tank_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int damage, vec3_t point)
 {
@@ -776,7 +807,7 @@ void tank_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int damage,
 	self->deadflag = DEAD_DEAD;
 	self->takedamage = DAMAGE_YES;
 
-	self->monsterinfo.currentmove = &tank_move_death;
+	self->monsterinfo.currentmove = tank_move_death;
 	
 }
 
@@ -798,8 +829,8 @@ void SP_monster_tank (edict_t *self)
 	}
 
 	self->s.modelindex = gi.modelindex ("models/monsters/tank/tris.md2");
-	VectorSet (self->mins, -32, -32, -16);
-	VectorSet (self->maxs, 32, 32, 72);
+	VectorSet (self->s.mins, -32, -32, -16);
+	VectorSet (self->s.maxs, 32, 32, 72);
 	self->movetype = MOVETYPE_STEP;
 	self->solid = SOLID_BBOX;
 
@@ -843,10 +874,11 @@ void SP_monster_tank (edict_t *self)
 	self->monsterinfo.melee = NULL;
 	self->monsterinfo.sight = tank_sight;
 	self->monsterinfo.idle = tank_idle;
+	self->monsterinfo.get_currentmove = tank_get_currentmove;
 
 	gi.linkentity (self);
 	
-	self->monsterinfo.currentmove = &tank_move_stand;
+	self->monsterinfo.currentmove = tank_move_stand;
 	self->monsterinfo.scale = MODEL_SCALE;
 
 	walkmonster_start(self);

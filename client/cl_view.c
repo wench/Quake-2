@@ -48,6 +48,9 @@ entity_t	r_entities[MAX_ENTITIES];
 int			r_numparticles;
 particle_t	r_particles[MAX_PARTICLES];
 
+int			r_numnewparticles;
+newparticle_t	r_newparticles[MAX_PARTICLES];
+
 lightstyle_t	r_lightstyles[MAX_LIGHTSTYLES];
 
 char cl_weaponmodels[MAX_CLIENTWEAPONMODELS][MAX_QPATH];
@@ -65,6 +68,7 @@ void V_ClearScene (void)
 	r_numdlights = 0;
 	r_numentities = 0;
 	r_numparticles = 0;
+	r_numnewparticles = 0;
 }
 
 
@@ -98,6 +102,19 @@ void V_AddParticle (vec3_t org, int color, float alpha)
 	VectorCopy (org, p->origin);
 	p->color = color;
 	p->alpha = alpha;
+}
+
+/*
+=====================
+V_AddNewParticle
+
+=====================
+*/
+void V_AddNewParticle (newparticle_t *p)
+{
+	if (r_numnewparticles >= MAX_PARTICLES)
+		return;
+	r_newparticles[r_numnewparticles++] = *p;
 }
 
 /*
@@ -310,6 +327,23 @@ void CL_PrepRefresh (void)
 			Com_Printf ("                                     \r");
 	}
 
+	Com_Printf ("new particles\r", i); 
+	SCR_UpdateScreen ();
+	for (i=1 ; i<MAX_APD&& cl.configstrings[CS_APD+i][0] ; i++)
+	{
+		//if (i!= 4) continue;
+		strcpy (name, cl.configstrings[CS_APD+i]);
+		name[37] = 0;	// never go beyond one line
+		Com_Printf ("%s\r", name); 
+		SCR_UpdateScreen ();
+		Sys_SendKeyEvents ();	// pump message loop
+
+		// New Particles
+		cl.part_generators[i] = CL_RegisterAPD(cl.configstrings[CS_APD+i]);
+
+		Com_Printf ("                                     \r");
+	}
+	
 	Com_Printf ("images\r", i); 
 	SCR_UpdateScreen ();
 	for (i=1 ; i<MAX_IMAGES && cl.configstrings[CS_IMAGES+i][0] ; i++)
@@ -317,7 +351,7 @@ void CL_PrepRefresh (void)
 		cl.image_precache[i] = re.RegisterPic (cl.configstrings[CS_IMAGES+i]);
 		Sys_SendKeyEvents ();	// pump message loop
 	}
-	
+
 	Com_Printf ("                                     \r");
 	for (i=0 ; i<MAX_CLIENTS ; i++)
 	{
@@ -526,6 +560,8 @@ void V_RenderView( float stereo_separation )
 		cl.refdef.num_dlights = r_numdlights;
 		cl.refdef.dlights = r_dlights;
 		cl.refdef.lightstyles = r_lightstyles;
+		cl.refdef.newparticles = r_newparticles;
+		cl.refdef.num_newparticles = r_numnewparticles;
 
 		cl.refdef.rdflags = cl.frame.playerstate.rdflags;
 

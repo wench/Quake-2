@@ -297,6 +297,18 @@ void SV_WritePlayerstateToClient (client_frame_t *from, client_frame_t *to, size
 	if (ps->gunframe != ops->gunframe)
 		pflags |= PS_WEAPONFRAME;
 
+	if (ps->stand_mins[0] != ops->stand_mins[0]
+		|| ps->stand_mins[1] != ops->stand_mins[1]
+		|| ps->stand_mins[2] != ops->stand_mins[2] 
+		|| ps->stand_maxs[0] != ops->stand_maxs[0] 
+		|| ps->stand_maxs[1] != ops->stand_maxs[1]
+		|| ps->stand_maxs[2] != ops->stand_maxs[2]
+		|| ps->run_speed != ops->run_speed
+		|| ps->duck_speed != ops->duck_speed
+		|| ps->walk_speed != ops->walk_speed )
+		pflags |= PS_MINMAX;
+
+
 	pflags |= PS_WEAPONINDEX;
 
 	//
@@ -392,6 +404,19 @@ void SV_WritePlayerstateToClient (client_frame_t *from, client_frame_t *to, size
 		MSG_WriteByte (msg, ps->fov);
 	if (pflags & PS_RDFLAGS)
 		MSG_WriteByte (msg, ps->rdflags);
+
+	if (pflags & PS_MINMAX)
+	{
+		MSG_WriteShort (msg, ps->stand_mins[0]*8);
+		MSG_WriteShort (msg, ps->stand_mins[1]*8);
+		MSG_WriteShort (msg, ps->stand_mins[2]*8);
+		MSG_WriteShort (msg, ps->stand_maxs[0]*8);
+		MSG_WriteShort (msg, ps->stand_maxs[1]*8);
+		MSG_WriteShort (msg, ps->stand_maxs[2]*8);
+		MSG_WriteShort (msg, ps->run_speed*8);
+		MSG_WriteShort (msg, ps->walk_speed*8);
+		MSG_WriteShort (msg, ps->duck_speed*8);
+	}
 
 	// send stats
 	statbits = 0;

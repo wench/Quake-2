@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // Main windowed and fullscreen graphics interface module. This module
 // is used for both the software and OpenGL rendering versions of the
 // Quake refresh engine.
+#pragma optmize(disable)
 #include <assert.h>
 #include <float.h>
 
@@ -112,43 +113,43 @@ DLL GLUE
 ==========================================================================
 */
 
-#define	MAXPRINTMSG	4096
+#define	MAXPRINTMSG	8192
 void VID_Printf (int print_level, char *fmt, ...)
 {
 	va_list		argptr;
-	char		msg[MAXPRINTMSG];
+	static char		msg_[MAXPRINTMSG];
 	static qboolean	inupdate;
 	
 	va_start (argptr,fmt);
-	vsprintf (msg,fmt,argptr);
+	vsprintf_s(msg_, MAXPRINTMSG,fmt,argptr);
 	va_end (argptr);
 
 	if (print_level == PRINT_ALL)
 	{
-		Com_Printf ("%s", msg);
+		Com_Printf ("%s", msg_);
 	}
 	else if ( print_level == PRINT_DEVELOPER )
 	{
-		Com_DPrintf ("%s", msg);
+		Com_DPrintf ("%s", msg_);
 	}
 	else if ( print_level == PRINT_ALERT )
 	{
-		MessageBox( 0, msg, "PRINT_ALERT", MB_ICONWARNING );
-		OutputDebugString( msg );
+		MessageBox( 0, msg_, "PRINT_ALERT", MB_ICONWARNING );
+		OutputDebugString( msg_ );
 	}
 }
 
 void VID_Error (int err_level, char *fmt, ...)
 {
 	va_list		argptr;
-	char		msg[MAXPRINTMSG];
+	char		msg_[MAXPRINTMSG];
 	static qboolean	inupdate;
 	
 	va_start (argptr,fmt);
-	vsprintf (msg,fmt,argptr);
+	vsprintf_s (msg_,MAXPRINTMSG,fmt,argptr);
 	va_end (argptr);
 
-	Com_Error (err_level,"%s", msg);
+	Com_Error (err_level,"%s", msg_);
 }
 
 //==========================================================================
@@ -492,7 +493,8 @@ vidmode_t vid_modes[] =
 	{ "Mode 6: 1024x768",  1024, 768,  6 },
 	{ "Mode 7: 1152x864",  1152, 864,  7 },
 	{ "Mode 8: 1280x960",  1280, 960, 8 },
-	{ "Mode 9: 1600x1200", 1600, 1200, 9 }
+	{ "Mode 9: 1600x1200", 1600, 1200, 9 },
+	{ "Mode 10: 2048x1536", 2048, 1536, 10 }
 };
 
 qboolean VID_GetModeInfo( int *width, int *height, int mode )
@@ -586,6 +588,7 @@ qboolean VID_LoadRefresh( char *name )
 	ri.FS_Gamedir = FS_Gamedir;
 	ri.Cvar_Get = Cvar_Get;
 	ri.Cvar_Set = Cvar_Set;
+	ri.Cvar_ForceSet = Cvar_ForceSet;
 	ri.Cvar_SetValue = Cvar_SetValue;
 	ri.Vid_GetModeInfo = VID_GetModeInfo;
 	ri.Vid_MenuInit = VID_MenuInit;
@@ -619,8 +622,8 @@ qboolean VID_LoadRefresh( char *name )
 	{
 		if(!strcmp (vid_ref->string, "gl"))
 			vidref_val = VIDREF_GL;
-		else if(!strcmp(vid_ref->string, "soft"))
-			vidref_val = VIDREF_SOFT;
+	//	else if(!strcmp(vid_ref->string, "soft"))
+	//		vidref_val = VIDREF_SOFT;
 	}
 //PGM
 //======
@@ -664,17 +667,21 @@ void VID_CheckChanges (void)
 		/*
 		** refresh has changed
 		*/
+		/* We don't support Software rendering in Aquakronox */
+		if ( strcmp (vid_ref->string, "soft") == 0 ) 
+			Cvar_Set( "vid_ref", "gl" );
+
 		vid_ref->modified = false;
 		vid_fullscreen->modified = true;
 		cl.refresh_prepped = false;
 		cls.disable_screen = true;
 
-		Com_sprintf( name, sizeof(name), "ref_%s.dll", vid_ref->string );
+		Com_sprintf( name, sizeof(name), "ref_%s_anox.dll", vid_ref->string );
 		if ( !VID_LoadRefresh( name ) )
 		{
-			if ( strcmp (vid_ref->string, "soft") == 0 )
-				Com_Error (ERR_FATAL, "Couldn't fall back to software refresh!");
-			Cvar_Set( "vid_ref", "soft" );
+			if ( strcmp (vid_ref->string, "gl") == 0 )
+				Com_Error (ERR_FATAL, "Couldn't fall back to default opengl refresh!");
+			Cvar_Set( "vid_ref", "gl" );
 
 			/*
 			** drop the console if we fail to load a refresh
@@ -685,6 +692,8 @@ void VID_CheckChanges (void)
 			}
 		}
 		cls.disable_screen = false;
+
+		Con_CheckResize ();
 	}
 
 	/*

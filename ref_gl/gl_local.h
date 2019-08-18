@@ -17,13 +17,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-// disable data conversion warnings
-
-#if 0
-#pragma warning(disable : 4244)     // MIPS
-#pragma warning(disable : 4136)     // X86
-#pragma warning(disable : 4051)     // ALPHA
-#endif
 
 #ifdef _WIN32
 #  include <windows.h>
@@ -35,15 +28,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <GL/glu.h>
 #include <math.h>
 
+#ifndef __linux__
 #ifndef GL_COLOR_INDEX8_EXT
 #define GL_COLOR_INDEX8_EXT GL_COLOR_INDEX
+#endif
 #endif
 
 #include "../client/ref.h"
 
 #include "qgl.h"
 
-#define	REF_VERSION	"GL 0.01"
+#define	REF_VERSION	"GL 0.01 ANOX"
 
 // up / down
 #define	PITCH	0
@@ -55,13 +50,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define	ROLL	2
 
 
+#ifndef __VIDDEF_T
+#define __VIDDEF_T
 typedef struct
 {
 	unsigned		width, height;			// coordinates from main game
 } viddef_t;
+#endif
 
 extern	viddef_t	vid;
-
 
 /*
 
@@ -82,7 +79,9 @@ typedef enum
 	it_sprite,
 	it_wall,
 	it_pic,
-	it_sky
+	it_sky,
+	it_clamped,
+	it_cubemap_ext	// data is in order +X, -X, +Y, -Y, +Z, -Z when uploading
 } imagetype_t;
 
 typedef struct image_s
@@ -96,16 +95,142 @@ typedef struct image_s
 	int		texnum;						// gl texture binding
 	float	sl, tl, sh, th;				// 0,0 - 1,1 unless part of the scrap
 	qboolean	scrap;
-	qboolean	has_alpha;
+	int			has_alpha;				// 1 if blend, 2 if alpha test
 
 	qboolean paletted;
+	struct atd_s *atd;					// ATD data 
 } image_t;
 
-#define	TEXNUM_LIGHTMAPS	1024
-#define	TEXNUM_SCRAPS		1152
-#define	TEXNUM_IMAGES		1153
+#define		MAX_GLTEXTURES	2048
 
-#define		MAX_GLTEXTURES	1024
+#define	TEXNUM_LIGHTMAPS	(MAX_GLTEXTURES)
+#define	TEXNUM_SCRAPS		(TEXNUM_LIGHTMAPS+128)
+#define	TEXNUM_IMAGES		(TEXNUM_SCRAPS+1)
+
+/*
+===============
+Anachronox Texture Definition Support
+===============
+*/
+
+#define ATDHEADER		(('1'<<24)+('D'<<16)+('T'<<8)+'A')
+
+typedef enum 
+{
+	atd_type_whitenoise,			// Has no data
+	atd_type_interform,				// cast to atd_interform_t
+	atd_type_animation,				// cast to atd_animation_t
+
+	atd_type_unknown				// Unknown type
+} atd_type_t;
+
+// Structure to hold loaded 32 bit bitmap
+typedef struct atd_bitmap_s 
+{
+	int					width;
+	int					height;
+
+	// Image data 32 bit (8 bit for interform mother&father)
+	byte				*pixels;
+
+	// only used by animation type
+	struct atd_bitmap_s	*listnext;
+} atd_bitmap_t;
+
+// interform move types
+typedef enum 
+{
+	atd_move_none,
+	atd_move_scroll,
+	atd_move_wander
+} atd_move_type_t;
+
+// animation frame structure
+typedef struct atd_frame_s 
+{
+	// index of the bitmap for the frame
+	int					bitmap;	
+
+	// index of next animation. (default = -1)
+	// -1 = stop animating
+	int					next;		
+
+	// ms to wait before doing next image. (default 0)
+	// -1 = do next immediately 
+	//  0 = do next on next rendering pass
+	float				wait;		
+
+	// x,y pos to do an update (default 0??)
+	int					x, y;
+
+	// House keeping
+	float				last_time;		// Last time updated
+
+	struct atd_frame_s	*listnext;
+} atd_frame_t;
+
+typedef struct atd_s
+{
+	atd_type_t			type;			// Type of ATD 
+	float				last_time;		// Last time updated
+	qboolean			bilinear;		// always false for whitenoise
+
+	// Keep the above same between various types
+
+} atd_t;
+
+typedef struct atd_interform_s
+{
+	atd_type_t			type;			// Type of ATD 
+	float				last_time;		// Last time updated
+	qboolean			bilinear;		// always true for interform
+
+	// Keep the above same between various types
+
+	// These are used to work out if an update is actually needed
+	float				mother_tc[2];
+	float				father_tc[2];
+
+	atd_bitmap_t		palette;		// 32 bit image (must be 256 wide!!!)
+
+	atd_bitmap_t		mother;			// 8 bit image
+	atd_move_type_t		mother_move;	// Default atd_move_none
+	float				mother_vx;		// Default 0
+	float				mother_vy;		// Default 0
+	float				mother_speed;	// Default 0.3
+	float				mother_rate;	// Default 1
+	float				mother_strength;// Detault 1
+
+	atd_bitmap_t		father;			// 8 bit image
+	atd_move_type_t		father_move;	// Default atd_move_none
+	float				father_vx;		// Default 0
+	float				father_vy;		// Default 0
+	float				father_speed;	// Default 0.3
+	float				father_rate;	// Default 1
+	float				father_strength;// Detault 1
+
+} atd_interform_t;
+
+typedef struct atd_animation_s
+{
+	atd_type_t			type;			// Type of ATD 
+	float				last_time;		// Last time updated
+	qboolean			bilinear;		// default true for animation
+	int					*pixels;		// Texture pixels
+
+	// Keep above same between various types
+
+	float				est_next;		// estimated time for next frame (0 if no est)
+	atd_frame_t			*nextframe;		// Next frame	
+
+	atd_bitmap_t		*bitmaps;		// Linked list
+	atd_frame_t			*frames;		// Linked list
+
+} atd_animation_t;
+
+atd_t *ATD_Load (char *name, byte **pic, int *width, int *height, int *clamp);
+extern void ATD_Free (atd_t *atd);
+extern void ATD_Update (image_t *image);
 
 //===================================================================
 
@@ -126,6 +251,7 @@ void GL_EndRendering (void);
 
 void GL_SetDefaultState( void );
 void GL_UpdateSwapInterval( void );
+void GL_UpdateGamma(void);
 
 extern	float	gldepthmin, gldepthmax;
 
@@ -150,6 +276,8 @@ extern	int			numgltextures;
 
 extern	image_t		*r_notexture;
 extern	image_t		*r_particletexture;
+extern	image_t		*r_newparticletexture;
+extern	image_t		*r_norm_cube;	// Normalizing Cubemap... SPECIAL SUPPORT!
 extern	entity_t	*currententity;
 extern	model_t		*currentmodel;
 extern	int			r_visframecount;
@@ -159,6 +287,7 @@ extern	int			c_brush_polys, c_alias_polys;
 
 
 extern	int			gl_filter_min, gl_filter_max;
+extern	int			gl_cinfilter_min, gl_cinfilter_max;
 
 //
 // view origin
@@ -234,11 +363,17 @@ extern	cvar_t	*gl_texturealphamode;
 extern	cvar_t	*gl_texturesolidmode;
 extern  cvar_t  *gl_saturatelighting;
 extern  cvar_t  *gl_lockpvs;
+extern  cvar_t	*gl_hardware_gamma;
 
 extern	cvar_t	*vid_fullscreen;
 extern	cvar_t	*vid_gamma;
 
 extern	cvar_t		*intensity;
+
+extern	cvar_t	*gl_large_cins;
+
+extern	cvar_t	*gl_ext_3dfx_multisample;
+extern  cvar_t	*gl_atd_subimage_update;
 
 extern	int		gl_lightmap_format;
 extern	int		gl_solid_format;
@@ -254,11 +389,14 @@ extern	float	r_world_matrix[16];
 void R_TranslatePlayerSkin (int playernum);
 void GL_Bind (int texnum);
 void GL_MBind( GLenum target, int texnum );
+void GL_BindImage (image_t *image );
+void GL_MBindImage( GLenum target, image_t *image );
 void GL_TexEnv( GLenum value );
 void GL_EnableMultitexture( qboolean enable );
 void GL_SelectTexture( GLenum );
 
 void R_LightPoint (vec3_t p, vec3_t color);
+void R_RealLights (float ambient[4], float rgba[4], vec3_t diffuse_strength);
 void R_PushDlights (void);
 
 //====================================================================
@@ -277,7 +415,7 @@ void	R_Shutdown( void );
 
 void R_RenderView (refdef_t *fd);
 void GL_ScreenShot_f (void);
-void R_DrawAliasModel (entity_t *e);
+void R_DrawAliasModel (entity_t *e, qboolean transpass);
 void R_DrawBrushModel (entity_t *e);
 void R_DrawSpriteModel (entity_t *e);
 void R_DrawBeam( entity_t *e );
@@ -329,11 +467,13 @@ int		Draw_GetPalette (void);
 void GL_ResampleTexture (unsigned *in, int inwidth, int inheight, unsigned *out,  int outwidth, int outheight);
 
 struct image_s *R_RegisterSkin (char *name);
+struct image_s *R_RegisterClamped (char *name);
 
 void LoadPCX (char *filename, byte **pic, byte **palette, int *width, int *height);
 image_t *GL_LoadPic (char *name, byte *pic, int width, int height, imagetype_t type, int bits);
 image_t	*GL_FindImage (char *name, imagetype_t type);
 void	GL_TextureMode( char *string );
+void	GL_TextureCinMode( char *string );
 void	GL_ImageList_f (void);
 
 void	GL_SetTexturePalette( unsigned palette[256] );
@@ -346,6 +486,10 @@ void	GL_FreeUnusedImages (void);
 void GL_TextureAlphaMode( char *string );
 void GL_TextureSolidMode( char *string );
 
+void GL_MultisampleAABitMask(GLuint mask);
+void GL_DisableAA();
+void GL_EnableAA();
+
 /*
 ** GL extension emulation functions
 */
@@ -355,9 +499,9 @@ void GL_DrawParticles( int n, const particle_t particles[], const unsigned color
 ** GL config stuff
 */
 #define GL_RENDERER_VOODOO		0x00000001
-#define GL_RENDERER_VOODOO2   	0x00000002
+#define GL_RENDERER_VOODOO_4_5	0x00000002
 #define GL_RENDERER_VOODOO_RUSH	0x00000004
-#define GL_RENDERER_BANSHEE		0x00000008
+#define GL_RENDERER_VOODOO_BANSHEE	0x00000008
 #define		GL_RENDERER_3DFX		0x0000000F
 
 #define GL_RENDERER_PCX1		0x00000010
@@ -394,6 +538,11 @@ void GL_DrawParticles( int n, const particle_t particles[], const unsigned color
 #define GL_RENDERER_MCD			0x01000000
 #define GL_RENDERER_OTHER		0x80000000
 
+#define MULTISAMPLE_TYPE_NONE	0
+#define MULTISAMPLE_TYPE_3DFX	1
+#define MULTISAMPLE_TYPE_ARB	2
+#define MULTISAMPLE_TYPE_SGI	3
+
 typedef struct
 {
 	int         renderer;
@@ -401,8 +550,19 @@ typedef struct
 	const char *vendor_string;
 	const char *version_string;
 	const char *extensions_string;
+	const char *wglextensions_string;
 
 	qboolean	allow_cds;
+
+	int			max_texture_size;
+	int			multisample_samples;
+	int			multisample_type;		// MULTISAMPLE_TYPE_3DFX, MULTISAMPLE_TYPE_ARB or MULTISAMPLE_TYPE_SGI
+
+	qboolean	have_generate_mipmap;
+	qboolean	have_cube_map;
+	qboolean	have_dot3;				// Implies have ARB_texture_env_combine 
+
+
 } glconfig_t;
 
 typedef struct
@@ -416,7 +576,7 @@ typedef struct
 
 	int lightmap_textures;
 
-	int	currenttextures[2];
+	int	currenttextures[3];
 	int currenttmu;
 
 	float camera_separation;

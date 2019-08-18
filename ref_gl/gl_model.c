@@ -21,17 +21,26 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "gl_local.h"
 
+float	r_avertexnormals[NUMVERTEXNORMALS][3] = {
+#include "anorms.h"
+};
+
+float	r_avertexnormals_anox[2048][3] = {
+#include "anoxnorms.h"
+};
+
 model_t	*loadmodel;
 int		modfilelen;
 
 void Mod_LoadSpriteModel (model_t *mod, void *buffer);
 void Mod_LoadBrushModel (model_t *mod, void *buffer);
-void Mod_LoadAliasModel (model_t *mod, void *buffer);
+void Mod_LoadAliasModel (model_t *mod, void *buffer, qboolean gen_profiles);
+void Mod_LoadMDAModel (model_t *mod, void *buffer);
 model_t *Mod_LoadModel (model_t *mod, qboolean crash);
 
 byte	mod_novis[MAX_MAP_LEAFS/8];
 
-#define	MAX_MOD_KNOWN	512
+#define	MAX_MOD_KNOWN	2048
 model_t	mod_known[MAX_MOD_KNOWN];
 int		mod_numknown;
 
@@ -179,6 +188,7 @@ model_t *Mod_ForName (char *name, qboolean crash)
 	model_t	*mod;
 	unsigned *buf;
 	int		i;
+	int		profile = 0;
 	
 	if (!name[0])
 		ri.Sys_Error (ERR_DROP, "Mod_ForName: NULL name");
@@ -219,11 +229,12 @@ model_t *Mod_ForName (char *name, qboolean crash)
 			ri.Sys_Error (ERR_DROP, "mod_numknown == MAX_MOD_KNOWN");
 		mod_numknown++;
 	}
-	strcpy (mod->name, name);
 	
+
 	//
 	// load the file
 	//
+	strcpy(mod->name, name);
 	modfilelen = ri.FS_LoadFile (mod->name, &buf);
 	if (!buf)
 	{
@@ -245,18 +256,25 @@ model_t *Mod_ForName (char *name, qboolean crash)
 	switch (LittleLong(*(unsigned *)buf))
 	{
 	case IDALIASHEADER:
-		loadmodel->extradata = Hunk_Begin (0x200000);
-		Mod_LoadAliasModel (mod, buf);
+		loadmodel->extradata = Hunk_Begin (0xA00000);
+		Mod_LoadAliasModel (mod, buf, true);
+		break;
+		
+	case IDMDAHEADER:
+		loadmodel->extradata = Hunk_Begin (0xA00000);
+		Mod_LoadMDAModel (mod, buf);
 		break;
 		
 	case IDSPRITEHEADER:
-		loadmodel->extradata = Hunk_Begin (0x10000);
+		loadmodel->extradata = Hunk_Begin (0x20000);
 		Mod_LoadSpriteModel (mod, buf);
+		mod->mda_opaque = true;
 		break;
 	
 	case IDBSPHEADER:
-		loadmodel->extradata = Hunk_Begin (0x1000000);
+		loadmodel->extradata = Hunk_Begin (0x2000000);
 		Mod_LoadBrushModel (mod, buf);
+		mod->mda_opaque = true;
 		break;
 
 	default:
@@ -467,8 +485,8 @@ void Mod_LoadTexinfo (lump_t *l)
 			out->next = loadmodel->texinfo + next;
 		else
 		    out->next = NULL;
-		Com_sprintf (name, sizeof(name), "textures/%s.wal", in->texture);
 
+		Com_sprintf (name, sizeof(name), "textures/%s", in->texture);
 		out->image = GL_FindImage (name, it_wall);
 		if (!out->image)
 		{
@@ -618,7 +636,8 @@ void Mod_LoadFaces (lump_t *l)
 		}
 
 		// create lightmaps and polygons
-		if ( !(out->texinfo->flags & (SURF_SKY|SURF_TRANS33|SURF_TRANS66|SURF_WARP) ) )
+//		if ( !(out->texinfo->flags & (SURF_SKY|SURF_TRANS33|SURF_TRANS66|SURF_WARP) ) )
+		if ( !(out->texinfo->flags & (SURF_SKY|SURF_WARP) ) )
 			GL_CreateSurfaceLightmap (out);
 
 		if (! (out->texinfo->flags & SURF_WARP) ) 
@@ -895,6 +914,7 @@ void Mod_LoadBrushModel (model_t *mod, void *buffer)
 		starmod = &mod_inline[i];
 
 		*starmod = *loadmodel;
+		starmod->mda_opaque = true;
 		
 		starmod->firstmodelsurface = bm->firstface;
 		starmod->nummodelsurfaces = bm->numfaces;
@@ -923,31 +943,211 @@ ALIAS MODELS
 
 /*
 =================
+Mod_AutoGenAnoxProfile
+=================
+*/
+
+// This func will auto generate a profile for normal Anox models
+void Mod_AutoGenAnoxProfile(model_t *mod, dmdl_anox_t *anox)
+{
+	typedef char skinname_t[64];
+	int i;
+	mda_profile_t *last_prof;
+
+	// A bit of a hack for q2 md2's
+	int skin_passes = anox->num_skins/anox->num_passes;
+	int	skin_counter;
+	skinname_t	*skinnames;
+
+	skinnames = (skinname_t	*) ((char *)anox + anox->ofs_skins);
+
+	for (skin_counter = 0; skin_counter < skin_passes; skin_counter++)
+	{
+		mda_profile_t *prof = (mda_profile_t *) Hunk_Alloc(sizeof(mda_profile_t));
+		memset(prof,0, sizeof(mda_profile_t));
+
+		prof->name = *(int*)"DFLT";
+
+		prof->skins = (mda_skin_t *) Hunk_Alloc(sizeof(mda_skin_t)*anox->num_passes);
+		memset(prof->skins,0, sizeof(mda_skin_t)*anox->num_passes);
+
+		for (i = 0; i < anox->num_passes; i++)
+		{
+			mda_pass_t *pass;
+
+			// Note the array access only works here
+			prof->skins[i].next = &prof->skins[i+1];
+			prof->skins[i].passes = pass = Hunk_Alloc(sizeof(mda_pass_t));
+
+			pass->imagename[0] = 0;
+			// Anox skins need model path appended to start of skinname
+			if (anox->version != ALIAS_VERSION) 
+			{
+				COM_FilePath(mod->name, pass->imagename);
+				strcat(pass->imagename, "/");
+			}
+
+			strcat(pass->imagename, skinnames[i+skin_counter*anox->num_passes]);
+
+			// Get the image
+			mod->skins[i] = pass->image = GL_FindImage (pass->imagename, it_skin);
+
+			// Cull
+			pass->cull_mode = GL_FRONT;
+
+			// Depth func
+			pass->depth_func = GL_LEQUAL;
+
+			// Alpha Test
+			pass->alpha_func = GL_ALWAYS;
+			pass->alpha_test_ref = 0;
+
+			// RGB gen
+			pass->rgbgen = MDA_RGBGEN_DIFFUSE;
+
+			// UV gen
+			pass->uvgen = MDA_UVGEN_BASE;
+
+			// UV Scroll
+			pass->uvscroll[0] = 0;
+			pass->uvscroll[1] = 0;
+
+			// Alpha Blend (and depth write)
+			if (pass->image->has_alpha && anox->version != ALIAS_VERSION)
+			{
+				pass->src_blend = GL_SRC_ALPHA;
+				pass->dest_blend = GL_ONE_MINUS_SRC_ALPHA;			
+				pass->depth_write = false;
+				prof->skins[i].sort_blend = true;
+				mod->mda_blend = true;
+				prof->alpha_gen_mask = pass->uvgen|pass->rgbgen;
+			}
+			else
+			{
+				pass->src_blend = GL_ONE;
+				pass->dest_blend = GL_ZERO;			
+				pass->depth_write = true;
+				prof->skins[i].sort_blend = false;
+				mod->mda_opaque = true;
+				prof->opaque_gen_mask = pass->uvgen|pass->rgbgen;
+			}
+
+			// Next
+			pass->next = 0;
+		}
+		prof->skins[anox->num_passes-1].next = 0;
+	
+		if (!mod->profiles) mod->profiles = prof;
+		else last_prof->next = prof;
+		last_prof = prof;
+	}
+
+	if (skin_passes == 0)
+	{
+		mod->mda_blend = false;
+		mod->mda_opaque = true;
+	}
+}
+
+/*
+=================
 Mod_LoadAliasModel
 =================
 */
-void Mod_LoadAliasModel (model_t *mod, void *buffer)
+void Mod_LoadAliasModel (model_t *mod, void *buffer, qboolean gen_profiles)
 {
 	int					i, j;
 	dmdl_t				*pinmodel, *pheader;
+	dmdl_anox_t			*anox;
 	dstvert_t			*pinst, *poutst;
 	dtriangle_t			*pintri, *pouttri;
 	daliasframe_t		*pinframe, *poutframe;
 	int					*pincmd, *poutcmd;
+	short				*pinpasses, *poutpasses;
 	int					version;
+	int					frame_extra;
+	int					total_extra;
+	int					total_frame_extra;
+	int					header_extra = 0;
+	int					passes_extra = 0;
+	int					new_framesize;
+	int					estfs;
+	unsigned short		normal;
+	byte				*a_verts;
 
 	pinmodel = (dmdl_t *)buffer;
 
 	version = LittleLong (pinmodel->version);
-	if (version != ALIAS_VERSION)
+
+	if (version != ALIAS_VERSION && version != ALIAS_VERSION_ANOX_3_BYTE && 
+		version != ALIAS_VERSION_ANOX_4_BYTE && version != ALIAS_VERSION_ANOX_6_BYTE &&
+		version != ALIAS_VERSION_ANOX_OLD )
 		ri.Sys_Error (ERR_DROP, "%s has wrong version number (%i should be %i)",
 				 mod->name, version, ALIAS_VERSION);
 
-	pheader = Hunk_Alloc (LittleLong(pinmodel->ofs_end));
+	/*
+	if (version != ALIAS_VERSION && !floats_loaded) {
+		int len;
+		void *buf;
+		FILE *f;
+
+		//len = ri.FS_LoadFile ("normals.dat", &buf);
+		// Dead
+		//if (!buf) ri.Sys_Error (ERR_DROP, "Unable to load normals.dat\n");
+		floats_loaded = true;
+        
+		qsort (r_avertexnormals_anox, 2048, 12, FloatCompare);
+
+		f = fopen ("floats", "wb");
+		fwrite(r_avertexnormals_anox, 2048, 12, f);
+		fclose(f);
+		//memcpy(r_avertexnormals_anox,buf,len);
+		//ri.FS_FreeFile(buf);
+
+	}
+	*/
+
+	// Calculate the extra memory we will require for the new frames
+	if (version == ALIAS_VERSION_ANOX_3_BYTE || version == ALIAS_VERSION_ANOX_OLD) 
+		frame_extra = 5;
+	else if (version == ALIAS_VERSION_ANOX_4_BYTE)
+		frame_extra = 6;
+	else if (version == ALIAS_VERSION_ANOX_6_BYTE) 
+		frame_extra = 8;
+	else 
+	{
+		frame_extra = 4;
+		header_extra = sizeof(dmdl_anox_t) - sizeof(dmdl_t);
+		passes_extra = 2;
+	}
+
+	estfs = frame_extra * LittleLong(pinmodel->num_xyz);
+
+	frame_extra = sizeof(dtrivertx_t) - frame_extra;
+	frame_extra *= LittleLong(pinmodel->num_xyz);
+
+	estfs += sizeof(daliasframe_t) - sizeof(dtrivertx_t);
+
+	// Don't bother changing size if new is smaller
+	//if (frame_extra < 0) frame_extra = 0;
+
+	total_frame_extra = frame_extra * LittleLong(pinmodel->num_frames);
+	// Actual total size difference
+	total_extra = total_frame_extra + header_extra + passes_extra;
+
+	pheader = Hunk_Alloc (LittleLong(pinmodel->ofs_end) + total_extra);
+	anox = (dmdl_anox_t*)pheader;
 	
 	// byte swap the header fields and sanity check
 	for (i=0 ; i<sizeof(dmdl_t)/4 ; i++)
 		((int *)pheader)[i] = LittleLong (((int *)buffer)[i]);
+
+	// Continue reading the rest of the header for anox files
+	if (version != ALIAS_VERSION) for ( ; i<sizeof(dmdl_anox_t)/4 ; i++)
+		((int *)pheader)[i] = LittleLong (((int *)buffer)[i]);
+
+	pinmodel->ofs_end += total_extra;
+	new_framesize = pheader->framesize + frame_extra;
 
 	if (pheader->skinheight > MAX_LBM_HEIGHT)
 		ri.Sys_Error (ERR_DROP, "model %s has a skin taller than %d", mod->name,
@@ -972,6 +1172,8 @@ void Mod_LoadAliasModel (model_t *mod, void *buffer)
 // load base s and t vertices (not used in gl version)
 //
 	pinst = (dstvert_t *) ((byte *)pinmodel + pheader->ofs_st);
+	if (pheader->ofs_st > pheader->ofs_frames) pheader->ofs_st += total_frame_extra + header_extra;
+	else pheader->ofs_st += header_extra;
 	poutst = (dstvert_t *) ((byte *)pheader + pheader->ofs_st);
 
 	for (i=0 ; i<pheader->num_st ; i++)
@@ -984,6 +1186,8 @@ void Mod_LoadAliasModel (model_t *mod, void *buffer)
 // load triangle lists
 //
 	pintri = (dtriangle_t *) ((byte *)pinmodel + pheader->ofs_tris);
+	if (pheader->ofs_tris > pheader->ofs_frames) pheader->ofs_tris += total_frame_extra + header_extra;
+	else pheader->ofs_tris += header_extra;
 	pouttri = (dtriangle_t *) ((byte *)pheader + pheader->ofs_tris);
 
 	for (i=0 ; i<pheader->num_tris ; i++)
@@ -1003,7 +1207,7 @@ void Mod_LoadAliasModel (model_t *mod, void *buffer)
 		pinframe = (daliasframe_t *) ((byte *)pinmodel 
 			+ pheader->ofs_frames + i * pheader->framesize);
 		poutframe = (daliasframe_t *) ((byte *)pheader 
-			+ pheader->ofs_frames + i * pheader->framesize);
+			+ pheader->ofs_frames + header_extra + i * new_framesize);
 
 		memcpy (poutframe->name, pinframe->name, sizeof(poutframe->name));
 		for (j=0 ; j<3 ; j++)
@@ -1011,11 +1215,61 @@ void Mod_LoadAliasModel (model_t *mod, void *buffer)
 			poutframe->scale[j] = LittleFloat (pinframe->scale[j]);
 			poutframe->translate[j] = LittleFloat (pinframe->translate[j]);
 		}
-		// verts are all 8 bit, so no swapping needed
-		memcpy (poutframe->verts, pinframe->verts, 
-			pheader->num_xyz*sizeof(dtrivertx_t));
+
+		a_verts = (byte*)pinframe->verts;
+
+		if (version == ALIAS_VERSION_ANOX_3_BYTE || version == ALIAS_VERSION_ANOX_OLD) {
+			for (j = 0; j < pheader->num_xyz; j++) {
+				poutframe->verts[j].v[0] = *a_verts++;
+				poutframe->verts[j].v[1] = *a_verts++;
+				poutframe->verts[j].v[2] = *a_verts++;
+
+				normal = LittleShort(*(short*)a_verts) & 0x7FF;
+				VectorCopy(r_avertexnormals_anox[normal], poutframe->verts[j].normal);
+				a_verts += 2;
+			}
+		}
+		else if (version == ALIAS_VERSION_ANOX_4_BYTE) {
+			for (j = 0; j < pheader->num_xyz; j++) {
+				unsigned int v = LittleLong(*(long*)a_verts);
+				poutframe->verts[j].v[0] =  v      & 0x7FF;
+				poutframe->verts[j].v[1] = (v>>11) & 0x3FF;
+				poutframe->verts[j].v[2] = (v>>21) & 0x7FF;
+				a_verts += 4;
+
+				normal = LittleShort(*(short*)a_verts) & 0x7FF;
+				VectorCopy(r_avertexnormals_anox[normal], poutframe->verts[j].normal);
+				a_verts += 2;
+			}
+		}
+		else if (version == ALIAS_VERSION_ANOX_6_BYTE) {
+			for (j = 0; j < pheader->num_xyz; j++) {
+				poutframe->verts[j].v[0] = LittleShort(*(short*)a_verts);
+				a_verts+=2;
+				poutframe->verts[j].v[1] = LittleShort(*(short*)a_verts);
+				a_verts+=2;
+				poutframe->verts[j].v[2] = LittleShort(*(short*)a_verts);
+				a_verts+=2;
+
+				normal = LittleShort(*(short*)a_verts) & 0x7FF;
+				VectorCopy(r_avertexnormals_anox[normal], poutframe->verts[j].normal);
+				a_verts += 2;
+			}
+		}
+		else {
+			for (j = 0; j < pheader->num_xyz; j++) {
+				poutframe->verts[j].v[0] = *a_verts++;
+				poutframe->verts[j].v[1] = *a_verts++;
+				poutframe->verts[j].v[2] = *a_verts++;
+
+				normal = *a_verts++;
+				VectorCopy(r_avertexnormals[normal], poutframe->verts[j].normal);
+			}
+		}
 
 	}
+	pheader->ofs_frames += header_extra;
+	pheader->framesize = new_framesize;
 
 	mod->type = mod_alias;
 
@@ -1023,19 +1277,80 @@ void Mod_LoadAliasModel (model_t *mod, void *buffer)
 	// load the glcmds
 	//
 	pincmd = (int *) ((byte *)pinmodel + pheader->ofs_glcmds);
+	if (pheader->ofs_glcmds > pheader->ofs_frames) pheader->ofs_glcmds += total_frame_extra + header_extra;
+	else pheader->ofs_glcmds += header_extra;
 	poutcmd = (int *) ((byte *)pheader + pheader->ofs_glcmds);
+
 	for (i=0 ; i<pheader->num_glcmds ; i++)
 		poutcmd[i] = LittleLong (pincmd[i]);
 
-
 	// register all skins
-	memcpy ((char *)pheader + pheader->ofs_skins, (char *)pinmodel + pheader->ofs_skins,
-		pheader->num_skins*MAX_SKINNAME);
-	for (i=0 ; i<pheader->num_skins ; i++)
+	if (pheader->ofs_skins > pheader->ofs_frames) 
 	{
-		mod->skins[i] = GL_FindImage ((char *)pheader + pheader->ofs_skins + i*MAX_SKINNAME
-			, it_skin);
+		memcpy ((char *)pheader + pheader->ofs_skins + total_frame_extra + header_extra, 
+				(char *)pinmodel + pheader->ofs_skins,
+				pheader->num_skins*MAX_SKINNAME);
+		pheader->ofs_skins += total_frame_extra + header_extra;
 	}
+	else 
+	{
+		memcpy ((char *)pheader + pheader->ofs_skins + header_extra, 
+				(char *)pinmodel + pheader->ofs_skins,
+				pheader->num_skins*MAX_SKINNAME);
+		pheader->ofs_skins += header_extra;
+	}
+
+	if (version == ALIAS_VERSION) 
+	{
+		short	*passes;
+		int		*order;
+		anox->ofs_passes = pinmodel->ofs_end-2;
+		anox->num_passes = 1;
+		passes = (short*)((char *)anox + anox->ofs_passes);
+		passes[0] = 0;
+
+		// Quickly count num gl_cmds for passes
+		order = (int *)((byte *)anox + anox->ofs_glcmds);
+		while (1)
+		{
+			i = *order++;
+			if (i == 0) break;
+			if (i < 0) order -= i * 3;
+			else order += i * 3;
+			passes[0]++;
+		}
+
+		anox->scale[0] = 1;
+		anox->scale[1] = 1;
+		anox->scale[2] = 1;
+
+		for (i=0 ; i<pheader->num_skins ; i++)
+		{
+			mod->skins[i] = GL_FindImage ((char *)pheader + pheader->ofs_skins + i*MAX_SKINNAME
+				, it_skin);
+		}
+
+	}
+	// Anox stuff
+	else
+	{
+		// Load emits
+		pinpasses = (short *) ((byte *)pinmodel + anox->ofs_passes);
+		if (anox->ofs_passes > anox->ofs_frames) anox->ofs_passes += total_frame_extra + header_extra;
+		else anox->ofs_passes += header_extra;
+		poutpasses = (short *) ((byte *)pheader + anox->ofs_passes);
+
+		for (i=0 ; i<anox->num_passes; i++) poutpasses[i] = LittleShort (pinpasses[i]);
+
+		//if (anox->num_skins != anox->num_passes)
+		//	ri.Sys_Error (ERR_DROP, "%s number of skins (%i) doesn't match emit passes (%i)",
+		//			 mod->name, anox->num_skins, anox->num_passes);
+
+		// Ignore tags for now
+	}
+
+	// Do shaders 
+	if (gen_profiles) Mod_AutoGenAnoxProfile(mod, anox);
 
 	mod->mins[0] = -32;
 	mod->mins[1] = -32;
@@ -1045,6 +1360,680 @@ void Mod_LoadAliasModel (model_t *mod, void *buffer)
 	mod->maxs[2] = 32;
 }
 
+/*
+==============================================================================
+
+MDA MODELS (Alias + Extras)
+
+==============================================================================
+*/
+
+// Parse a profile
+mda_pass_t* Mod_ParsePass (model_t *mod, void **tokens, float minmax[2])
+{
+	int			i;
+	char		*token;
+	mda_pass_t	*pass = Hunk_Alloc(sizeof(mda_pass_t));
+	memset(pass, 0, sizeof(mda_pass_t));
+
+	minmax[0] = 0;
+	minmax[1] = 1;
+
+	// Defaults
+
+	pass->cull_mode = GL_FRONT;
+	pass->depth_func = GL_LEQUAL;
+	pass->alpha_func = GL_ALWAYS;
+	pass->alpha_test_ref = 0;
+	pass->rgbgen = MDA_RGBGEN_DIFFUSE;
+	pass->uvgen = MDA_UVGEN_BASE;
+	pass->uvscroll[0] = 0;
+	pass->uvscroll[1] = 0;
+	pass->src_blend = GL_ONE;
+	pass->dest_blend = GL_ZERO;			
+	pass->depth_write = -1;
+	
+	token = COM_Parse2 (tokens);
+	// Corrupt MDA
+	if (!*tokens) return NULL;
+	// Corrupt MDA
+	if (token[0] != '{') return NULL;
+
+	while (1) 
+	{
+		token = COM_Parse2 (tokens);
+		// Corrupt MDA
+		if (!*tokens) return NULL;
+
+		// end of profile
+		if (Q_stricmp(token, "}") == 0)
+		{
+			break;
+		}
+		// Texture map
+		else if (Q_stricmp(token, "map") == 0)
+		{
+			token = COM_Parse2 (tokens);
+			// Corrupt MDA
+			if (!*tokens) return NULL;
+
+			strcpy(pass->imagename, token);
+			pass->image = GL_FindImage(pass->imagename, it_skin );
+		}
+		else if (Q_stricmp(token, "blendmode") == 0)
+		{
+			token = COM_Parse2 (tokens);
+			// Corrupt MDA
+			if (!*tokens) return NULL;
+
+			if (!Q_strcasecmp(token, "add"))
+			{
+				pass->src_blend = GL_ONE;
+				pass->dest_blend = GL_ONE;			
+			}
+			else if (!Q_strcasecmp(token, "multiply"))
+			{
+				pass->src_blend = GL_DST_COLOR;
+				pass->dest_blend = GL_ZERO;			
+			}
+			else if (!Q_strcasecmp(token, "none"))
+			{
+				pass->src_blend = GL_ONE;
+				pass->dest_blend = GL_ZERO;			
+			}
+			else if (!Q_strcasecmp(token, "normal"))
+			{
+				pass->src_blend = GL_SRC_ALPHA;
+				pass->dest_blend = GL_ONE_MINUS_SRC_ALPHA;			
+			}
+			else
+			{
+				ri.Sys_Error (ERR_DROP, "%s unknown blendmode type (%s) in Pass", mod->name, token);
+			}
+		}
+		else if (Q_stricmp(token, "cull") == 0)
+		{
+			token = COM_Parse2 (tokens);
+			// Corrupt MDA
+			if (!*tokens) return NULL;
+
+			else if (!Q_strcasecmp(token, "disable"))
+			{
+				pass->cull_mode = GL_NEVER;
+			}
+			else if (!Q_strcasecmp(token, "back"))
+			{
+				pass->cull_mode = GL_BACK;
+			}
+			else if (!Q_strcasecmp(token, "front"))
+			{
+				pass->cull_mode = GL_FRONT;
+			}
+			else
+			{
+				ri.Sys_Error (ERR_DROP, "%s unknown cull type (%s) in Pass", mod->name, token);
+			}
+		}
+
+		else if (Q_stricmp(token, "uvgen") == 0)
+		{
+			token = COM_Parse2 (tokens);
+			// Corrupt MDA
+			if (!*tokens) return NULL;
+
+			if (!Q_strcasecmp(token, "base"))
+			{
+				pass->uvgen = MDA_UVGEN_BASE;
+			}
+			else if (!Q_strcasecmp(token, "sphere"))
+			{
+				pass->uvgen = MDA_UVGEN_SPHERE;
+			}
+			else if (!Q_strcasecmp(token, "parabxneg"))
+			{
+				pass->uvgen = MDA_UVGEN_PARABXNEG;
+			}
+			else if (!Q_strcasecmp(token, "parabxpos"))
+			{
+				pass->uvgen = MDA_UVGEN_PARABXPOS;
+			}
+			else
+			{
+				ri.Sys_Error (ERR_DROP, "%s unknown uvgen type (%s) in Pass", mod->name, token);
+			}
+		}
+
+		else if (Q_stricmp(token, "uvmod") == 0)
+		{
+			token = COM_Parse2 (tokens);
+			// Corrupt MDA
+			if (!*tokens) return NULL;
+
+			else if (!Q_strcasecmp(token, "scroll"))
+			{
+				// X
+				token = COM_Parse2 (tokens);
+				if (!*tokens) return NULL;	// Corrupt MDA
+				pass->uvscroll[0] = atof (token);
+
+				// Y
+				token = COM_Parse2 (tokens);
+				if (!*tokens) return NULL;	// Corrupt MDA
+				pass->uvscroll[1] = atof (token);
+			}
+			else
+			{
+				ri.Sys_Error (ERR_DROP, "%s unknown uvmod type (%s) in Pass", mod->name, token);
+			}
+		}
+
+		else if (Q_stricmp(token, "alphafunc") == 0)
+		{
+			token = COM_Parse2 (tokens);
+			// Corrupt MDA
+			if (!*tokens) return NULL;
+
+			if (!Q_strcasecmp(token, "ge128"))
+			{
+				pass->alpha_func = GL_GEQUAL;
+				pass->alpha_test_ref = 128/255.0;
+
+				minmax[0] = 0.5;
+				minmax[1] = 1;
+			}
+			else if (!Q_strcasecmp(token, "lt128"))
+			{
+				pass->alpha_func = GL_LESS;
+				pass->alpha_test_ref = 128/255.0;
+
+				minmax[0] = 0;
+				minmax[1] = 0.5;
+			}
+			else if (!Q_strcasecmp(token, "ge64"))
+			{
+				pass->alpha_func = GL_GEQUAL;
+				pass->alpha_test_ref = 64/255.0;
+
+				minmax[0] = 0.125;
+				minmax[1] = 1;
+			}
+			else if (!Q_strcasecmp(token, "gt0"))
+			{
+				pass->alpha_func = GL_GREATER;
+				pass->alpha_test_ref = 0;
+
+				minmax[0] = 1/510.0;
+				minmax[1] = 1;
+			}
+			else
+			{
+				ri.Sys_Error (ERR_DROP, "%s unknown alphafunc type (%s) in Pass", mod->name, token);
+			}
+		}
+
+		else if (Q_stricmp(token, "depthfunc") == 0)
+		{
+			token = COM_Parse2 (tokens);
+			// Corrupt MDA
+			if (!*tokens) return NULL;
+
+			if (!Q_strcasecmp(token, "notequal"))
+			{
+				pass->depth_func = GL_NOTEQUAL;
+			}
+			else if (!Q_strcasecmp(token, "greater"))
+			{
+				pass->depth_func = GL_GREATER;
+			}
+			else if (!Q_strcasecmp(token, "gequal"))
+			{
+				pass->depth_func = GL_GEQUAL;
+			}
+			else if (!Q_strcasecmp(token, "equal"))
+			{
+				pass->depth_func = GL_EQUAL;
+			}
+			else if (!Q_strcasecmp(token, "lequal"))
+			{
+				pass->depth_func = GL_LEQUAL;
+			}
+			else if (!Q_strcasecmp(token, "less"))
+			{
+				pass->depth_func = GL_LESS;
+			}
+			else if (!Q_strcasecmp(token, "always"))
+			{
+				pass->depth_func = GL_ALWAYS;
+			}
+			else if (!Q_strcasecmp(token, "never"))
+			{
+				pass->depth_func = GL_NEVER;
+			}
+			else
+			{
+				ri.Sys_Error (ERR_DROP, "%s unknown depthfunc type (%s) in Pass", mod->name, token);
+			}
+		}
+
+		else if (Q_stricmp(token, "depthwrite") == 0)
+		{
+			token = COM_Parse2 (tokens);
+			// Corrupt MDA
+			if (!*tokens) return NULL;
+
+			if (pass->depth_write != -1)
+				ri.Sys_Error (ERR_DROP, "%s only one depthwrite allowed per Pass", mod->name);
+
+			i = atoi(token);
+			if (i == 1)
+				pass->depth_write = true;
+			else if (i == 0)
+				pass->depth_write = false;
+			else
+				ri.Sys_Error (ERR_DROP, "%s unknown depthwrite value (%s) in Pass", mod->name, token);
+		}
+
+		else if (Q_stricmp(token, "rgbgen") == 0)
+		{
+			token = COM_Parse2 (tokens);
+			// Corrupt MDA
+			if (!*tokens) return NULL;
+
+			if (!Q_strcasecmp(token, "identity"))
+			{
+				pass->rgbgen = MDA_RGBGEN_IDENTITY;
+			}
+			else if (!Q_strcasecmp(token, "ambient"))
+			{
+				pass->rgbgen = MDA_RGBGEN_AMBIENT;
+			}
+			else if (!Q_strcasecmp(token, "diffusezero"))
+			{
+				pass->rgbgen = MDA_RGBGEN_DIFFUSEZERO;
+			}
+			else if (!Q_strcasecmp(token, "diffuse"))
+			{
+				pass->rgbgen = MDA_RGBGEN_DIFFUSE;
+			}
+			else
+			{
+				ri.Sys_Error (ERR_DROP, "%s unknown rgbgen type (%s) in Pass", mod->name, token);
+			}
+		}
+
+	}
+
+	return pass;
+
+}
+
+// Parse a profile
+mda_skin_t* Mod_ParseSkin (model_t *mod, void **tokens, int *mask)
+{
+	float		solid[2], trans[2], *type, minmax[2];
+	qboolean	sort_blend_explicit = false;
+	char		*token;
+	mda_pass_t	*last_pass = 0;
+	mda_pass_t	*pass = 0;
+	mda_skin_t	*skin = Hunk_Alloc(sizeof(mda_skin_t));
+	memset(skin, 0, sizeof(mda_skin_t));
+
+	solid[0] = trans[0] = 1;
+	solid[1] = trans[1] = 0;
+
+	token = COM_Parse2 (tokens);
+	// Corrupt MDA
+	if (!*tokens) return NULL;
+	// Corrupt MDA
+	if (token[0] != '{') return NULL;
+
+	while (1) 
+	{
+		token = COM_Parse2 (tokens);
+		// Corrupt MDA
+		if (!*tokens) return NULL;
+
+		// end of profile
+		if (Q_stricmp(token, "}") == 0)
+		{
+			break;
+		}
+		// Sort order
+		else if (Q_stricmp(token, "sort") == 0)
+		{
+			token = COM_Parse2 (tokens);
+			// Corrupt MDA
+			if (!*tokens) return NULL;
+
+			sort_blend_explicit = true;
+
+			if (!Q_strcasecmp(token, "opaque"))
+				skin->sort_blend = false;
+			else if (!Q_strcasecmp(token, "blend"))
+				skin->sort_blend = true;
+			else
+				ri.Sys_Error (ERR_DROP, "%s unknown sort order type (%s) in Skin", mod->name, token);
+		}
+		// Pass parsing
+		else if (Q_stricmp(token, "pass") == 0)
+		{
+			pass = Mod_ParsePass(mod, tokens, minmax);
+			if (!pass) return NULL;
+
+			if (!last_pass) skin->passes = pass;
+			else last_pass->next = pass;
+			last_pass = pass;
+
+				// Solid pass (depth write default enabled if not equal depth func)
+			if (pass->src_blend == GL_ONE && pass->dest_blend == GL_ZERO)
+			{
+				if (pass->depth_write == -1)
+				{
+					if (pass->depth_func == GL_EQUAL) pass->depth_write = 0;
+					else pass->depth_write = 1;
+				}
+				type = solid;
+			}
+			else // Trans pass (depth write default disabled)
+			{
+				if (pass->depth_write == -1) pass->depth_write = 0;
+				type = trans;
+			}
+
+			if (minmax[0] < type[0]) type[0] = minmax[0];
+			else if (minmax[1] > type[1]) type[1] = minmax[1];
+
+			*mask = pass->rgbgen | pass->uvgen;
+		}
+	}
+
+	// In here we are supposed to work out sort order and stuff
+	if (skin->passes) 
+	{
+		// Sort type calculating (from range of coverage of each type)
+		if (!sort_blend_explicit && (trans[0] < solid[0] || trans[1] > solid[1]))
+			skin->sort_blend = true;
+
+		return skin;
+	}
+
+	ri.Sys_Error (ERR_DROP, "%s Skin didn't have any passes", mod->name);
+
+	return NULL;
+}
+
+// Parse a profile
+mda_profile_t* Mod_ParseProfile (model_t *mod, dmdl_anox_t *anox, void **tokens)
+{
+	int			num_skins = 0;
+	int			mask = 0;
+	char		*token;
+	mda_skin_t	*last_skin = 0;
+	mda_skin_t	*skin = 0;
+	mda_profile_t	*profile = Hunk_Alloc(sizeof(mda_profile_t));
+	memset(profile, 0, sizeof(mda_profile_t));
+
+	token = COM_Parse2 (tokens);
+	// Corrupt MDA
+	if (!*tokens) return NULL;
+
+	// Profile name
+	if (token[0] != '{')
+	{
+		profile->name = *(int*)token;
+
+		token = COM_Parse2 (tokens);
+		// Corrupt MDA
+		if (!*tokens) return NULL;
+	}	
+
+	// Corrupt MDA
+	if (token[0] != '{') return NULL;
+
+	while (1) 
+	{
+		token = COM_Parse2 (tokens);
+		// Corrupt MDA
+		if (!*tokens) return NULL;
+
+		// end of profile
+		if (Q_stricmp(token, "}") == 0)
+		{
+			break;
+		}
+		// Script evaluation
+		else if (Q_stricmp(token, "evaluate") == 0)
+		{
+			token = COM_Parse2 (tokens);
+			// Corrupt MDA
+			if (!*tokens) return NULL;
+		}
+		// Skin parsing
+		else if (Q_stricmp(token, "skin") == 0)
+		{
+			skin = Mod_ParseSkin(mod, tokens, &mask);
+			if (!skin) return NULL;
+
+			if (!last_skin) profile->skins = skin;
+			else last_skin->next = skin;
+			last_skin = skin;
+
+			if (skin->sort_blend) profile->alpha_gen_mask |= mask;
+			else profile->opaque_gen_mask |= mask;
+
+			num_skins++;
+		}
+	}
+
+	//if (num_skins != anox->num_passes)
+	//	ri.Sys_Error (ERR_DROP, "%s number of skins (%i) in profile didn't didn't match number of emit passes in MD2", mod->name, num_skins, anox->num_passes);
+
+	if (!profile->skins) 
+		ri.Sys_Error (ERR_DROP, "%s Profile didn't have any skins", mod->name);
+
+	return profile;
+}
+
+void Mod_LoadMDAModel (model_t *mod, void *buffer)
+{
+	dmdl_anox_t *anox = (dmdl_anox_t *)mod->extradata;
+	int			i, j;
+	char		*data, *mdastring;
+	char		*token;
+	qboolean	loaded_md2 = false;
+	qboolean	dead = true;
+	qboolean	profiles_generated = false;
+	mda_profile_t	*profile = 0;
+	mda_profile_t	*last_profile = 0;
+
+	// We need to make the MDA file into a NULL terminated string
+	mdastring = malloc (modfilelen+1);
+	memcpy(mdastring, buffer, modfilelen);
+	mdastring[modfilelen] = 0;
+
+	//
+	// Parse file for MD2 name
+	//
+
+	data = mdastring;
+	while (1) 
+	{
+		token = COM_Parse2 (&data);
+
+		if (!data) break;
+
+		// Basemodel specifies the MD2
+		if (Q_stricmp(token, "basemodel") == 0)
+		{
+			int			our_len = modfilelen;
+			unsigned	*md2buf;
+
+			token = COM_Parse2 (&data);
+
+			// Corrupt MDA
+			if (!data) break;		// Screwed
+
+			// Load the md2
+			modfilelen = ri.FS_LoadFile (token, &md2buf);
+
+			// Dead
+			if (!md2buf) ri.Sys_Error (ERR_DROP, "Mod_NumForName: %s not found", mod->name);
+         
+			Mod_LoadAliasModel(mod,md2buf,false);
+			ri.FS_FreeFile(md2buf);
+
+			modfilelen = our_len; 
+
+			loaded_md2 = true;
+			break;
+		}
+	}
+
+	// Uh oh, we're in trouble now
+	if (!loaded_md2) 
+	{
+		// Free the MDA string
+		free (mdastring);
+
+		ri.Sys_Error (ERR_DROP, "%s didn't have a basemodel specified or the MD2 couldn't be loaded", mod->name);
+	}
+
+	//
+	// Now read profiles
+	//
+
+	data = mdastring;
+	while (1) 
+	{
+		// Ok, we got this far, so thing are looking ok.... for now
+		token = COM_Parse2 (&data);
+
+		// This is the only spot where we are allowed to actually leave without causing an error
+		if (!data) 
+		{
+			dead = false;
+			break;
+		}
+
+		// Basemodel specifies the MD2
+		if (Q_stricmp(token, "basemodel") == 0)
+		{
+			token = COM_Parse2 (&data);
+
+			// Corrupt MDA
+			if (!data) break;		// Screwed
+		}
+		// Profiles are shader definitions. Maybe Handle this later
+		else if (Q_stricmp(token, "profile") == 0) 
+		{
+			profile = Mod_ParseProfile (mod, anox, &data);
+
+			if (!profile) break;
+
+			if (!last_profile) mod->profiles = profile;
+			else last_profile->next = profile;
+			last_profile = profile;
+
+			if (profile->alpha_gen_mask) mod->mda_blend = true;
+			if (profile->opaque_gen_mask) mod->mda_opaque = true;
+
+		}
+		// headtri is used to orientate morphs
+		else if (Q_stricmp(token, "headtri") == 0) 
+		{
+			int tris[3];
+
+			token = COM_Parse2 (&data);
+			if (!data) break;		// Corrupt MDA
+			tris[0] = atoi(token);
+
+			token = COM_Parse2 (&data);
+			if (!data) break;		// Corrupt MDA
+			tris[1] = atoi(token);
+
+			token = COM_Parse2 (&data);
+			if (!data) break;		// Corrupt MDA
+			tris[2] = atoi(token);
+
+			// Now do what????
+		}
+		// We can't deal with this stuff (Morphs)
+		else if (token[0] == '$' || token[0] == '&') 
+		{
+		}
+	}
+
+	// Free the MDA string
+	free (mdastring);
+
+	// Failed somewhere
+	if (dead)
+	{
+		ri.Sys_Error (ERR_DROP, "%s Corrupt MDA file", mod->name);
+	}
+	else if (!mod->profiles)
+	{
+		Mod_AutoGenAnoxProfile(mod, anox);
+	}
+}
+/*
+
+MDA profile keywords
+
+profile DFLT					- default profile
+profile XXXX					- profile XXXX
+profile							- Unnamed profile (DFLT if no others i guess)
+{
+    evaluate "Party_Wears_Labcoats"	- May be used to specify a different default skin when specific flags are set
+
+    skin
+    {
+        sort blend				- do in 'blend' phase
+        sort opaque				- do in 'opaque' phase
+
+        pass
+        {
+            map "texturename"	- normal wrap texture mode
+            clampmap "texturename"	- clamped texture mode
+            blendmode add	
+            blendmode multiply
+			blendmode none		- (default)
+			blendmode normal	- GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA
+            cull disable		- 
+			cull back			- 
+			cull front			- (default)
+            uvgen base			- (default)
+            uvgen sphere		- Generate sphere map coords 
+            uvgen parabxpos		- Generate positive parabolic env map coords
+			uvgen parabxneg		- Generate negetive parabolic env map coords
+			uvmod scroll x y    - uv scroll (per second?)
+			alphafunc ge128
+			alphafunc lt127
+			alphafunc ge64
+			alphafunc gt0
+			depthfunc notequal	
+			depthfunc greater
+			depthfunc gequal	
+			depthfunc equal	
+			depthfunc lequal	- (default)	
+			depthfunc less
+			depthfunc always
+			depthfunc never
+			depthwrite 1		- force depth writing this frame (disabled for blended and equal depth func)
+			rgbgen identity		- 1
+			rgbgen ambient		- Ambient light level
+            rgbgen diffusezero	- infinite diffuse lighting from 0,0,1 with no ambient
+            rgbgen diffuse      - (default)
+        }
+    }
+
+// Defaults
+depth writing is enabled for opaque, disabled for blended
+blendmode NONE
+cull front
+
+
+*/
 /*
 ==============================================================================
 
@@ -1102,20 +2091,25 @@ R_BeginRegistration
 Specifies the model that will be used as the world
 @@@@@@@@@@@@@@@@@@@@@
 */
+void R_EndRegistration (void);
 void R_BeginRegistration (char *model)
 {
 	char	fullname[MAX_QPATH];
 	cvar_t	*flushmap;
 
 	registration_sequence++;
+
+	/* Ok, we will free everything first before entering a new level */
+	R_EndRegistration();
+
 	r_oldviewcluster = -1;		// force markleafs
 
 	Com_sprintf (fullname, sizeof(fullname), "maps/%s.bsp", model);
 
 	// explicitly free the old map if different
 	// this guarantees that mod_known[0] is the world map
-	flushmap = ri.Cvar_Get ("flushmap", "0", 0);
-	if ( strcmp(mod_known[0].name, fullname) || flushmap->value)
+	//flushmap = ri.Cvar_Get ("flushmap", "0", 0);
+	//if ( strcmp(mod_known[0].name, fullname) || flushmap->value)
 		Mod_Free (&mod_known[0]);
 	r_worldmodel = Mod_ForName(fullname, true);
 
@@ -1151,8 +2145,41 @@ struct model_s *R_RegisterModel (char *name)
 		else if (mod->type == mod_alias)
 		{
 			pheader = (dmdl_t *)mod->extradata;
-			for (i=0 ; i<pheader->num_skins ; i++)
-				mod->skins[i] = GL_FindImage ((char *)pheader + pheader->ofs_skins + i*MAX_SKINNAME, it_skin);
+
+			if (mod->profiles)
+			{
+				mda_profile_t *profile;
+				mda_skin_t *skin;
+				mda_pass_t *pass;
+
+				for (profile = mod->profiles; profile != NULL; profile = profile->next)
+				{
+					for (skin = profile->skins; skin != NULL; skin = skin->next)
+					{
+						for (pass = skin->passes; pass != NULL; pass = pass->next)
+						{
+							pass->image = GL_FindImage (pass->imagename, it_skin);
+						}
+					}
+				}
+			}
+			else
+			{
+				for (i=0 ; i<pheader->num_skins ; i++)
+				{
+					if (pheader->version != ALIAS_VERSION) {
+						// Anox skins need model path appended to start of skinname
+						char skinname[MAX_QPATH];
+						COM_FilePath(mod->name, skinname);
+						strcat(skinname, "/");
+						strcat(skinname, (char *)pheader + pheader->ofs_skins + i*MAX_SKINNAME);
+
+						mod->skins[i] = GL_FindImage (skinname, it_skin);
+					}
+					else
+						mod->skins[i] = GL_FindImage ((char *)pheader + pheader->ofs_skins + i*MAX_SKINNAME, it_skin);
+				}
+			}
 //PGM
 			mod->numframes = pheader->num_frames;
 //PGM

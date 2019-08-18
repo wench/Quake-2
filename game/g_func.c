@@ -1,24 +1,7 @@
-/*
-Copyright (C) 1997-2001 Id Software, Inc.
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-*/
 #include "g_local.h"
 
+#define T_Damage(targ,inflictor,attacker,dir,point,normal,damage,knockback,dflags) T_Damage(targ,inflictor,attacker,dir,point,normal,damage,knockback,dflags,MOD_CRUSH)
+#define T_RadiusDamage(inflictor,attacker,damage,ignore,radius) T_RadiusDamage(inflictor,attacker,damage,ignore,radius,MOD_EXPLOSIVE)
 /*
 =========================================================
 
@@ -406,17 +389,16 @@ void plat_go_up (edict_t *ent)
 
 void plat_blocked (edict_t *self, edict_t *other)
 {
-	if (!(other->svflags & SVF_MONSTER) && (!other->client) )
+	if (!(other->svflags & SVF_MONSTER) && (!other->client))
 	{
 		// give it a chance to go away on it's own terms (like gibs)
-		T_Damage (other, self, self, vec3_origin, other->s.origin, vec3_origin, 100000, 1, 0, MOD_CRUSH);
+		T_Damage (other, self, self, vec3_origin, other->s.origin, vec3_origin, 100000, 1, 0);
 		// if it's still there, nuke it
-		if (other)
-			BecomeExplosion1 (other);
+		BecomeExplosion1 (other);
 		return;
 	}
 
-	T_Damage (other, self, self, vec3_origin, other->s.origin, vec3_origin, self->dmg, 1, 0, MOD_CRUSH);
+	T_Damage (other, self, self, vec3_origin, other->s.origin, vec3_origin, self->dmg, 1, 0);
 
 	if (self->moveinfo.state == STATE_UP)
 		plat_go_down (self);
@@ -462,13 +444,13 @@ void plat_spawn_inside_trigger (edict_t *ent)
 	trigger->solid = SOLID_TRIGGER;
 	trigger->enemy = ent;
 	
-	tmin[0] = ent->mins[0] + 25;
-	tmin[1] = ent->mins[1] + 25;
-	tmin[2] = ent->mins[2];
+	tmin[0] = ent->s.mins[0] + 25;
+	tmin[1] = ent->s.mins[1] + 25;
+	tmin[2] = ent->s.mins[2];
 
-	tmax[0] = ent->maxs[0] - 25;
-	tmax[1] = ent->maxs[1] - 25;
-	tmax[2] = ent->maxs[2] + 8;
+	tmax[0] = ent->s.maxs[0] - 25;
+	tmax[1] = ent->s.maxs[1] - 25;
+	tmax[2] = ent->s.maxs[2] + 8;
 
 	tmin[2] = tmax[2] - (ent->pos1[2] - ent->pos2[2] + st.lip);
 
@@ -477,17 +459,17 @@ void plat_spawn_inside_trigger (edict_t *ent)
 	
 	if (tmax[0] - tmin[0] <= 0)
 	{
-		tmin[0] = (ent->mins[0] + ent->maxs[0]) *0.5;
+		tmin[0] = (ent->s.mins[0] + ent->s.maxs[0]) *0.5;
 		tmax[0] = tmin[0] + 1;
 	}
 	if (tmax[1] - tmin[1] <= 0)
 	{
-		tmin[1] = (ent->mins[1] + ent->maxs[1]) *0.5;
+		tmin[1] = (ent->s.mins[1] + ent->s.maxs[1]) *0.5;
 		tmax[1] = tmin[1] + 1;
 	}
 	
-	VectorCopy (tmin, trigger->mins);
-	VectorCopy (tmax, trigger->maxs);
+	VectorCopy (tmin, trigger->s.mins);
+	VectorCopy (tmax, trigger->s.maxs);
 
 	gi.linkentity (trigger);
 }
@@ -547,7 +529,7 @@ void SP_func_plat (edict_t *ent)
 	if (st.height)
 		ent->pos2[2] -= st.height;
 	else
-		ent->pos2[2] -= (ent->maxs[2] - ent->mins[2]) - st.lip;
+		ent->pos2[2] -= (ent->s.maxs[2] - ent->s.mins[2]) - st.lip;
 
 	ent->use = Use_Plat;
 
@@ -594,13 +576,13 @@ STOP mean it will stop moving instead of pushing entities
 
 void rotating_blocked (edict_t *self, edict_t *other)
 {
-	T_Damage (other, self, self, vec3_origin, other->s.origin, vec3_origin, self->dmg, 1, 0, MOD_CRUSH);
+	T_Damage (other, self, self, vec3_origin, other->s.origin, vec3_origin, self->dmg, 1, 0);
 }
 
 void rotating_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
 {
 	if (self->avelocity[0] || self->avelocity[1] || self->avelocity[2])
-		T_Damage (other, self, self, vec3_origin, other->s.origin, vec3_origin, self->dmg, 1, 0, MOD_CRUSH);
+		T_Damage (other, self, self, vec3_origin, other->s.origin, vec3_origin, self->dmg, 1, 0);
 }
 
 void rotating_use (edict_t *self, edict_t *other, edict_t *activator)
@@ -824,7 +806,7 @@ void SP_func_button (edict_t *ent)
 DOORS
 
   spawn a trigger surrounding the entire team unless it is
-  already targeted by another
+  allready targeted by another
 
 ======================================================================
 */
@@ -1059,8 +1041,8 @@ void Think_SpawnDoorTrigger (edict_t *ent)
 	maxs[1] += 60;
 
 	other = G_Spawn ();
-	VectorCopy (mins, other->mins);
-	VectorCopy (maxs, other->maxs);
+	VectorCopy (mins, other->s.mins);
+	VectorCopy (maxs, other->s.maxs);
 	other->owner = ent;
 	other->solid = SOLID_TRIGGER;
 	other->movetype = MOVETYPE_NONE;
@@ -1077,17 +1059,16 @@ void door_blocked  (edict_t *self, edict_t *other)
 {
 	edict_t	*ent;
 
-	if (!(other->svflags & SVF_MONSTER) && (!other->client) )
+	if (!(other->svflags & SVF_MONSTER) && (!other->client))
 	{
 		// give it a chance to go away on it's own terms (like gibs)
-		T_Damage (other, self, self, vec3_origin, other->s.origin, vec3_origin, 100000, 1, 0, MOD_CRUSH);
+		T_Damage (other, self, self, vec3_origin, other->s.origin, vec3_origin, 100000, 1, 0);
 		// if it's still there, nuke it
-		if (other)
-			BecomeExplosion1 (other);
+		BecomeExplosion1 (other);
 		return;
 	}
 
-	T_Damage (other, self, self, vec3_origin, other->s.origin, vec3_origin, self->dmg, 1, 0, MOD_CRUSH);
+	T_Damage (other, self, self, vec3_origin, other->s.origin, vec3_origin, self->dmg, 1, 0);
 
 	if (self->spawnflags & DOOR_CRUSHER)
 		return;
@@ -1156,9 +1137,6 @@ void SP_func_door (edict_t *ent)
 	
 	if (!ent->speed)
 		ent->speed = 100;
-	if (deathmatch->value)
-		ent->speed *= 2;
-
 	if (!ent->accel)
 		ent->accel = ent->speed;
 	if (!ent->decel)
@@ -1229,7 +1207,7 @@ void SP_func_door (edict_t *ent)
 }
 
 
-/*QUAKED func_door_rotating (0 .5 .8) ? START_OPEN REVERSE CRUSHER NOMONSTER ANIMATED TOGGLE X_AXIS Y_AXIS
+/*QUAKED func_door_rotating (0 .5 .8) ? START_OPEN REVERSE CRUSHER NOMONSTER ANIMATED TOGGLE X_AXIS Y_AXIS SWINGING
 TOGGLE causes the door to wait in both the start and end states for a trigger event.
 
 START_OPEN	the door to moves to its destination when spawned, and operate in reverse.  It is used to temporarily or permanently close off an area when triggered (not useful for touch or takedamage doors).
@@ -1243,6 +1221,8 @@ check either the X_AXIS or Y_AXIS box to change that.
 "speed" determines how fast the door moves; default value is 100.
 
 REVERSE will cause the door to rotate in the opposite direction.
+
+SWINGING will cause the door to always open in the the direction away from the player
 
 "message"	is printed when the door is touched if it is a trigger door and it hasn't been fired yet
 "angle"		determines the opening direction
@@ -1345,10 +1325,6 @@ void SP_func_door_rotating (edict_t *ent)
 
 	if (ent->spawnflags & 16)
 		ent->s.effects |= EF_ANIM_ALL;
-
-	// to simplify logic elsewhere, make non-teamed doors into a team of one
-	if (!ent->team)
-		ent->teammaster = ent;
 
 	gi.linkentity (ent);
 
@@ -1460,10 +1436,10 @@ void train_next (edict_t *self);
 
 void train_blocked (edict_t *self, edict_t *other)
 {
-	if (!(other->svflags & SVF_MONSTER) && (!other->client) )
+	if (!(other->svflags & SVF_MONSTER) && (!other->client))
 	{
 		// give it a chance to go away on it's own terms (like gibs)
-		T_Damage (other, self, self, vec3_origin, other->s.origin, vec3_origin, 100000, 1, 0, MOD_CRUSH);
+		T_Damage (other, self, self, vec3_origin, other->s.origin, vec3_origin, 100000, 1, 0);
 		// if it's still there, nuke it
 		if (other)
 			BecomeExplosion1 (other);
@@ -1476,7 +1452,7 @@ void train_blocked (edict_t *self, edict_t *other)
 	if (!self->dmg)
 		return;
 	self->touch_debounce_time = level.time + 0.5;
-	T_Damage (other, self, self, vec3_origin, other->s.origin, vec3_origin, self->dmg, 1, 0, MOD_CRUSH);
+	T_Damage (other, self, self, vec3_origin, other->s.origin, vec3_origin, self->dmg, 1, 0);
 }
 
 void train_wait (edict_t *self)
@@ -1558,9 +1534,8 @@ again:
 			return;
 		}
 		first = false;
-		VectorSubtract (ent->s.origin, self->mins, self->s.origin);
+		VectorSubtract (ent->s.origin, self->s.mins, self->s.origin);
 		VectorCopy (self->s.origin, self->s.old_origin);
-		self->s.event = EV_OTHER_TELEPORT;
 		gi.linkentity (self);
 		goto again;
 	}
@@ -1575,7 +1550,7 @@ again:
 		self->s.sound = self->moveinfo.sound_middle;
 	}
 
-	VectorSubtract (ent->s.origin, self->mins, dest);
+	VectorSubtract (ent->s.origin, self->s.mins, dest);
 	self->moveinfo.state = STATE_TOP;
 	VectorCopy (self->s.origin, self->moveinfo.start_origin);
 	VectorCopy (dest, self->moveinfo.end_origin);
@@ -1590,7 +1565,7 @@ void train_resume (edict_t *self)
 
 	ent = self->target_ent;
 
-	VectorSubtract (ent->s.origin, self->mins, dest);
+	VectorSubtract (ent->s.origin, self->s.mins, dest);
 	self->moveinfo.state = STATE_TOP;
 	VectorCopy (self->s.origin, self->moveinfo.start_origin);
 	VectorCopy (dest, self->moveinfo.end_origin);
@@ -1615,7 +1590,7 @@ void func_train_find (edict_t *self)
 	}
 	self->target = ent->target;
 
-	VectorSubtract (ent->s.origin, self->mins, self->s.origin);
+	VectorSubtract (ent->s.origin, self->s.mins, self->s.origin);
 	gi.linkentity (self);
 
 	// if not triggered, start immediately
@@ -1940,13 +1915,12 @@ void door_secret_done (edict_t *self)
 
 void door_secret_blocked  (edict_t *self, edict_t *other)
 {
-	if (!(other->svflags & SVF_MONSTER) && (!other->client) )
+	if (!(other->svflags & SVF_MONSTER) && (!other->client))
 	{
 		// give it a chance to go away on it's own terms (like gibs)
-		T_Damage (other, self, self, vec3_origin, other->s.origin, vec3_origin, 100000, 1, 0, MOD_CRUSH);
+		T_Damage (other, self, self, vec3_origin, other->s.origin, vec3_origin, 100000, 1, 0);
 		// if it's still there, nuke it
-		if (other)
-			BecomeExplosion1 (other);
+		BecomeExplosion1 (other);
 		return;
 	}
 
@@ -1954,7 +1928,7 @@ void door_secret_blocked  (edict_t *self, edict_t *other)
 		return;
 	self->touch_debounce_time = level.time + 0.5;
 
-	T_Damage (other, self, self, vec3_origin, other->s.origin, vec3_origin, self->dmg, 1, 0, MOD_CRUSH);
+	T_Damage (other, self, self, vec3_origin, other->s.origin, vec3_origin, self->dmg, 1, 0);
 }
 
 void door_secret_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int damage, vec3_t point)

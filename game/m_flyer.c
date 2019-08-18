@@ -40,6 +40,25 @@ static int	sound_slash;
 static int	sound_sproing;
 static int	sound_die;
 
+enum {
+	flyer_move_stand = 1,
+	flyer_move_walk,
+	flyer_move_run,
+	flyer_move_start,
+	flyer_move_stop,
+	flyer_move_rollright,
+	flyer_move_rollleft,
+	flyer_move_pain3,
+	flyer_move_pain2,
+	flyer_move_pain1,
+	flyer_move_defense,
+	flyer_move_bankright,
+	flyer_move_bankleft,
+	flyer_move_attack2,
+	flyer_move_start_melee,
+	flyer_move_end_melee,
+	flyer_move_loop_melee
+};
 
 void flyer_check_melee(edict_t *self);
 void flyer_loop_melee (edict_t *self);
@@ -113,7 +132,6 @@ mframe_t flyer_frames_stand [] =
 	ai_stand, 0, NULL,
 	ai_stand, 0, NULL
 };
-mmove_t	flyer_move_stand = {FRAME_stand01, FRAME_stand45, flyer_frames_stand, NULL};
 
 
 mframe_t flyer_frames_walk [] =
@@ -164,7 +182,6 @@ mframe_t flyer_frames_walk [] =
 	ai_walk, 5, NULL,
 	ai_walk, 5, NULL
 };
-mmove_t	flyer_move_walk = {FRAME_stand01, FRAME_stand45, flyer_frames_walk, NULL};
 
 mframe_t flyer_frames_run [] =
 {
@@ -214,24 +231,23 @@ mframe_t flyer_frames_run [] =
 	ai_run, 10, NULL,
 	ai_run, 10, NULL
 };
-mmove_t	flyer_move_run = {FRAME_stand01, FRAME_stand45, flyer_frames_run, NULL};
 
 void flyer_run (edict_t *self)
 {
 	if (self->monsterinfo.aiflags & AI_STAND_GROUND)
-		self->monsterinfo.currentmove = &flyer_move_stand;
+		self->monsterinfo.currentmove = flyer_move_stand;
 	else
-		self->monsterinfo.currentmove = &flyer_move_run;
+		self->monsterinfo.currentmove = flyer_move_run;
 }
 
 void flyer_walk (edict_t *self)
 {
-	self->monsterinfo.currentmove = &flyer_move_walk;
+	self->monsterinfo.currentmove = flyer_move_walk;
 }
 
 void flyer_stand (edict_t *self)
 {
-		self->monsterinfo.currentmove = &flyer_move_stand;
+		self->monsterinfo.currentmove = flyer_move_stand;
 }
 
 mframe_t flyer_frames_start [] =
@@ -243,7 +259,6 @@ mframe_t flyer_frames_start [] =
 		ai_move, 0,	NULL,
 		ai_move, 0,	flyer_nextmove
 };
-mmove_t flyer_move_start = {FRAME_start01, FRAME_start06, flyer_frames_start, NULL};
 
 mframe_t flyer_frames_stop [] =
 {
@@ -255,16 +270,15 @@ mframe_t flyer_frames_stop [] =
 		ai_move, 0,	NULL,
 		ai_move, 0,	flyer_nextmove
 };
-mmove_t flyer_move_stop = {FRAME_stop01, FRAME_stop07, flyer_frames_stop, NULL};
 
 void flyer_stop (edict_t *self)
 {
-		self->monsterinfo.currentmove = &flyer_move_stop;
+		self->monsterinfo.currentmove = flyer_move_stop;
 }
 
 void flyer_start (edict_t *self)
 {
-		self->monsterinfo.currentmove = &flyer_move_start;
+		self->monsterinfo.currentmove = flyer_move_start;
 }
 
 
@@ -280,7 +294,6 @@ mframe_t flyer_frames_rollright [] =
 		ai_move, 0, NULL,
 		ai_move, 0, NULL
 };
-mmove_t flyer_move_rollright = {FRAME_rollr01, FRAME_rollr09, flyer_frames_rollright, NULL};
 
 mframe_t flyer_frames_rollleft [] =
 {
@@ -294,7 +307,6 @@ mframe_t flyer_frames_rollleft [] =
 		ai_move, 0, NULL,
 		ai_move, 0, NULL
 };
-mmove_t flyer_move_rollleft = {FRAME_rollf01, FRAME_rollf09, flyer_frames_rollleft, NULL};
 
 mframe_t flyer_frames_pain3 [] =
 {	
@@ -303,7 +315,6 @@ mframe_t flyer_frames_pain3 [] =
 		ai_move, 0, NULL,
 		ai_move, 0, NULL
 };
-mmove_t flyer_move_pain3 = {FRAME_pain301, FRAME_pain304, flyer_frames_pain3, flyer_run};
 
 mframe_t flyer_frames_pain2 [] =
 {
@@ -312,7 +323,6 @@ mframe_t flyer_frames_pain2 [] =
 		ai_move, 0, NULL,
 		ai_move, 0, NULL
 };
-mmove_t flyer_move_pain2 = {FRAME_pain201, FRAME_pain204, flyer_frames_pain2, flyer_run};
 
 mframe_t flyer_frames_pain1 [] =
 {
@@ -326,7 +336,6 @@ mframe_t flyer_frames_pain1 [] =
 		ai_move, 0, NULL,
 		ai_move, 0, NULL
 };
-mmove_t flyer_move_pain1 = {FRAME_pain101, FRAME_pain109, flyer_frames_pain1, flyer_run};
 
 mframe_t flyer_frames_defense [] = 
 {
@@ -337,7 +346,6 @@ mframe_t flyer_frames_defense [] =
 		ai_move, 0, NULL,
 		ai_move, 0, NULL
 };
-mmove_t flyer_move_defense = {FRAME_defens01, FRAME_defens06, flyer_frames_defense, NULL};
 
 mframe_t flyer_frames_bankright [] =
 {
@@ -349,7 +357,6 @@ mframe_t flyer_frames_bankright [] =
 		ai_move, 0, NULL,
 		ai_move, 0, NULL
 };
-mmove_t flyer_move_bankright = {FRAME_bankr01, FRAME_bankr07, flyer_frames_bankright, NULL};
 
 mframe_t flyer_frames_bankleft [] =
 {
@@ -361,7 +368,6 @@ mframe_t flyer_frames_bankleft [] =
 		ai_move, 0, NULL,
 		ai_move, 0, NULL
 };
-mmove_t flyer_move_bankleft = {FRAME_bankl01, FRAME_bankl07, flyer_frames_bankleft, NULL};		
 
 
 void flyer_fire (edict_t *self, int flash_number)
@@ -417,14 +423,13 @@ mframe_t flyer_frames_attack2 [] =
 		ai_charge, 0, NULL,
 		ai_charge, 0, NULL
 };
-mmove_t flyer_move_attack2 = {FRAME_attak201, FRAME_attak217, flyer_frames_attack2, flyer_run};
 
 
 void flyer_slash_left (edict_t *self)
 {
 	vec3_t	aim;
 
-	VectorSet (aim, MELEE_DISTANCE, self->mins[0], 0);
+	VectorSet (aim, MELEE_DISTANCE, self->s.mins[0], 0);
 	fire_hit (self, aim, 5, 0);
 	gi.sound (self, CHAN_WEAPON, sound_slash, 1, ATTN_NORM, 0);
 }
@@ -433,7 +438,7 @@ void flyer_slash_right (edict_t *self)
 {
 	vec3_t	aim;
 
-	VectorSet (aim, MELEE_DISTANCE, self->maxs[0], 0);
+	VectorSet (aim, MELEE_DISTANCE, self->s.maxs[0], 0);
 	fire_hit (self, aim, 5, 0);
 	gi.sound (self, CHAN_WEAPON, sound_slash, 1, ATTN_NORM, 0);
 }
@@ -447,7 +452,6 @@ mframe_t flyer_frames_start_melee [] =
 		ai_charge, 0, NULL,
 		ai_charge, 0, NULL
 };
-mmove_t flyer_move_start_melee = {FRAME_attak101, FRAME_attak106, flyer_frames_start_melee, flyer_loop_melee};
 
 mframe_t flyer_frames_end_melee [] =
 {
@@ -455,7 +459,6 @@ mframe_t flyer_frames_end_melee [] =
 		ai_charge, 0, NULL,
 		ai_charge, 0, NULL
 };
-mmove_t flyer_move_end_melee = {FRAME_attak119, FRAME_attak121, flyer_frames_end_melee, flyer_run};
 
 
 mframe_t flyer_frames_loop_melee [] =
@@ -474,14 +477,39 @@ mframe_t flyer_frames_loop_melee [] =
 		ai_charge, 0, NULL		// Loop Ends
 		
 };
-mmove_t flyer_move_loop_melee = {FRAME_attak107, FRAME_attak118, flyer_frames_loop_melee, flyer_check_melee};
+
+mmove_t flyer_moves[] = {
+	{FRAME_stand01, FRAME_stand45, flyer_frames_stand, NULL},
+	{FRAME_stand01, FRAME_stand45, flyer_frames_walk, NULL},
+	{FRAME_stand01, FRAME_stand45, flyer_frames_run, NULL},
+	{FRAME_start01, FRAME_start06, flyer_frames_start, NULL},
+	{FRAME_stop01, FRAME_stop07, flyer_frames_stop, NULL},
+	{FRAME_rollr01, FRAME_rollr09, flyer_frames_rollright, NULL},
+	{FRAME_rollf01, FRAME_rollf09, flyer_frames_rollleft, NULL},
+	{FRAME_pain301, FRAME_pain304, flyer_frames_pain3, flyer_run},
+	{FRAME_pain201, FRAME_pain204, flyer_frames_pain2, flyer_run},
+	{FRAME_pain101, FRAME_pain109, flyer_frames_pain1, flyer_run},
+	{FRAME_defens01, FRAME_defens06, flyer_frames_defense, NULL},
+	{FRAME_bankr01, FRAME_bankr07, flyer_frames_bankright, NULL},
+	{FRAME_bankl01, FRAME_bankl07, flyer_frames_bankleft, NULL},		
+	{FRAME_attak201, FRAME_attak217, flyer_frames_attack2, flyer_run},
+	{FRAME_attak101, FRAME_attak106, flyer_frames_start_melee, flyer_loop_melee},
+	{FRAME_attak119, FRAME_attak121, flyer_frames_end_melee, flyer_run},
+	{FRAME_attak107, FRAME_attak118, flyer_frames_loop_melee, flyer_check_melee}
+};
+
+mmove_t * flyer_get_currentmove(edict_t *self)
+{
+	if (!self->monsterinfo.currentmove) return NULL;
+	return &flyer_moves[self->monsterinfo.currentmove-1];
+}
 
 void flyer_loop_melee (edict_t *self)
 {
 /*	if (random() <= 0.5)	
-		self->monsterinfo.currentmove = &flyer_move_attack1;
+		self->monsterinfo.currentmove = flyer_move_attack1;
 	else */
-	self->monsterinfo.currentmove = &flyer_move_loop_melee;
+	self->monsterinfo.currentmove = flyer_move_loop_melee;
 }
 
 
@@ -489,43 +517,43 @@ void flyer_loop_melee (edict_t *self)
 void flyer_attack (edict_t *self)
 {
 /*	if (random() <= 0.5)	
-		self->monsterinfo.currentmove = &flyer_move_attack1;
+		self->monsterinfo.currentmove = flyer_move_attack1;
 	else */
-	self->monsterinfo.currentmove = &flyer_move_attack2;
+	self->monsterinfo.currentmove = flyer_move_attack2;
 }
 
 void flyer_setstart (edict_t *self)
 {
 	nextmove = ACTION_run;
-	self->monsterinfo.currentmove = &flyer_move_start;
+	self->monsterinfo.currentmove = flyer_move_start;
 }
 
 void flyer_nextmove (edict_t *self)
 {
 	if (nextmove == ACTION_attack1)
-		self->monsterinfo.currentmove = &flyer_move_start_melee;
+		self->monsterinfo.currentmove = flyer_move_start_melee;
 	else if (nextmove == ACTION_attack2)
-		self->monsterinfo.currentmove = &flyer_move_attack2;
+		self->monsterinfo.currentmove = flyer_move_attack2;
 	else if (nextmove == ACTION_run)
-		self->monsterinfo.currentmove = &flyer_move_run;
+		self->monsterinfo.currentmove = flyer_move_run;
 }
 
 void flyer_melee (edict_t *self)
 {
 //	flyer.nextmove = ACTION_attack1;
-//	self->monsterinfo.currentmove = &flyer_move_stop;
-	self->monsterinfo.currentmove = &flyer_move_start_melee;
+//	self->monsterinfo.currentmove = flyer_move_stop;
+	self->monsterinfo.currentmove = flyer_move_start_melee;
 }
 
 void flyer_check_melee(edict_t *self)
 {
 	if (range (self, self->enemy) == RANGE_MELEE)
 		if (random() <= 0.8)
-			self->monsterinfo.currentmove = &flyer_move_loop_melee;
+			self->monsterinfo.currentmove = flyer_move_loop_melee;
 		else
-			self->monsterinfo.currentmove = &flyer_move_end_melee;
+			self->monsterinfo.currentmove = flyer_move_end_melee;
 	else
-		self->monsterinfo.currentmove = &flyer_move_end_melee;
+		self->monsterinfo.currentmove = flyer_move_end_melee;
 }
 
 void flyer_pain (edict_t *self, edict_t *other, float kick, int damage)
@@ -546,17 +574,17 @@ void flyer_pain (edict_t *self, edict_t *other, float kick, int damage)
 	if (n == 0)
 	{
 		gi.sound (self, CHAN_VOICE, sound_pain1, 1, ATTN_NORM, 0);
-		self->monsterinfo.currentmove = &flyer_move_pain1;
+		self->monsterinfo.currentmove = flyer_move_pain1;
 	}
 	else if (n == 1)
 	{
 		gi.sound (self, CHAN_VOICE, sound_pain2, 1, ATTN_NORM, 0);
-		self->monsterinfo.currentmove = &flyer_move_pain2;
+		self->monsterinfo.currentmove = flyer_move_pain2;
 	}
 	else
 	{
 		gi.sound (self, CHAN_VOICE, sound_pain1, 1, ATTN_NORM, 0);
-		self->monsterinfo.currentmove = &flyer_move_pain3;
+		self->monsterinfo.currentmove = flyer_move_pain3;
 	}
 }
 
@@ -596,8 +624,8 @@ void SP_monster_flyer (edict_t *self)
 	gi.soundindex ("flyer/flyatck3.wav");
 
 	self->s.modelindex = gi.modelindex ("models/monsters/flyer/tris.md2");
-	VectorSet (self->mins, -16, -16, -24);
-	VectorSet (self->maxs, 16, 16, 32);
+	VectorSet (self->s.mins, -16, -16, -24);
+	VectorSet (self->s.maxs, 16, 16, 32);
 	self->movetype = MOVETYPE_STEP;
 	self->solid = SOLID_BBOX;
 
@@ -616,10 +644,11 @@ void SP_monster_flyer (edict_t *self)
 	self->monsterinfo.melee = flyer_melee;
 	self->monsterinfo.sight = flyer_sight;
 	self->monsterinfo.idle = flyer_idle;
+	self->monsterinfo.get_currentmove = flyer_get_currentmove;
 
 	gi.linkentity (self);
 
-	self->monsterinfo.currentmove = &flyer_move_stand;	
+	self->monsterinfo.currentmove = flyer_move_stand;	
 	self->monsterinfo.scale = MODEL_SCALE;
 
 	flymonster_start (self);

@@ -1,17 +1,51 @@
---------------------Configuration: ref_gl - Win32 Release Alpha--------------------
-Begining build with project "G:\quake2\code\ref_gl\ref_gl.dsp", at root.
-Active configuration is Win32 (ALPHA) Dynamic-Link Library (based on Win32 (ALPHA) Dynamic-Link Library)
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: ref_gl - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "c:\windows\TEMP\RSPB360.TMP" with contents
+[
+/nologo /G5 /MT /W4 /GX /O2 /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /Fp".\release/ref_gl.pch" /YX /Fo".\release/" /Fd".\release/" /FD /c 
+"C:\Games\Quake2\Quake2-3.21\win32\glw_imp.c"
+]
+Creating command line "cl.exe @c:\windows\TEMP\RSPB360.TMP" 
+Creating temporary file "c:\windows\TEMP\RSPB361.TMP" with contents
+[
+kernel32.lib user32.lib gdi32.lib winmm.lib /nologo /subsystem:windows /dll /incremental:no /pdb:"c:/games/quake2/ref_gl.pdb" /machine:I386 /def:".\ref_gl.def" /out:"c:/games/quake2/ref_gl.dll" /implib:"c:/games/quake2/ref_gl.lib" 
+".\release\gl_draw.obj"
+".\release\gl_image.obj"
+".\release\gl_light.obj"
+".\release\gl_mesh.obj"
+".\release\gl_model.obj"
+".\release\gl_rmain.obj"
+".\release\gl_rmisc.obj"
+".\release\gl_rsurf.obj"
+".\release\gl_warp.obj"
+".\release\glw_imp.obj"
+".\release\q_shared.obj"
+".\release\q_shwin.obj"
+".\release\qgl_win.obj"
+".\release\qlw_trick.obj"
+]
+Creating command line "link.exe @c:\windows\TEMP\RSPB361.TMP"
+<h3>Output Window</h3>
+Compiling...
+glw_imp.c
+C:\Games\Quake2\Quake2-3.21\win32\glw_imp.c(53) : warning C4057: 'function' : 'const char *' differs in indirection to slightly different base types from 'const unsigned char *'
+C:\Games\Quake2\Quake2-3.21\win32\glw_imp.c(80) : warning C4055: 'type cast' : from data pointer 'void *' to function pointer 'long (__stdcall *)(struct HWND__ *,unsigned int ,unsigned int ,long )'
+C:\Games\Quake2\Quake2-3.21\win32\glw_imp.c(408) : warning C4033: 'wglCPFDAGB_AddSetting' must return a value
+C:\Games\Quake2\Quake2-3.21\win32\glw_imp.c(412) : warning C4033: 'wglCPFDAGB_AddSetting' must return a value
+Linking...
+   Creating library c:/games/quake2/ref_gl.lib and object c:/games/quake2/ref_gl.exp
+LINK : warning LNK4089: all references to "WINMM.dll" discarded by /OPT:REF
 
-Project's tools are:
-			"OLE Type Library Maker" with flags "/nologo /D "NDEBUG" /mktyplib203 /o NUL /win32 "
-			"C/C++ Compiler for Alpha" with flags "/nologo /QA21164 /MT /Gt0 /W3 /GX /Zi /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "C_ONLY" /Fp".\ReleaseAXP/ref_gl.pch" /YX /Fo".\ReleaseAXP/" /Fd".\ReleaseAXP/" /FD /QAieee1 /c "
-			"Win32 Resource Compiler" with flags "/l 0x409 /d "NDEBUG" "
-			"Browser Database Maker" with flags "/nologo /o"..\ReleaseAXP/ref_gl.bsc" "
-			"COFF Linker for Alpha" with flags "kernel32.lib user32.lib gdi32.lib winmm.lib /nologo /subsystem:windows /dll /incremental:no /pdb:"..\ReleaseAXP/ref_gl.pdb" /debug /machine:ALPHA /def:".\ref_gl.def" /out:"..\ReleaseAXP/ref_gl.dll" /implib:"..\ReleaseAXP/ref_gl.lib" "
-			"Custom Build" with flags ""
-			"<Component 0xa>" with flags ""
 
 
-
-
-ref_gl.dll - 0 error(s), 0 warning(s)
+<h3>Results</h3>
+ref_gl.dll - 0 error(s), 5 warning(s)
+</pre>
+</body>
+</html>

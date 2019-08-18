@@ -176,8 +176,8 @@ void PF_setmodel (edict_t *ent, char *name)
 	if (name[0] == '*')
 	{
 		mod = CM_InlineModel (name);
-		VectorCopy (mod->mins, ent->mins);
-		VectorCopy (mod->maxs, ent->maxs);
+		VectorCopy (mod->mins, ent->s.mins);
+		VectorCopy (mod->maxs, ent->s.maxs);
 		SV_LinkEdict (ent);
 	}
 
@@ -199,6 +199,7 @@ void PF_Configstring (int index, char *val)
 
 	// change the string in sv
 	strcpy (sv.configstrings[index], val);
+
 	
 	if (sv.state != ss_loading)
 	{	// send the update to everyone
@@ -319,6 +320,8 @@ Init the game subsystem for a new map
 ===============
 */
 void SCR_DebugGraph (float value, int color);
+md2_info_t *SV_GetModelInfo (int index);
+void SV_WipeModelInfo(void);
 
 void SV_InitGameProgs (void)
 {
@@ -382,6 +385,12 @@ void SV_InitGameProgs (void)
 	import.DebugGraph = SCR_DebugGraph;
 	import.SetAreaPortalState = CM_SetAreaPortalState;
 	import.AreasConnected = CM_AreasConnected;
+
+	import.FS_LoadFile = FS_LoadFile;
+	import.FS_FreeFile = FS_FreeFile;
+	import.GetModelInfo = SV_GetModelInfo;
+	import.WipeModelInfo = SV_WipeModelInfo;
+	import.apdindex = SV_APDIndex;
 
 	ge = (game_export_t *)Sys_GetGameAPI (&import);
 

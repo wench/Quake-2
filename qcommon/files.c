@@ -342,7 +342,7 @@ Properly handles partial reads
 =================
 */
 void CDAudio_Stop(void);
-#define	MAX_READ	0x10000		// read in blocks of 64k
+#define	MAX_READ	0x1000		// read in blocks of 64k
 void FS_Read (void *buffer, int len, FILE *f)
 {
 	int		block, remaining;
@@ -381,6 +381,7 @@ void FS_Read (void *buffer, int len, FILE *f)
 		remaining -= read;
 		buf += read;
 	}
+
 }
 
 /*
@@ -501,7 +502,73 @@ pack_t *FS_LoadPackFile (char *packfile)
 	return pack;
 }
 
+pack_t *FS_LoadDATFile(char *packfile)
+{
+	dpackheader_t	header;
+	int				i;
+	packfile_t		*newfiles;
+	int				numpackfiles;
+	pack_t			*pack;
+	FILE			*packhandle;
+	adatfile_t		*info;
+	unsigned		checksum;
 
+	packhandle = fopen(packfile, "rb");
+	if (!packhandle)
+		return NULL;
+
+	fread(&header, 1, sizeof(header), packhandle);
+	if (LittleLong(header.ident) != ADATHEADER)
+		Com_Error(ERR_FATAL, "%s is not a datfile", packfile);
+	header.dirofs = LittleLong(header.dirofs);
+	header.dirlen = LittleLong(header.dirlen);
+
+	numpackfiles = header.dirlen / sizeof(adatfile_t);
+
+	info = Z_Malloc(numpackfiles * sizeof(adatfile_t));
+	newfiles = Z_Malloc(numpackfiles * sizeof(packfile_t));
+
+	fseek(packhandle, header.dirofs, SEEK_SET);
+	fread(info, 1, header.dirlen, packhandle);
+
+	// crc the directory to check for modifications
+	checksum = Com_BlockChecksum((void *)info, header.dirlen);
+
+#ifdef NO_ADDONS
+	if (checksum != PAK0_CHECKSUM)
+		return NULL;
+#endif
+	// parse the directory
+	{
+		char *slash = strrchr(packfile, '/');
+		char *bslash = strrchr(packfile, '\\');
+		if (bslash > slash)
+			slash = bslash;
+
+		for (i = 0; i < numpackfiles; i++)
+		{
+			char*dot;
+			strcpy(newfiles[i].name, slash + 1);
+			dot = strchr(newfiles[i].name, '.');
+			*dot = '/';
+			dot[1] = 0;
+			info[i].name[127] = 0;
+			strcat_s(newfiles[i].name, sizeof(newfiles[i].name), info[i].name);
+			newfiles[i].filepos = LittleLong(info[i].filepos);
+			newfiles[i].filelen = LittleLong(info[i].filelen);
+		}
+	}
+
+	pack = Z_Malloc(sizeof(pack_t));
+	strcpy_s(pack->filename,sizeof(pack->filename), packfile);
+	pack->handle = packhandle;
+	pack->numfiles = numpackfiles;
+	pack->files = newfiles;
+
+	Com_Printf("Added packfile %s (%i files)\n", packfile, numpackfiles);
+	return pack;
+}
+extern char **FS_ListFiles(char *, int *, unsigned, unsigned);
 /*
 ================
 FS_AddGameDirectory
@@ -515,6 +582,9 @@ void FS_AddGameDirectory (char *dir)
 	int				i;
 	searchpath_t	*search;
 	pack_t			*pak;
+	
+		char	**dirnames;
+	int ndirs;
 	char			pakfile[MAX_OSPATH];
 
 	strcpy (fs_gamedir, dir);
@@ -542,6 +612,32 @@ void FS_AddGameDirectory (char *dir)
 		fs_searchpaths = search;		
 	}
 
+	Com_sprintf(pakfile, sizeof(pakfile), "%s/*.dat", dir, i);
+	if ((dirnames = FS_ListFiles(pakfile, &ndirs, 0, SFF_SUBDIR | SFF_HIDDEN | SFF_SYSTEM)) != 0)
+	{
+		int i;
+
+		for (i = 0; i < ndirs - 1; i++)
+		{
+			//if (strrchr(dirnames[i], '/'))
+				//Com_Printf("%s\n", strrchr(dirnames[i], '/') + 1);
+			//else
+				Com_Printf("%s\n", dirnames[i]);
+
+
+			pak = FS_LoadDATFile(dirnames[i]);
+			if (!pak)
+				continue;
+			search = Z_Malloc(sizeof(searchpath_t));
+			search->pack = pak;
+			search->next = fs_searchpaths;
+			fs_searchpaths = search;
+
+			free(dirnames[i]);
+		}
+		free(dirnames);
+	}
+	Com_Printf("\n");
 
 }
 
@@ -554,7 +650,10 @@ Called to find where to write a file (demos, savegames, etc)
 */
 char *FS_Gamedir (void)
 {
-	return fs_gamedir;
+	if (*fs_gamedir)
+		return fs_gamedir;
+	else
+		return BASEDIRNAME;
 }
 
 /*
@@ -726,7 +825,7 @@ char **FS_ListFiles( char *findname, int *numfiles, unsigned musthave, unsigned 
 
 	return list;
 }
-
+extern char **FS_ListFiles(char *, int *, unsigned, unsigned);
 /*
 ** FS_Dir_f
 */
@@ -863,6 +962,8 @@ void FS_InitFilesystem (void)
 	// start up with baseq2 by default
 	//
 	FS_AddGameDirectory (va("%s/"BASEDIRNAME, fs_basedir->string) );
+
+	FS_AddGameDirectory(va("%s/anoxdata", fs_basedir->string) );
 
 	// any set gamedirs will be freed up to here
 	fs_base_searchpaths = fs_searchpaths;

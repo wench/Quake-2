@@ -67,22 +67,23 @@ typedef enum {false, true}	qboolean;
 
 #define	MAX_STRING_CHARS	1024	// max length of a string passed to Cmd_TokenizeString
 #define	MAX_STRING_TOKENS	80		// max tokens resulting from Cmd_TokenizeString
-#define	MAX_TOKEN_CHARS		128		// max length of an individual token
+#define	MAX_TOKEN_CHARS		512		// max length of an individual token
 
-#define	MAX_QPATH			64		// max length of a quake game pathname
-#define	MAX_OSPATH			128		// max length of a filesystem pathname
+#define	MAX_QPATH			256		// max length of a quake game pathname
+#define	MAX_OSPATH			256		// max length of a filesystem pathname
 
 //
 // per-level limits
 //
-#define	MAX_CLIENTS			256		// absolute limit
-#define	MAX_EDICTS			1024	// must change protocol to increase more
+#define	MAX_CLIENTS			16		// absolute limit (yeah, it's now really small)
+#define	MAX_EDICTS			2048	// must change protocol to increase more
 #define	MAX_LIGHTSTYLES		256
-#define	MAX_MODELS			256		// these are sent over the net as bytes
-#define	MAX_SOUNDS			256		// so they cannot be blindly increased
-#define	MAX_IMAGES			256
+#define	MAX_MODELS			1024	// these are sent over the net as bytes
+#define	MAX_SOUNDS			1024	// so they cannot be blindly increased (words now)
+#define	MAX_IMAGES			1024
 #define	MAX_ITEMS			256
 #define MAX_GENERAL			(MAX_CLIENTS*2)	// general config strings
+#define	MAX_APD				1024	// This is the max number of particle APD files that can be loaded
 
 
 // game print flags
@@ -216,6 +217,10 @@ void COM_FilePath (char *in, char *out);
 void COM_DefaultExtension (char *path, char *extension);
 
 char *COM_Parse (char **data_p);
+char *COM_Parse2 (char **data_p);
+char *COM_Parse3 (char **data_p, qboolean skip_white);
+char *COM_Parse4 (char **data_p);
+char *COM_Parse5 (char **data_p);
 // data is an in/out parm, returns a parsed out token
 
 void Com_sprintf (char *dest, int size, char *fmt, ...);
@@ -379,6 +384,15 @@ COLLISION DETECTION
 #define	SURF_TRANS66	0x20
 #define	SURF_FLOWING	0x40	// scroll towards angle
 #define	SURF_NODRAW		0x80	// don't bother referencing the texture
+#define	SURF_HINT			0x100
+#define	SURF_SKIP			0x200
+#define	SURF_MIRROR			0x400
+#define	SURF_TRANSTHING		0x800
+#define	SURF_ALPHACHAN		0x1000
+#define	SURF_MIDTEXTURE		0x2000
+#define	SURF_HALF_SCROLL	0x4000
+#define	SURF_QUART_SCROLL	0x8000
+#define	SURF_FOG			0x10000
 
 
 
@@ -502,6 +516,7 @@ typedef struct
 //
 #define	BUTTON_ATTACK		1
 #define	BUTTON_USE			2
+#define	BUTTON_WALKING		4
 #define	BUTTON_ANY			128			// any key whatsoever
 
 
@@ -535,6 +550,8 @@ typedef struct
 	float		viewheight;
 
 	vec3_t		mins, maxs;			// bounding box size
+	float		run_speed;		// 300 quake, 160 anox
+	float		duck_speed;		// 100 quake, 68 anox
 
 	struct edict_s	*groundentity;
 	int			watertype;
@@ -1108,7 +1125,8 @@ ROGUE - VERSIONS
 #define	CS_ITEMS			(CS_LIGHTS+MAX_LIGHTSTYLES)
 #define	CS_PLAYERSKINS		(CS_ITEMS+MAX_ITEMS)
 #define CS_GENERAL			(CS_PLAYERSKINS+MAX_CLIENTS)
-#define	MAX_CONFIGSTRINGS	(CS_GENERAL+MAX_GENERAL)
+#define	CS_APD				(CS_GENERAL+MAX_GENERAL)
+#define	MAX_CONFIGSTRINGS	(CS_APD+MAX_APD)
 
 
 //==============================================
@@ -1141,6 +1159,9 @@ typedef struct entity_state_s
 	vec3_t	origin;
 	vec3_t	angles;
 	vec3_t	old_origin;		// for lerping
+	vec3_t	scale;
+	vec3_t	rgb;
+	vec3_t	offset;
 	int		modelindex;
 	int		modelindex2, modelindex3, modelindex4;	// weapons, CTF flags, etc
 	int		frame;
@@ -1154,6 +1175,12 @@ typedef struct entity_state_s
 	int		event;			// impulse events -- muzzle flashes, footsteps, etc
 							// events only go out for a single frame, they
 							// are automatically cleared each frame
+
+	vec3_t	mins,maxs;		// Yes, bounding box is here now
+
+	// Particles (use apdindex)
+	int		np[4], np_tri[4][2];	// Note that np_tri[3] is unused server side
+
 } entity_state_t;
 
 //==============================================
@@ -1185,6 +1212,12 @@ typedef struct
 
 	int			rdflags;		// refdef flags
 
+	vec3_t		stand_mins;
+	vec3_t		stand_maxs;
+	float		run_speed;		// 300 quake, 160 anox
+	float		walk_speed;		// 300 quake, 68 anox
+	float		duck_speed;		// 100 quake, 68 anox
+
 	short		stats[MAX_STATS];		// fast status bar updates
 } player_state_t;
 
@@ -1198,3 +1231,25 @@ typedef struct
 extern int vidref_val;
 // PGM
 // ==================
+
+typedef struct md2_frameset_s
+{
+	char				name[16];	// Fullname of frameset (only excludes num)
+	char				anim[8];	// Name of animation
+	char				subtype;	// Subtype of animation
+
+	int					num_frames;
+	int					first_frame;
+
+} md2_frameset_t;
+
+typedef struct md2_info_s
+{
+	vec3_t				mins, maxs;
+	int					num_frames;		// Total number of frames
+	char				**framename;	// frame names
+
+	int					num_framesets;
+	md2_frameset_t		*frameset;
+
+} md2_info_t;

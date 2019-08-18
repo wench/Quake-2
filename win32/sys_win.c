@@ -29,7 +29,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <direct.h>
 #include <io.h>
 #include <conio.h>
+#include<strsafe.h>
 #include "../win32/conproc.h"
+
+WORD original_gamma[768];
 
 #define MINIMUM_WIN_MEMORY	0x0a00000
 #define MAXIMUM_WIN_MEMORY	0x1000000
@@ -84,6 +87,13 @@ void Sys_Error (char *error, ...)
 // shut down QHOST hooks if necessary
 	DeinitConProc ();
 
+	{
+		HDC hDCScreen = GetDC(NULL);
+		SetDeviceGammaRamp (hDCScreen, original_gamma);
+		ReleaseDC (NULL, hDCScreen);
+	}
+
+
 	exit (1);
 }
 
@@ -97,8 +107,24 @@ void Sys_Quit (void)
 	if (dedicated && dedicated->value)
 		FreeConsole ();
 
-// shut down QHOST hooks if necessary
+	// shut down QHOST hooks if necessary
 	DeinitConProc ();
+
+	{
+		BOOL res;
+		int i;
+		static char nums[65536];
+		static char nums2[65536];
+		HDC hDCScreen = GetDC(NULL);
+
+		res = SetDeviceGammaRamp (hDCScreen, original_gamma);
+		ReleaseDC (NULL, hDCScreen);
+
+		if (!res) {
+			MessageBox(NULL, "Gamma Set failed", "Error", MB_ICONERROR);
+		}
+
+	}
 
 	exit (0);
 }
@@ -245,8 +271,7 @@ void Sys_Init (void)
 	{
 		if (!AllocConsole ())
 			Sys_Error ("Couldn't create dedicated server console");
-		hinput = GetStdHandle (STD_INPUT_HANDLE);
-		houtput = GetStdHandle (STD_OUTPUT_HANDLE);
+		
 	
 		// let QHOST hook in
 		InitConProc (argc, argv);
@@ -347,8 +372,8 @@ void Sys_ConsoleOutput (char *string)
 	int		dummy;
 	char	text[256];
 
-	if (!dedicated || !dedicated->value)
-		return;
+	//if (!dedicated || !dedicated->value)
+		//return;
 
 	if (console_textlen)
 	{
@@ -508,6 +533,7 @@ void *Sys_GetGameAPI (void *parms)
 	}
 	else
 	{
+#ifdef DEBUG
 		// check the current directory for other development purposes
 		Com_sprintf (name, sizeof(name), "%s/%s", cwd, gamename);
 		game_library = LoadLibrary ( name );
@@ -516,6 +542,7 @@ void *Sys_GetGameAPI (void *parms)
 			Com_DPrintf ("LoadLibrary (%s)\n", name);
 		}
 		else
+#endif
 		{
 			// now run through the search paths
 			path = NULL;
@@ -591,19 +618,69 @@ WinMain
 */
 HINSTANCE	global_hInstance;
 
-int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+void ErrorExit(LPTSTR lpszFunction, DWORD dw)
+{
+	// Retrieve the system error message for the last-error code
+
+	LPTSTR lpMsgBuf;
+	LPTSTR lpDisplayBuf;
+
+	FormatMessage(
+		FORMAT_MESSAGE_ALLOCATE_BUFFER |
+		FORMAT_MESSAGE_FROM_SYSTEM |
+		FORMAT_MESSAGE_IGNORE_INSERTS,
+		NULL,
+		dw,
+		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+		(LPTSTR)&lpMsgBuf,
+		0, NULL);
+
+	// Display the error message and exit the process
+
+	lpDisplayBuf = (LPTSTR)LocalAlloc(LMEM_ZEROINIT,
+		(lstrlen((LPCTSTR)lpMsgBuf) + lstrlen((LPCTSTR)lpszFunction) + 40) * sizeof(TCHAR));
+	StringCchPrintf((LPTSTR)lpDisplayBuf,
+		LocalSize(lpDisplayBuf) / sizeof(TCHAR),
+		TEXT("%s failed with error %d: %s"),
+		lpszFunction, dw, lpMsgBuf);
+
+	LocalFree(lpMsgBuf);
+	LocalFree(lpDisplayBuf);
+}
+//int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+int main(int argc, char **argv)
 {
     MSG				msg;
 	int				time, oldtime, newtime;
 	char			*cddir;
+	TCHAR dir[1024];
 
-    /* previous instances do not exist in Win32 */
-    if (hPrevInstance)
-        return 0;
+	{
+		BOOL res;
+		HDC hDCScreen = GetDCEx(NULL,NULL,0);
+		int r = SetICMMode(hDCScreen, ICM_OFF);
+		res = GetDeviceGammaRamp (hDCScreen, original_gamma);
+		DWORD error = GetLastError();
+		ErrorExit("GetDeviceGammaRamp", error);
 
-	global_hInstance = hInstance;
+		ReleaseDC (NULL, hDCScreen);
 
-	ParseCommandLine (lpCmdLine);
+		if (!res) {
+		//	MessageBox(NULL, "Gamma get failed", "Error", MB_ICONERROR);
+		}
+	}
+	hinput = GetStdHandle(STD_INPUT_HANDLE);
+	houtput = GetStdHandle(STD_OUTPUT_HANDLE);
+
+	global_hInstance = GetModuleHandle(NULL);
+
+	GetCurrentDirectory(1024,dir);
+
+
+
+
+
+	//ParseCommandLine (lpCmdLine);
 
 	// if we find the CD, add a +set cddir xxx command line
 	cddir = Sys_ScanForCD ();

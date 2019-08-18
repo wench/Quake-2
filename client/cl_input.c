@@ -316,6 +316,12 @@ void CL_ClampPitch (void)
 	pitch = SHORT2ANGLE(cl.frame.playerstate.pmove.delta_angles[PITCH]);
 	if (pitch > 180)
 		pitch -= 360;
+
+	if (cl.viewangles[PITCH] + pitch < -360)
+		cl.viewangles[PITCH] += 360; // wrapped
+	if (cl.viewangles[PITCH] + pitch > 360)
+		cl.viewangles[PITCH] -= 360; // wrapped
+
 	if (cl.viewangles[PITCH] + pitch > 89)
 		cl.viewangles[PITCH] = 89 - pitch;
 	if (cl.viewangles[PITCH] + pitch < -89)
@@ -342,6 +348,9 @@ void CL_FinishMove (usercmd_t *cmd)
 	if (in_use.state & 3)
 		cmd->buttons |= BUTTON_USE;
 	in_use.state &= ~2;
+
+	if ( !((in_speed.state & 1) ^ (int)(cl_run->value)) )
+		cmd->buttons |= BUTTON_WALKING;
 
 	if (anykeydown && cls.key_dest == key_game)
 		cmd->buttons |= BUTTON_ANY;

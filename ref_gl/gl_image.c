@@ -31,33 +31,42 @@ cvar_t		*intensity;
 
 unsigned	d_8to24table[256];
 
-qboolean GL_Upload8 (byte *data, int width, int height,  qboolean mipmap, qboolean is_sky );
-qboolean GL_Upload32 (unsigned *data, int width, int height,  qboolean mipmap);
+int GL_Upload8 (byte *data, int width, int height,  qboolean mipmap, qboolean is_sky );
+int GL_Upload32 (unsigned *data, int width, int height,  qboolean mipmap);
+
+
+void	*Hunk_Begin2 (int maxsize);
+void	*Hunk_Alloc2 (int size);
+int		Hunk_End2 (void);
+void	Hunk_Free2 (void *base);
+
 
 
 int		gl_solid_format = 3;
 int		gl_alpha_format = 4;
 
-int		gl_tex_solid_format = 3;
-int		gl_tex_alpha_format = 4;
+int		gl_tex_solid_format = GL_RGB8;
+int		gl_tex_alpha_format = GL_RGBA8;
 
 int		gl_filter_min = GL_LINEAR_MIPMAP_NEAREST;
 int		gl_filter_max = GL_LINEAR;
+int		gl_cinfilter_min = GL_LINEAR;
+int		gl_cinfilter_max = GL_LINEAR;
 
 void GL_SetTexturePalette( unsigned palette[256] )
 {
 	int i;
 	unsigned char temptable[768];
 
-	for ( i = 0; i < 256; i++ )
-	{
-		temptable[i*3+0] = ( palette[i] >> 0 ) & 0xff;
-		temptable[i*3+1] = ( palette[i] >> 8 ) & 0xff;
-		temptable[i*3+2] = ( palette[i] >> 16 ) & 0xff;
-	}
-
 	if ( qglColorTableEXT && gl_ext_palettedtexture->value )
 	{
+		for ( i = 0; i < 256; i++ )
+		{
+			temptable[i*3+0] = ( palette[i] >> 0 ) & 0xff;
+			temptable[i*3+1] = ( palette[i] >> 8 ) & 0xff;
+			temptable[i*3+2] = ( palette[i] >> 16 ) & 0xff;
+		}
+
 		qglColorTableEXT( GL_SHARED_TEXTURE_PALETTE_EXT,
 						   GL_RGB,
 						   256,
@@ -69,22 +78,22 @@ void GL_SetTexturePalette( unsigned palette[256] )
 
 void GL_EnableMultitexture( qboolean enable )
 {
-	if ( !qglSelectTextureSGIS )
+	if ( !qglSelectTextureSGIS && !qglActiveTextureARB )
 		return;
 
 	if ( enable )
 	{
-		GL_SelectTexture( GL_TEXTURE1_SGIS );
+		GL_SelectTexture( GL_TEXTURE1 );
 		qglEnable( GL_TEXTURE_2D );
 		GL_TexEnv( GL_REPLACE );
 	}
 	else
 	{
-		GL_SelectTexture( GL_TEXTURE1_SGIS );
+		GL_SelectTexture( GL_TEXTURE1 );
 		qglDisable( GL_TEXTURE_2D );
 		GL_TexEnv( GL_REPLACE );
 	}
-	GL_SelectTexture( GL_TEXTURE0_SGIS );
+	GL_SelectTexture( GL_TEXTURE0 );
 	GL_TexEnv( GL_REPLACE );
 }
 
@@ -92,23 +101,34 @@ void GL_SelectTexture( GLenum texture )
 {
 	int tmu;
 
-	if ( !qglSelectTextureSGIS )
+	if ( !qglSelectTextureSGIS && !qglActiveTextureARB )
 		return;
 
-	if ( texture == GL_TEXTURE0_SGIS )
+	if ( texture == GL_TEXTURE0 )
+	{
 		tmu = 0;
+	}
 	else
+	{
 		tmu = 1;
+	}
 
 	if ( tmu == gl_state.currenttmu )
+	{
 		return;
+	}
 
 	gl_state.currenttmu = tmu;
 
-	if ( tmu == 0 )
-		qglSelectTextureSGIS( GL_TEXTURE0_SGIS );
-	else
-		qglSelectTextureSGIS( GL_TEXTURE1_SGIS );
+	if ( qglSelectTextureSGIS )
+	{
+		qglSelectTextureSGIS( texture );
+	}
+	else if ( qglActiveTextureARB )
+	{
+		qglActiveTextureARB( texture );
+		qglClientActiveTextureARB( texture );
+	}
 }
 
 void GL_TexEnv( GLenum mode )
@@ -128,16 +148,41 @@ void GL_Bind (int texnum)
 
 	if (gl_nobind->value && draw_chars)		// performance evaluation option
 		texnum = draw_chars->texnum;
-	if ( gl_state.currenttextures[gl_state.currenttmu] == texnum)
-		return;
-	gl_state.currenttextures[gl_state.currenttmu] = texnum;
-	qglBindTexture (GL_TEXTURE_2D, texnum);
+	if ( gl_state.currenttextures[gl_state.currenttmu] != texnum) 
+	{
+		gl_state.currenttextures[gl_state.currenttmu] = texnum;
+		qglBindTexture (GL_TEXTURE_2D, texnum);
+	}
+}
+
+void GL_BindCube (int texnum)
+{
+	extern	image_t	*draw_chars;
+
+	if (gl_nobind->value && draw_chars)		// performance evaluation option
+		texnum = draw_chars->texnum;
+	if ( gl_state.currenttextures[gl_state.currenttmu] != texnum) 
+	{
+		gl_state.currenttextures[gl_state.currenttmu] = texnum;
+		qglBindTexture (GL_TEXTURE_CUBE_MAP_ARB, texnum);
+	}
+}
+
+void GL_BindImage (image_t *image)
+{
+	if (image->type != it_cubemap_ext)
+		GL_Bind(image->texnum);
+	else
+		GL_BindCube(image->texnum);
+
+	if (image->atd && !gl_nobind->value ) 
+		ATD_Update(image);
 }
 
 void GL_MBind( GLenum target, int texnum )
 {
 	GL_SelectTexture( target );
-	if ( target == GL_TEXTURE0_SGIS )
+	if ( target == GL_TEXTURE0 )
 	{
 		if ( gl_state.currenttextures[0] == texnum )
 			return;
@@ -148,6 +193,33 @@ void GL_MBind( GLenum target, int texnum )
 			return;
 	}
 	GL_Bind( texnum );
+}
+
+void GL_MBindCube( GLenum target, int texnum )
+{
+	GL_SelectTexture( target );
+	if ( target == GL_TEXTURE0 )
+	{
+		if ( gl_state.currenttextures[0] == texnum )
+			return;
+	}
+	else
+	{
+		if ( gl_state.currenttextures[1] == texnum )
+			return;
+	}
+	GL_BindCube( texnum );
+}
+
+void GL_MBindImage( GLenum target, image_t *image )
+{
+	if (image->type != it_cubemap_ext)
+		GL_MBind( target, image->texnum );
+	else
+		GL_MBindCube( target, image->texnum );
+
+	if (image->atd && !gl_nobind->value ) 
+		ATD_Update(image);
 }
 
 typedef struct
@@ -166,6 +238,13 @@ glmode_t modes[] = {
 };
 
 #define NUM_GL_MODES (sizeof(modes) / sizeof (glmode_t))
+
+glmode_t cinmodes[] = {
+	{"GL_NEAREST", GL_NEAREST, GL_NEAREST},
+	{"GL_LINEAR", GL_LINEAR, GL_LINEAR},
+};
+
+#define NUM_GL_CINMODES (sizeof(cinmodes) / sizeof (glmode_t))
 
 typedef struct
 {
@@ -226,13 +305,65 @@ void GL_TextureMode( char *string )
 	// change all the existing mipmap texture objects
 	for (i=0, glt=gltextures ; i<numgltextures ; i++, glt++)
 	{
-		if (glt->type != it_pic && glt->type != it_sky )
+		if (glt->type != it_pic && glt->type != it_sky && glt->type != it_cubemap_ext && glt->type != it_clamped )
 		{
 			GL_Bind (glt->texnum);
-			qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_min);
-			qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max);
+
+			// Special ATD handling 
+			if (glt->atd) 
+			{
+				if (glt->atd->bilinear) 
+				{
+					// If we can generate mipmap, then use the user specified mipmap min filter
+					// Otherwise use the 'max' filter for both up and down
+					if (gl_config.have_generate_mipmap)
+						qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_min);
+					else
+						qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_max);
+					qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max);
+				}
+				else 
+				{
+					// Nearest, but we will allow mipmapping
+					if (gl_config.have_generate_mipmap)
+						qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_min);
+					else
+						qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+					qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+				}
+			}
+			else 
+			{
+				qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_min);
+				qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max);
+			}
 		}
 	}
+}
+
+/*
+===============
+GL_TextureCinMode
+===============
+*/
+void GL_TextureCinMode( char *string )
+{
+	int		i;
+
+	for (i=0 ; i< NUM_GL_CINMODES ; i++)
+	{
+		if ( !Q_stricmp( cinmodes[i].name, string ) )
+			break;
+	}
+
+	if (i == NUM_GL_CINMODES)
+	{
+		ri.Con_Printf (PRINT_ALL, "bad filter name\n");
+		return;
+	}
+
+	gl_cinfilter_min = cinmodes[i].minimize;
+	gl_cinfilter_max = cinmodes[i].maximize;
 }
 
 /*
@@ -242,6 +373,7 @@ GL_TextureAlphaMode
 */
 void GL_TextureAlphaMode( char *string )
 {
+	/*
 	int		i;
 
 	for (i=0 ; i< NUM_GL_ALPHA_MODES ; i++)
@@ -257,6 +389,7 @@ void GL_TextureAlphaMode( char *string )
 	}
 
 	gl_tex_alpha_format = gl_alpha_modes[i].mode;
+	*/
 }
 
 /*
@@ -266,6 +399,7 @@ GL_TextureSolidMode
 */
 void GL_TextureSolidMode( char *string )
 {
+	/*
 	int		i;
 
 	for (i=0 ; i< NUM_GL_SOLID_MODES ; i++)
@@ -281,6 +415,7 @@ void GL_TextureSolidMode( char *string )
 	}
 
 	gl_tex_solid_format = gl_solid_modes[i].mode;
+	*/
 }
 
 /*
@@ -536,7 +671,7 @@ typedef struct _TargaHeader {
 LoadTGA
 =============
 */
-void LoadTGA (char *name, byte **pic, int *width, int *height)
+void LoadTGA (char *name, byte **pic, int *width, int *height, qboolean hunk)
 {
 	int		columns, rows, numPixels;
 	byte	*pixbuf;
@@ -603,7 +738,10 @@ void LoadTGA (char *name, byte **pic, int *width, int *height)
 	if (height)
 		*height = rows;
 
-	targa_rgba = malloc (numPixels*4);
+	if (hunk)
+		targa_rgba = Hunk_Alloc(numPixels*4);
+	else
+		targa_rgba = malloc (numPixels*4);
 	*pic = targa_rgba;
 
 	if (targa_header.id_length != 0)
@@ -722,6 +860,390 @@ void LoadTGA (char *name, byte **pic, int *width, int *height)
 
 
 /*
+=============
+LoadPNG
+=============
+*/
+#include <png.h>
+
+typedef struct LoadPNGReadStruct_s {
+	byte	*start;
+	byte	*cur;
+	int		len;
+} LoadPNGReadStruct_t;
+
+void PNGAPI LoadPNGRead (png_structp png_ptr, png_bytep buf, png_size_t num)
+{
+	LoadPNGReadStruct_t *str;
+
+    str = (LoadPNGReadStruct_t*) png_get_io_ptr(png_ptr);
+
+	if (((str->cur-str->start)+num) > str->len) {
+		png_error(png_ptr, "Trying to read past end of file");
+	}
+
+	memcpy (buf, str->cur, num);
+	str->cur += num;
+}
+
+void LoadPNG (char *name, byte **pic, int *width, int *height, qboolean hunk)
+{
+	byte	*buffer;
+	int		length;
+	LoadPNGReadStruct_t readstruct;
+
+	png_structp png_ptr;
+	png_infop info_ptr;
+	png_infop end_info;
+	png_bytep *row_pointers;
+
+	png_uint_32 pwidth;
+	png_uint_32 pheight;
+    int pbit_depth;
+	int pcolor_type;
+	byte *picture;
+	int row, rowbytes;
+
+	*pic = NULL;
+
+	//
+	// load the file
+	//
+	length = ri.FS_LoadFile (name, (void **)&buffer);
+	if (!buffer)
+	{
+		//ri.Con_Printf (PRINT_ALL, "Bad png file %s\n", name);
+		return;
+	}
+
+    if (png_sig_cmp(buffer, 0, 8))
+	{
+		ri.Con_Printf (PRINT_ALL, "Bad png file %s\n", name);
+		ri.FS_FreeFile (buffer);
+		return;
+	}
+
+    png_ptr = png_create_read_struct (PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+
+	if (!png_ptr) {
+		ri.Con_Printf (PRINT_ALL, "Error creating PNG read struct\n");
+		ri.FS_FreeFile (buffer);
+		return;
+	}
+
+    info_ptr = png_create_info_struct(png_ptr);
+    if (!info_ptr)
+    {
+        png_destroy_read_struct(&png_ptr,
+           (png_infopp)NULL, (png_infopp)NULL);
+		ri.Con_Printf (PRINT_ALL, "Error creating PNG info struct\n");
+		ri.FS_FreeFile (buffer);
+		return;
+    }
+
+    end_info = png_create_info_struct(png_ptr);
+    if (!end_info)
+    {
+        png_destroy_read_struct(&png_ptr, &info_ptr,
+          (png_infopp)NULL);
+		ri.Con_Printf (PRINT_ALL, "Error creating PNG info struct\n");
+		ri.FS_FreeFile (buffer);
+		return;
+    }
+
+    if (setjmp(png_jmpbuf(png_ptr)))
+    {
+		ri.Con_Printf (PRINT_ALL, "Bad png file %s\n", name);
+        png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
+		ri.FS_FreeFile (buffer);
+		return;
+	}
+
+	readstruct.cur = buffer;
+	readstruct.start = buffer;
+	readstruct.len = length;
+
+	// Set read function
+	png_set_read_fn(png_ptr, (void *)&readstruct, LoadPNGRead);
+
+	/* The call to png_read_info() gives us all of the information from the
+	* PNG file before the first IDAT (image data chunk).  REQUIRED
+	*/
+	png_read_info(png_ptr, info_ptr);
+
+	png_get_IHDR(png_ptr, info_ptr, &pwidth, &pheight, &pbit_depth, &pcolor_type,
+		NULL, NULL, NULL);
+
+	/* tell libpng to strip 16 bit/color files down to 8 bits/color */
+	png_set_strip_16(png_ptr);
+
+	/* Extract multiple pixels with bit depths of 1, 2, and 4 from a single
+	* byte into separate bytes (useful for paletted and grayscale images).
+	*/
+	png_set_packing(png_ptr);
+
+	/* Expand paletted colors into true RGB triplets */
+	if (pcolor_type == PNG_COLOR_TYPE_PALETTE)
+		png_set_palette_to_rgb(png_ptr);
+
+	/* Expand grayscale images to the full 8 bits from 1, 2, or 4 bits/pixel */
+	if (pcolor_type == PNG_COLOR_TYPE_GRAY && pbit_depth < 8)
+		png_set_expand_gray_1_2_4_to_8(png_ptr);
+
+	if (pcolor_type == PNG_COLOR_TYPE_GRAY)
+		png_set_gray_to_rgb(png_ptr);
+
+	/* Expand paletted or RGB images with transparency to full alpha channels
+	* so the data will be available as RGBA quartets.
+	*/
+	if (png_get_valid(png_ptr, info_ptr, PNG_INFO_tRNS))
+		png_set_tRNS_to_alpha(png_ptr);
+	else 
+		/* Add filler (or alpha) byte (before/after each RGB triplet) */
+		png_set_filler(png_ptr, 0xff, PNG_FILLER_AFTER);
+
+	/* Optional call to gamma correct and add the background to the palette
+	* and update info structure.  REQUIRED if you are expecting libpng to
+	* update the palette for you (ie you selected such a transform above).
+	*/
+
+	png_read_update_info(png_ptr, info_ptr);
+
+	/* Allocate the memory to hold the image using the fields of info_ptr. */
+	rowbytes = png_get_rowbytes(png_ptr, info_ptr);
+	row_pointers = png_malloc(png_ptr, pheight*sizeof(png_bytep));
+
+	*width = pwidth;
+	*height = pheight;
+
+	if (hunk) *pic = picture = Hunk_Alloc2(pheight * pwidth*4);
+	else *pic = picture = malloc (pheight * pwidth*4);
+
+	// Yes we don't have to bother with allocating memory for the rows
+	if (rowbytes == pwidth*4)
+	{
+		for (row = 0; row < pheight; row++)
+		{
+			row_pointers[row] = picture;
+			picture += rowbytes;
+		}
+	}
+	else
+	{
+		for (row = 0; row < pheight; row++)
+			row_pointers[row] = png_malloc(png_ptr, rowbytes);
+	}
+
+	/* Read the entire image in one go */
+	png_read_image(png_ptr, row_pointers);
+
+	// Hmph! We need to copy the rows
+	if (rowbytes != pwidth*4)
+	{
+		// Now copy lines go over the file
+		for (row = 0; row < pheight; row++) 
+		{
+			memcpy (picture, row_pointers[row], pwidth*4);
+			picture += pwidth*4;
+			
+		}
+	}
+
+	/* clean up after the read, and free any memory allocated - REQUIRED */
+	png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
+
+	ri.FS_FreeFile (buffer);
+
+	return;
+
+}
+
+// Load a 8-bit PNG (Greyscale or Paletted)
+void LoadPNG_8Bit (char *name, byte **pic, int *width, int *height, qboolean hunk)
+{
+	byte	*buffer;
+	int		length;
+	LoadPNGReadStruct_t readstruct;
+
+	png_structp png_ptr;
+	png_infop info_ptr;
+	png_infop end_info;
+	png_bytep *row_pointers;
+
+	png_uint_32 pwidth;
+	png_uint_32 pheight;
+    int pbit_depth;
+	int pcolor_type;
+	byte *picture;
+	int row, rowbytes;
+
+	*pic = NULL;
+
+	//
+	// load the file
+	//
+	length = ri.FS_LoadFile (name, (void **)&buffer);
+	if (!buffer)
+	{
+		//ri.Con_Printf (PRINT_ALL, "Bad png file %s\n", name);
+		return;
+	}
+
+    if (png_sig_cmp(buffer, 0, 8))
+	{
+		ri.Con_Printf (PRINT_ALL, "Bad png file %s\n", name);
+		ri.FS_FreeFile (buffer);
+		return;
+	}
+
+    png_ptr = png_create_read_struct (PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+
+	if (!png_ptr) {
+		ri.Con_Printf (PRINT_ALL, "Error creating PNG read struct\n");
+		ri.FS_FreeFile (buffer);
+		return;
+	}
+
+    info_ptr = png_create_info_struct(png_ptr);
+    if (!info_ptr)
+    {
+        png_destroy_read_struct(&png_ptr,
+           (png_infopp)NULL, (png_infopp)NULL);
+		ri.Con_Printf (PRINT_ALL, "Error creating PNG info struct\n");
+		ri.FS_FreeFile (buffer);
+		return;
+    }
+
+    end_info = png_create_info_struct(png_ptr);
+    if (!end_info)
+    {
+        png_destroy_read_struct(&png_ptr, &info_ptr,
+          (png_infopp)NULL);
+		ri.Con_Printf (PRINT_ALL, "Error creating PNG info struct\n");
+		ri.FS_FreeFile (buffer);
+		return;
+    }
+
+    if (setjmp(png_jmpbuf(png_ptr)))
+    {
+		ri.Con_Printf (PRINT_ALL, "Bad png file %s\n", name);
+        png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
+		ri.FS_FreeFile (buffer);
+		return;
+	}
+
+	readstruct.cur = buffer;
+	readstruct.start = buffer;
+	readstruct.len = length;
+
+	// Set read function
+	png_set_read_fn(png_ptr, (void *)&readstruct, LoadPNGRead);
+
+	/* The call to png_read_info() gives us all of the information from the
+	* PNG file before the first IDAT (image data chunk).  REQUIRED
+	*/
+	png_read_info(png_ptr, info_ptr);
+
+	png_get_IHDR(png_ptr, info_ptr, &pwidth, &pheight, &pbit_depth, &pcolor_type,
+		NULL, NULL, NULL);
+
+	/* Only 8 bit grey or paletted supported */
+	if (pbit_depth != 8 || (pcolor_type != PNG_COLOR_TYPE_PALETTE && pcolor_type != PNG_COLOR_TYPE_GRAY)) 
+	{
+		ri.Con_Printf (PRINT_ALL, "LoadPNG_8Bit: PNG (%s) wasn't 8-bit grey or paletted\n", name);
+
+		/* clean up after the read, and free any memory allocated - REQUIRED */
+		png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
+		ri.FS_FreeFile (buffer);
+		return;
+	}
+
+	/* Optional call to gamma correct and add the background to the palette
+	* and update info structure.  REQUIRED if you are expecting libpng to
+	* update the palette for you (ie you selected such a transform above).
+	*/
+
+	png_read_update_info(png_ptr, info_ptr);
+
+	/* Allocate the memory to hold the image using the fields of info_ptr. */
+	rowbytes = png_get_rowbytes(png_ptr, info_ptr);
+	row_pointers = png_malloc(png_ptr, pheight*sizeof(png_bytep));
+
+	*width = pwidth;
+	*height = pheight;
+
+	if (hunk) *pic = picture = Hunk_Alloc2(pheight * pwidth);
+	else *pic = picture = malloc (pheight * pwidth);
+
+	// Yes we don't have to bother with allocating memory for the rows
+	if (rowbytes == pwidth)
+	{
+		for (row = 0; row < pheight; row++)
+		{
+			row_pointers[row] = picture;
+			picture += rowbytes;
+		}
+	}
+	else
+	{
+		for (row = 0; row < pheight; row++)
+			row_pointers[row] = png_malloc(png_ptr, rowbytes);
+	}
+
+	/* Read the entire image in one go */
+	png_read_image(png_ptr, row_pointers);
+
+	// Hmph! We need to copy the rows
+	if (rowbytes != pwidth)
+	{
+		// Now copy lines go over the file
+		for (row = 0; row < pheight; row++) 
+		{
+			memcpy (picture, row_pointers[row], pwidth*4);
+			picture += pwidth;
+			
+		}
+	}
+
+	/* clean up after the read, and free any memory allocated - REQUIRED */
+	png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
+
+	ri.FS_FreeFile (buffer);
+
+	return;
+
+}
+
+/*
+=============
+LoadBMP
+=============
+*/
+
+void LoadBMP (char *name, byte **pic, int *width, int *height)
+{
+	byte	*buffer;
+	int		length;
+
+	*pic = NULL;
+
+	//
+	// load the file
+	//
+	length = ri.FS_LoadFile (name, (void **)&buffer);
+	if (!buffer)
+	{
+		//ri.Con_Printf (PRINT_ALL, "Bad bmp file %s\n", name);
+		return;
+	}
+
+	ri.FS_FreeFile (buffer);
+
+	return;
+}
+
+
+/*
 ====================================================================
 
 IMAGE FLOOD FILLING
@@ -744,7 +1266,7 @@ typedef struct
 } floodfill_t;
 
 // must be a power of 2
-#define FLOODFILL_FIFO_SIZE 0x1000
+#define FLOODFILL_FIFO_SIZE 0x8000
 #define FLOODFILL_FIFO_MASK (FLOODFILL_FIFO_SIZE - 1)
 
 #define FLOODFILL_STEP( off, dx, dy ) \
@@ -817,7 +1339,7 @@ void GL_ResampleTexture (unsigned *in, int inwidth, int inheight, unsigned *out,
 	int		i, j;
 	unsigned	*inrow, *inrow2;
 	unsigned	frac, fracstep;
-	unsigned	p1[1024], p2[1024];
+	unsigned	p1[8192], p2[8192];
 	byte		*pix1, *pix2, *pix3, *pix4;
 
 	fracstep = inwidth*0x10000/outwidth;
@@ -952,16 +1474,18 @@ void GL_BuildPalettedTexture( unsigned char *paletted_texture, unsigned char *sc
 
 int		upload_width, upload_height;
 qboolean uploaded_paletted;
+static qboolean no_pic_mip = false;
 
-qboolean GL_Upload32 (unsigned *data, int width, int height,  qboolean mipmap)
+int GL_Upload32 (unsigned *data, int width, int height,  qboolean mipmap)
 {
 	int			samples;
-	unsigned	scaled[256*256];
-	unsigned char paletted_texture[256*256];
+	static unsigned	scaled[2048*2048];
+	static unsigned char paletted_texture[2048*2048];
 	int			scaled_width, scaled_height;
 	int			i, c;
 	byte		*scan;
 	int comp;
+	qboolean	want_blend = false;
 
 	uploaded_paletted = false;
 
@@ -975,17 +1499,17 @@ qboolean GL_Upload32 (unsigned *data, int width, int height,  qboolean mipmap)
 		scaled_height >>= 1;
 
 	// let people sample down the world textures for speed
-	if (mipmap)
+	if (mipmap && !no_pic_mip)
 	{
 		scaled_width >>= (int)gl_picmip->value;
 		scaled_height >>= (int)gl_picmip->value;
 	}
 
 	// don't ever bother with >256 textures
-	if (scaled_width > 256)
-		scaled_width = 256;
-	if (scaled_height > 256)
-		scaled_height = 256;
+	if (scaled_width > gl_config.max_texture_size)
+		scaled_width = gl_config.max_texture_size;
+	if (scaled_height > gl_config.max_texture_size)
+		scaled_height = gl_config.max_texture_size;
 
 	if (scaled_width < 1)
 		scaled_width = 1;
@@ -1007,7 +1531,10 @@ qboolean GL_Upload32 (unsigned *data, int width, int height,  qboolean mipmap)
 		if ( *scan != 255 )
 		{
 			samples = gl_alpha_format;
-			break;
+			if (*scan != 0) {
+				want_blend = true;
+				break;
+			}
 		}
 	}
 
@@ -1037,8 +1564,10 @@ qboolean GL_Upload32 (unsigned *data, int width, int height,  qboolean mipmap)
 
 	if (scaled_width == width && scaled_height == height)
 	{
-		if (!mipmap)
+		if (!mipmap || gl_config.have_generate_mipmap)
 		{
+			if (mipmap) qglTexParameteri (GL_TEXTURE_2D, GL_GENERATE_MIPMAP_SGIS, TRUE);
+
 			if ( qglColorTableEXT && gl_ext_palettedtexture->value && samples == gl_solid_format )
 			{
 				uploaded_paletted = true;
@@ -1057,6 +1586,8 @@ qboolean GL_Upload32 (unsigned *data, int width, int height,  qboolean mipmap)
 			{
 				qglTexImage2D (GL_TEXTURE_2D, 0, comp, scaled_width, scaled_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 			}
+			if (mipmap) qglTexParameteri (GL_TEXTURE_2D, GL_GENERATE_MIPMAP_SGIS, FALSE);
+
 			goto done;
 		}
 		memcpy (scaled, data, width*height*4);
@@ -1082,10 +1613,14 @@ qboolean GL_Upload32 (unsigned *data, int width, int height,  qboolean mipmap)
 	}
 	else
 	{
+		if (mipmap && gl_config.have_generate_mipmap) qglTexParameteri (GL_TEXTURE_2D, GL_GENERATE_MIPMAP_SGIS, TRUE);
+
 		qglTexImage2D( GL_TEXTURE_2D, 0, comp, scaled_width, scaled_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, scaled );
+
+		if (mipmap && gl_config.have_generate_mipmap) qglTexParameteri (GL_TEXTURE_2D, GL_GENERATE_MIPMAP_SGIS, FALSE);
 	}
 
-	if (mipmap)
+	if (mipmap && !gl_config.have_generate_mipmap)
 	{
 		int		miplevel;
 
@@ -1135,7 +1670,10 @@ done: ;
 		qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max);
 	}
 
-	return (samples == gl_alpha_format);
+	if (want_blend) return 2;
+	else if (samples == gl_alpha_format) return 1;
+
+	return 0;
 }
 
 /*
@@ -1145,7 +1683,6 @@ GL_Upload8
 Returns has_alpha
 ===============
 */
-/*
 static qboolean IsPowerOf2( int value )
 {
 	int i = 1;
@@ -1160,9 +1697,8 @@ static qboolean IsPowerOf2( int value )
 		i <<= 1;
 	}
 }
-*/
 
-qboolean GL_Upload8 (byte *data, int width, int height,  qboolean mipmap, qboolean is_sky )
+int GL_Upload8 (byte *data, int width, int height,  qboolean mipmap, qboolean is_sky )
 {
 	unsigned	trans[512*256];
 	int			i, s;
@@ -1220,6 +1756,7 @@ qboolean GL_Upload8 (byte *data, int width, int height,  qboolean mipmap, qboole
 
 		return GL_Upload32 (trans, width, height, mipmap);
 	}
+	return false;
 }
 
 
@@ -1287,6 +1824,40 @@ image_t *GL_LoadPic (char *name, byte *pic, int width, int height, imagetype_t t
 		image->tl = (y+0.01)/(float)BLOCK_WIDTH;
 		image->th = (y+image->height-0.01)/(float)BLOCK_WIDTH;
 	}
+	else if (image->type == it_cubemap_ext)
+	{
+		image->scrap = false;
+		image->texnum = TEXNUM_IMAGES + (image - gltextures);
+		GL_BindCube (image->texnum);
+
+		qglTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB, 0, GL_RGB8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pic );
+
+		pic += width*height*4;
+		qglTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_X_ARB, 0, GL_RGB8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pic );
+
+		pic += width*height*4;
+		qglTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Y_ARB, 0, GL_RGB8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pic );
+
+		pic += width*height*4;
+		qglTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y_ARB, 0, GL_RGB8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pic );
+
+		pic += width*height*4;
+		qglTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Z_ARB, 0, GL_RGB8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pic );
+
+		pic += width*height*4;
+		qglTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z_ARB, 0, GL_RGB8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pic );
+
+		qglTexParameterf(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		qglTexParameterf(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		image->upload_width = width;
+		image->upload_height = height;
+		image->paletted = false;
+		image->sl = 0;
+		image->sh = 1;
+		image->tl = 0;
+		image->th = 1;
+	}
 	else
 	{
 nonscrap:
@@ -1294,9 +1865,9 @@ nonscrap:
 		image->texnum = TEXNUM_IMAGES + (image - gltextures);
 		GL_Bind(image->texnum);
 		if (bits == 8)
-			image->has_alpha = GL_Upload8 (pic, width, height, (image->type != it_pic && image->type != it_sky), image->type == it_sky );
+			image->has_alpha = GL_Upload8 (pic, width, height, (image->type != it_pic && image->type != it_sky && image->type != it_clamped), image->type == it_sky );
 		else
-			image->has_alpha = GL_Upload32 ((unsigned *)pic, width, height, (image->type != it_pic && image->type != it_sky) );
+			image->has_alpha = GL_Upload32 ((unsigned *)pic, width, height, (image->type != it_pic && image->type != it_sky && image->type != it_clamped) );
 		image->upload_width = upload_width;		// after power of 2 and scales
 		image->upload_height = upload_height;
 		image->paletted = uploaded_paletted;
@@ -1305,6 +1876,13 @@ nonscrap:
 		image->tl = 0;
 		image->th = 1;
 	}
+
+	if (image->type == it_clamped)
+	{
+		qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+		qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+	}
+
 
 	return image;
 }
@@ -1315,17 +1893,16 @@ nonscrap:
 GL_LoadWal
 ================
 */
-image_t *GL_LoadWal (char *name)
+image_t *GL_LoadWal (char *name, char *filename)
 {
 	miptex_t	*mt;
 	int			width, height, ofs;
 	image_t		*image;
 
-	ri.FS_LoadFile (name, (void **)&mt);
+	ri.FS_LoadFile (filename, (void **)&mt);
 	if (!mt)
 	{
-		ri.Con_Printf (PRINT_ALL, "GL_FindImage: can't load %s\n", name);
-		return r_notexture;
+		return NULL;
 	}
 
 	width = LittleLong (mt->width);
@@ -1348,21 +1925,24 @@ Finds or loads the given image
 */
 image_t	*GL_FindImage (char *name, imagetype_t type)
 {
-	image_t	*image;
+	image_t	*image = NULL;
 	int		i, len;
-	byte	*pic, *palette;
 	int		width, height;
+	char	newname[MAX_QPATH];
 
 	if (!name)
 		return NULL;	//	ri.Sys_Error (ERR_DROP, "GL_FindImage: NULL name");
+
+	// Strip extension
+	COM_StripExtension(name,newname);
+	name = newname;
+
 	len = strlen(name);
-	if (len<5)
-		return NULL;	//	ri.Sys_Error (ERR_DROP, "GL_FindImage: bad name: %s", name);
 
 	// look for it
 	for (i=0, image=gltextures ; i<numgltextures ; i++,image++)
 	{
-		if (!strcmp(name, image->name))
+		if (!Q_strcasecmp(name, image->name))
 		{
 			image->registration_sequence = registration_sequence;
 			return image;
@@ -1372,36 +1952,191 @@ image_t	*GL_FindImage (char *name, imagetype_t type)
 	//
 	// load the pic from disk
 	//
-	pic = NULL;
-	palette = NULL;
-	if (!strcmp(name+len-4, ".pcx"))
+
+	image = NULL;
+
+	// Try a TGA first
+	if (!image)
 	{
+		byte	*pic = NULL;
+
+		strcat(name+len, ".tga");
+		LoadTGA (name, &pic, &width, &height, false);
+		name[len] = 0; 
+
+		if (pic) 
+		{
+			image = GL_LoadPic (name, pic, width, height, type, 32);
+			free(pic);
+			pic = NULL;
+		}
+	}
+
+	// Try a PNG first
+	if (!image)
+	{
+		byte	*pic = NULL;
+
+		strcat(name+len, ".png");
+		LoadPNG (name, &pic, &width, &height, false);
+		name[len] = 0; 
+
+		if (pic) 
+		{
+			image = GL_LoadPic (name, pic, width, height, type, 32);
+			free(pic);
+			pic = NULL;
+		}
+	}
+
+	// Try a PCX
+	if (!image)
+	{
+		byte	*pic = NULL, *palette;
+
+		strcat(name+len, ".pcx");
 		LoadPCX (name, &pic, &palette, &width, &height);
-		if (!pic)
-			return NULL; // ri.Sys_Error (ERR_DROP, "GL_FindImage: can't load %s", name);
-		image = GL_LoadPic (name, pic, width, height, type, 8);
-	}
-	else if (!strcmp(name+len-4, ".wal"))
-	{
-		image = GL_LoadWal (name);
-	}
-	else if (!strcmp(name+len-4, ".tga"))
-	{
-		LoadTGA (name, &pic, &width, &height);
-		if (!pic)
-			return NULL; // ri.Sys_Error (ERR_DROP, "GL_FindImage: can't load %s", name);
-		image = GL_LoadPic (name, pic, width, height, type, 32);
-	}
-	else
-		return NULL;	//	ri.Sys_Error (ERR_DROP, "GL_FindImage: bad extension on: %s", name);
+		name[len] = 0; 
 
+		if (pic) 
+		{
+			image = GL_LoadPic (name, pic, width, height, type, 8);
+			free(pic);
+			free(palette);
+		}
+	}
 
-	if (pic)
-		free(pic);
-	if (palette)
-		free(palette);
+	// Try an ATD
+	if (!image) 
+	{
+		byte	*pic = NULL;
+		int		clamp = 0;
+		atd_t	*atd = NULL;
+
+		strcat(name+len, ".atd");
+		atd = ATD_Load (name, &pic, &width, &height, &clamp);
+		name[len] = 0; 
+
+		if (atd) 
+		{
+			image = GL_LoadPic (name, pic, width, height, type, 32);
+			image->atd = atd;
+
+			// Ok just make sure the filtering modes are correct
+			if (type != it_pic && type != it_sky)
+			{
+				if (atd->bilinear) 
+				{
+					// If we can generate mipmaps, then use the user specified mipmap min filter
+					// Otherwise use the 'max' filter for both up and down
+					if (gl_config.have_generate_mipmap)
+					{
+						qglTexParameteri (GL_TEXTURE_2D, GL_GENERATE_MIPMAP_SGIS, TRUE);
+						qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_min);
+					}
+					else
+						qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_max);
+
+					qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max);
+				}
+				else 
+				{
+					// Nearest, but we will allow mipmapping
+					if (gl_config.have_generate_mipmap)
+					{
+						qglTexParameteri (GL_TEXTURE_2D, GL_GENERATE_MIPMAP_SGIS, TRUE);
+						qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_min);
+					}
+					else
+						qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+					qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+				}
+			} 
+			else if (atd->bilinear) 
+			{
+				qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+				qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			}
+			else
+			{
+				qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+				qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+			}
+
+			// Clamping
+			if (clamp) 
+			{
+				qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+				qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+			}
+			else
+			{
+				qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+				qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+			}
+
+			// Now update it
+			ATD_Update(image);
+		}
+
+	}
+
+	// Try a wal
+	if (!image) 
+	{
+		char	filename[MAX_QPATH];
+
+		memcpy(filename, name, len);
+		filename[len] = 0;
+		strcat(filename+len, ".wal");
+		image = GL_LoadWal (name, filename);
+	}
+
+	// Now just put the 'bad' texture
+	if (!image)
+	{
+		ri.Con_Printf (PRINT_ALL, "GL_FindImage: can't load %s\n", name);
+		image = r_notexture;
+	}
 
 	return image;
+}
+
+
+
+void GL_FindImage2 (char *name, byte **pic, int *width, int *height, qboolean hunk)
+{
+	int		i, len;
+	char	newname[MAX_QPATH];
+
+	*pic = NULL;
+	if (!name) return;	//	ri.Sys_Error (ERR_DROP, "GL_FindImage: NULL name");
+
+	// Strip extension
+	COM_StripExtension(name,newname);
+	name = newname;
+
+	len = strlen(name);
+
+	//
+	// load the pic from disk
+	//
+
+	// Try a TGA first
+	*pic = NULL;
+	strcat(name+len, ".tga");
+	LoadTGA (name, pic, width, height, hunk);
+	name[len] = 0; 
+	if (*pic) return;
+
+	// Try a PNG first
+	*pic = NULL;
+	strcat(name+len, ".png");
+	LoadPNG (name, pic, width, height, hunk);
+	name[len] = 0; 
+
+	if (*pic) return;
 }
 
 
@@ -1414,6 +2149,17 @@ R_RegisterSkin
 struct image_s *R_RegisterSkin (char *name)
 {
 	return GL_FindImage (name, it_skin);
+}
+
+
+/*
+===============
+R_RegisterClamped
+===============
+*/
+struct image_s *R_RegisterClamped (char *name)
+{
+	return GL_FindImage (name, it_clamped);
 }
 
 
@@ -1433,6 +2179,8 @@ void GL_FreeUnusedImages (void)
 	// never free r_notexture or particle texture
 	r_notexture->registration_sequence = registration_sequence;
 	r_particletexture->registration_sequence = registration_sequence;
+	r_newparticletexture->registration_sequence = registration_sequence;
+	if (r_norm_cube) r_norm_cube->registration_sequence = registration_sequence;
 
 	for (i=0, image=gltextures ; i<numgltextures ; i++, image++)
 	{
@@ -1444,10 +2192,10 @@ void GL_FreeUnusedImages (void)
 			continue;		// don't free pics
 		// free it
 		qglDeleteTextures (1, &image->texnum);
+		if (image->atd) ATD_Free(image->atd);
 		memset (image, 0, sizeof(*image));
 	}
 }
-
 
 /*
 ===============
@@ -1495,17 +2243,19 @@ GL_InitImages
 void	GL_InitImages (void)
 {
 	int		i, j;
-	float	g = vid_gamma->value;
+	float	g = vid_gamma->value, intens = 1;
 
 	registration_sequence = 1;
 
 	// init intensity conversions
-	intensity = ri.Cvar_Get ("intensity", "2", 0);
+	intensity = ri.Cvar_Get ("intensity", "1", CVAR_ARCHIVE);
 
-	if ( intensity->value <= 1 )
-		ri.Cvar_Set( "intensity", "1" );
+	if ( intensity->value <= 1 ) ri.Cvar_Set( "intensity", "1" );
+	else intens = intensity->value;
 
-	gl_state.inverse_intensity = 1 / intensity->value;
+	gl_state.inverse_intensity = 1 / intens;
+
+	if (qwglSetDeviceGammaRamp) intens = 1;
 
 	Draw_GetPalette ();
 
@@ -1516,7 +2266,7 @@ void	GL_InitImages (void)
 			ri.Sys_Error( ERR_FATAL, "Couldn't load pics/16to8.pcx");
 	}
 
-	if ( gl_config.renderer & ( GL_RENDERER_VOODOO | GL_RENDERER_VOODOO2 ) )
+	if ( qwglSetDeviceGammaRamp || gl_config.renderer & ( GL_RENDERER_VOODOO ) )
 	{
 		g = 1.0F;
 	}
@@ -1542,7 +2292,7 @@ void	GL_InitImages (void)
 
 	for (i=0 ; i<256 ; i++)
 	{
-		j = i*intensity->value;
+		j = i*intens;
 		if (j > 255)
 			j = 255;
 		intensitytable[i] = j;
@@ -1565,7 +2315,1123 @@ void	GL_ShutdownImages (void)
 			continue;		// free image_t slot
 		// free it
 		qglDeleteTextures (1, &image->texnum);
+		if (image->atd) ATD_Free(image->atd);
 		memset (image, 0, sizeof(*image));
 	}
+}
+
+
+static int atd_update_buffer[256*256];
+
+/*
+===============
+ATD Interform
+===============
+*/
+void GenerateScrollCoords(float vx, float vy, float new_tc[2])
+{
+	// vx and vy are units per second
+	new_tc[0] = (r_newrefdef.time*vx) - (int)(r_newrefdef.time*vx);
+	new_tc[1] = (r_newrefdef.time*vy) - (int)(r_newrefdef.time*vy);
+}
+
+// Ok, just crapping on here
+void GenerateWanderCoords(float last_time, float rate, float strength, float speed, float tc_delta[2])
+{
+	float diff = r_newrefdef.time - last_time;
+	float speed_frac;
+	float rate_frac;
+	float rand_dir;
+
+	if (diff < 0) diff = 0;
+
+	speed_frac = (diff*speed) - (int)(diff*speed);
+	rate_frac = (diff*rate) - (int)(diff*rate);
+
+//	rand_dir = (rand() / (float)(RAND_MAX)) * M_PI;
+	rand_dir = rate_frac * M_PI * 2;
+	tc_delta[0] = speed_frac/20 + (cos(rand_dir)+0.5) * strength /150;//4 *  * (1-strength) + ;
+	tc_delta[1] = speed_frac/30 + (sin(rand_dir)-0.5) * strength /100;
+
+	tc_delta[0] = tc_delta[0] - (int)tc_delta[0];
+	tc_delta[1] = tc_delta[1] - (int)tc_delta[1];
+}
+
+static void ATD_Update_Interform (image_t *image, qboolean force)
+{
+	atd_interform_t *atd = (atd_interform_t *) image->atd;
+	int	mother_tc[2];
+	int	father_tc[2];
+	float tc_temp[2];
+	int	*out, *line_end, *end, *palette;
+	byte *mother, *mother_line_end, *mother_end, *mother_next;
+	byte *father, *father_line_end, *father_end, *father_next;
+
+	// Mother Texture Coord Generation
+	tc_temp[0] = tc_temp[1] = 0;
+	if (atd->mother_move == atd_move_scroll) 
+		GenerateScrollCoords(atd->mother_vx, atd->mother_vy, tc_temp);
+	else if (atd->mother_move == atd_move_wander)
+	{
+		float tc_delta[2];
+		GenerateWanderCoords(atd->last_time, atd->mother_rate, atd->mother_strength, atd->mother_speed, tc_delta);
+
+		if (atd->mother.width) tc_temp[0] = atd->mother_tc[0]/(float)(atd->mother.width) + tc_delta[0];
+		if (atd->mother.height) tc_temp[1] = atd->mother_tc[1]/(float)(atd->mother.height) + tc_delta[1];
+
+		tc_temp[0] = tc_temp[0] - (int) tc_temp[0];
+		tc_temp[1] = tc_temp[1] - (int) tc_temp[1];
+	}
+
+	while (tc_temp[0] < 0) tc_temp[0] += 1;
+	while (tc_temp[1] < 0) tc_temp[1] += 1;
+	mother_tc[0] = (int) (atd->mother_tc[0] = tc_temp[0] * atd->mother.width);
+	mother_tc[1] = (int) (atd->mother_tc[1] = tc_temp[1] * atd->mother.height);
+
+	// Father Texture Coord Generation
+	tc_temp[0] = tc_temp[1] = 0;
+	if (atd->father_move == atd_move_scroll) 
+	{
+		GenerateScrollCoords(atd->father_vx, atd->father_vy, tc_temp);
+	}
+	else if (atd->father_move == atd_move_wander)
+	{
+		float tc_delta[2];
+		GenerateWanderCoords(atd->last_time, atd->father_rate, atd->father_strength, atd->father_speed, tc_delta);
+
+		if (atd->father.width) tc_temp[0] = atd->father_tc[0]/(float)(atd->father.width) + tc_delta[0];
+		if (atd->father.height) tc_temp[1] = atd->father_tc[1]/(float)(atd->father.height) + tc_delta[1];
+
+		tc_temp[0] = tc_temp[0] - (int) tc_temp[0];
+		tc_temp[1] = tc_temp[1] - (int) tc_temp[1];
+	}
+
+	while (tc_temp[0] < 0) tc_temp[0] += 1;
+	while (tc_temp[1] < 0) tc_temp[1] += 1;
+	father_tc[0] = (int) (atd->father_tc[0] = tc_temp[0] * atd->father.width);
+	father_tc[1] = (int) (atd->father_tc[1] = tc_temp[1] * atd->father.height);
+
+
+	// Ok we need to regenerate it
+
+	palette = (int*) atd->palette.pixels;
+
+	out      = atd_update_buffer;
+	line_end = atd_update_buffer + image->width;
+	end      = atd_update_buffer + image->width*image->height;
+
+	mother          = atd->mother.pixels + atd->mother.width*mother_tc[1] + mother_tc[0];
+	mother_line_end = atd->mother.pixels + atd->mother.width*mother_tc[1] + atd->mother.width;
+	mother_end      = atd->mother.pixels + atd->mother.width*atd->mother.height + mother_tc[0];
+
+
+	// Only have mother so it's easy. Just the palette lookup
+	if (!atd->father.pixels)
+	{
+		while (out != end) 
+		{
+			mother_next = mother + atd->mother.width;
+
+			while (out != line_end) 
+			{
+				*out++ = palette[*mother++];
+				//*out++ = *mother++;
+				if (mother == mother_line_end) mother -= atd->mother.width;
+			}
+
+			mother = mother_next;
+
+			line_end += image->width;
+			mother_line_end += atd->mother.width;
+
+			if (mother == mother_end) 
+			{
+				mother -= atd->mother.width * atd->mother.height;
+				mother_line_end -= atd->mother.width * atd->mother.height;
+			}
+		}
+	}
+	else
+	{
+		father          = atd->father.pixels + atd->father.width*father_tc[1] + father_tc[0];
+		father_line_end = atd->father.pixels + atd->father.width*father_tc[1] + atd->father.width;
+		father_end      = atd->father.pixels + atd->father.width*atd->father.height + father_tc[0];
+
+		while (out != end) 
+		{
+			mother_next = mother + atd->mother.width;
+			father_next = father + atd->father.width;
+			while (out != line_end) 
+			{
+				*out++ = palette[((*mother++) + (*father++))>>1];
+				//*out++ = *mother++ + (*father++ << 8);
+				if (mother == mother_line_end) mother -= atd->mother.width;
+				if (father == father_line_end) father -= atd->father.width;
+			}
+
+			mother = mother_next;
+			father = father_next;
+			line_end += image->width;
+			mother_line_end += atd->mother.width;
+			father_line_end += atd->father.width;
+
+			if (mother == mother_end) 
+			{
+				mother -= atd->mother.width * atd->mother.height;
+				mother_line_end -= atd->mother.width * atd->mother.height;
+			}
+
+			if (father == father_end) 
+			{
+				father -= atd->father.width * atd->father.height;
+				father_line_end -= atd->father.width * atd->father.height;
+			}
+		}
+	}
+
+	qglTexImage2D(GL_TEXTURE_2D, 
+					0,
+					GL_RGBA8,
+					image->width,
+					image->height,
+					0,
+					GL_RGBA,
+					GL_UNSIGNED_BYTE,
+					atd_update_buffer);
+}
+
+#define TRY_ATD_FLOAT_TOKEN(name)		\
+	if (strcmp(token, #name) == 0) do	\
+	{									\
+		token = COM_Parse4(&tokens);	\
+		if (!tokens) return NULL;		\
+			atd->name = atof(token);	\
+	} while(0)
+
+atd_t *ATD_LoadInterform (char *tokens, byte **pic, int *width, int *height, int *clamp)
+{
+	atd_interform_t	*atd;
+	char *token;
+
+	atd = (atd_interform_t*)Hunk_Alloc2(sizeof(atd_interform_t));
+	memset(atd,0,sizeof(atd_interform_t));
+	atd->type = atd_type_interform;
+	atd->bilinear = true;
+
+	// Defaults
+	atd->mother_move = atd_move_none;
+	atd->mother_speed = 0.3;
+	atd->mother_rate = 1;
+	atd->mother_strength = 1;
+
+	atd->father_move = atd_move_none;
+	atd->father_speed = 0.3;
+	atd->father_rate = 1;
+	atd->father_strength = 1;
+
+	*clamp = false;
+
+	// Find our type
+	while (1) {
+		token = COM_Parse4(&tokens);
+		if (!tokens) break;
+
+		// Look for 'width' key
+		if (strcmp(token, "width") == 0)
+		{
+			// read data
+			token = COM_Parse4(&tokens);
+			if (!tokens) return NULL;
+
+			*width = atoi(token);
+		}
+		// Look for 'height' key
+		else if (strcmp(token, "height") == 0)
+		{
+			// read data
+			token = COM_Parse4(&tokens);
+			if (!tokens) return NULL;
+
+			*height = atoi(token);
+		}
+		// Look for 'palette' key
+		else if (strcmp(token, "palette") == 0)
+		{
+			// Only 1 file per bitmap please
+			if (atd->palette.pixels) return NULL;
+
+			// read data
+			token = COM_Parse4(&tokens);
+			if (!*tokens) break;
+
+			// Attempt to load the PGN
+			GL_FindImage2 (token, &atd->palette.pixels, &atd->palette.width, &atd->palette.height, true);
+		}
+		// Look for 'mother' key
+		else if (strcmp(token, "mother") == 0)
+		{
+			// Only 1 file per bitmap please
+			if (atd->mother.pixels) return NULL;
+
+			// read data
+			token = COM_Parse4(&tokens);
+			if (!*tokens) break;
+
+			// Attempt to load the PGN
+			LoadPNG_8Bit (token, &atd->mother.pixels, &atd->mother.width, &atd->mother.height, true);
+		}
+		// Look for 'father' key
+		else if (strcmp(token, "father") == 0)
+		{
+			// Only 1 file per bitmap please
+			if (atd->father.pixels) return NULL;
+
+			// read data
+			token = COM_Parse4(&tokens);
+			if (!*tokens) break;
+
+			// Attempt to load the PGN
+			LoadPNG_8Bit (token, &atd->father.pixels, &atd->father.width, &atd->father.height, true);
+		}
+		// Look for 'mother_move' key
+		else if (strcmp(token, "mother_move") == 0)
+		{
+			// read data
+			token = COM_Parse4(&tokens);
+			if (!tokens) return NULL;
+
+			if (strcmp(token, "none") == 0)
+				atd->mother_move = atd_move_none;
+			else if (strcmp(token, "scroll") == 0)
+				atd->mother_move = atd_move_scroll;
+			else if (strcmp(token, "wander") == 0)
+				atd->mother_move = atd_move_wander;
+			else 
+			{
+				ri.Con_Printf (PRINT_ALL, "Error parsing ATD Interform. Unknown mother_move type (%s)\n", token);
+				return NULL;
+			}
+		}
+		// Look for 'father_move' key
+		else if (strcmp(token, "father_move") == 0)
+		{
+			// read data
+			token = COM_Parse4(&tokens);
+			if (!tokens) return NULL;
+
+			if (strcmp(token, "none") == 0)
+				atd->father_move = atd_move_none;
+			else if (strcmp(token, "scroll") == 0)
+				atd->father_move = atd_move_scroll;
+			else if (strcmp(token, "wander") == 0)
+				atd->father_move = atd_move_wander;
+			else 
+			{
+				ri.Con_Printf (PRINT_ALL, "Error parsing ATD Interform. Unknown father_move type (%s)\n", token);
+				return NULL;
+			}
+		}
+		else TRY_ATD_FLOAT_TOKEN(mother_vx);
+		else TRY_ATD_FLOAT_TOKEN(mother_vy);
+		else TRY_ATD_FLOAT_TOKEN(mother_speed);
+		else TRY_ATD_FLOAT_TOKEN(mother_rate);
+		else TRY_ATD_FLOAT_TOKEN(mother_strength);
+		else TRY_ATD_FLOAT_TOKEN(father_vx);
+		else TRY_ATD_FLOAT_TOKEN(father_vy);
+		else TRY_ATD_FLOAT_TOKEN(father_speed);
+		else TRY_ATD_FLOAT_TOKEN(father_rate);
+		else TRY_ATD_FLOAT_TOKEN(father_strength);
+		// Eat unknown crap
+		else
+		{
+			// now the data
+			token = COM_Parse4(&tokens);
+			if (!tokens) break;
+		}
+	}
+
+
+	if (!IsPowerOf2(*width) || !IsPowerOf2(*height))
+	{
+		ri.Con_Printf (PRINT_ALL, "Error parsing ATD Interform. Width and Height must be POW2\n");
+		return NULL;
+	}
+
+	if (*width < 1 || *width > 256) 
+	{
+		ri.Con_Printf (PRINT_ALL, "Error parsing ATD Interform. width out of range (0-256) - %i\n", *width);
+		return NULL;
+	}
+
+	if (*height < 1 || *height > 256) 
+	{
+		ri.Con_Printf (PRINT_ALL, "Error parsing ATD Interform. height out of range (0-256) - %i\n", *height);
+		return NULL;
+	}
+
+	if (!atd->palette.pixels) 
+	{
+		ri.Con_Printf (PRINT_ALL, "Error parsing ATD Animation. No palette\n");
+		return NULL;
+	}
+
+	if (atd->palette.width != 256 )
+	{
+		ri.Con_Printf (PRINT_ALL, "Error parsing ATD Interform. Palette PNG must be exactly 256 pixel wide\n");
+		return NULL;
+	}
+
+	if (!atd->mother.pixels && !atd->father.pixels) 
+	{
+		ri.Con_Printf (PRINT_ALL, "Error parsing ATD Animation. No mother and father. At least 1 must exist.\n");
+		return NULL;
+	}
+
+	// A little trick. If no mother, copy father to mother and clear father
+	if (!atd->mother.pixels)
+	{
+		atd->mother = atd->father;
+		atd->mother_move = atd->father_move;
+		atd->mother_rate = atd->father_rate;
+		atd->mother_speed = atd->father_speed;
+		atd->mother_strength = atd->father_strength;
+		atd->mother_vx = atd->father_vx;
+		atd->mother_vy = atd->father_vy;
+		atd->father.pixels = 0;
+		atd->father.height = 0;
+		atd->father.width = 0;
+	}
+
+	memset(atd_update_buffer, 255, (*width)*(*height)*4);
+	memcpy (atd_update_buffer, atd->palette.pixels, 768);
+
+	*pic = (byte*) atd_update_buffer;
+
+	return (atd_t*) atd;
+}
+
+/*
+===============
+ATD Animation
+===============
+*/
+
+// Note, is recursive, though we will attempt to catch stupidity 
+static void ATD_Update_Animation (image_t *image)
+{
+	int i;
+	atd_animation_t *atd = (atd_animation_t *) image->atd;
+	atd_frame_t		*frame = atd->nextframe;
+	atd_frame_t		*nextframe;
+	atd_bitmap_t	*bitmap;
+
+	// Only update IF est_next is less than current time
+	if (atd->est_next > r_newrefdef.time) return;
+
+	// Make sure we weren't already run this frame
+	if (frame->last_time == r_newrefdef.time) return;
+	frame->last_time = r_newrefdef.time;
+
+	// Do our animation
+
+	// Get the Bitmap
+	bitmap = atd->bitmaps;
+	for (i = 0; i < frame->bitmap; i++) {
+		bitmap = bitmap->listnext;
+	}
+
+	// Now upload it
+
+
+	// needs clipping ? (i think these are unsupported, so we wont do anything)
+	if ((frame->x + bitmap->width) > image->width || 
+		(frame->y + bitmap->height) > image->height ||
+		frame->x < 0 || frame->y < 0)
+	{
+	}
+	// Just upload it using glTexSubImage2D
+	else if (gl_atd_subimage_update->value || !atd->pixels)
+	{
+		qglTexSubImage2D(GL_TEXTURE_2D, 
+							0,
+							frame->x,
+							frame->y,
+							bitmap->width,
+							bitmap->height,
+							GL_RGBA,
+							GL_UNSIGNED_BYTE,
+							bitmap->pixels);
+	}
+	// Do full uploads
+	else
+	{
+		int internalformat = GL_RGBA8;
+		if (!image->has_alpha) internalformat = GL_RGB8;
+
+		// Full width updates can be done in a single memcpy
+		if (frame->x == 0 && bitmap->width == image->width)
+		{
+			memcpy(atd->pixels+(frame->y*bitmap->width),
+					bitmap->pixels, 
+					bitmap->width*bitmap->height*4);
+		}
+		else
+		{
+			int i;
+			int *dest, *src;
+			
+			dest = atd->pixels + frame->x + frame->y*image->width;
+			src = bitmap->pixels;
+
+			for (i = 0; i < bitmap->height; i++)
+			{
+				memcpy(dest, src, bitmap->width*4);
+				src += bitmap->width;
+				dest += image->width;
+			}
+		}
+
+		qglTexImage2D(GL_TEXTURE_2D, 
+						0,
+						internalformat,
+						image->width,
+						image->height,
+						0,
+						GL_RGBA,
+						GL_UNSIGNED_BYTE,
+						atd->pixels);
+
+	}
+
+
+	// Get next frame
+	
+	// None? then nothing else for us to do
+	if (frame->next == -1) 
+	{
+		atd->nextframe = NULL;
+		return;
+	}
+
+	// Get our next
+	nextframe = atd->frames;
+	for (i = 0; i < frame->next; i++) 
+	{
+		nextframe = nextframe->listnext;
+	}
+
+	atd->nextframe = nextframe;
+	
+	// Run it now if our wait time was -1, but only if it wasn't already run this time
+	if (frame->wait == -1) ATD_Update_Animation (image);
+	else atd->est_next = r_newrefdef.time+frame->wait;	// Time in seconds to milliseconds
+}
+
+atd_bitmap_t * ATD_LoadAnimation_ParseBitmap (char **tokens)
+{
+	char *token;
+	atd_bitmap_t *ret = NULL;
+
+	ret = (atd_bitmap_t*) Hunk_Alloc2 (sizeof(atd_bitmap_t));
+	ret->pixels = 0;	// If loaded and ok, this is set to something
+
+	while (1)
+	{
+		char *prev = *tokens;
+		token = COM_Parse4(tokens);
+		if (!*tokens) break;
+
+		// Look for 'colortype' key
+		if (strcmp(token, "file") == 0)
+		{
+			// Only 1 file per bitmap please
+			if (ret->pixels) return NULL;
+
+			// read data
+			token = COM_Parse4(tokens);
+			if (!*tokens) break;
+
+			// Attempt to load the PGN
+			GL_FindImage2 (token, &ret->pixels, &ret->width, &ret->height, true);
+
+			// Was not ok!
+			if (!ret->pixels) return NULL;
+		}
+		// Whoa.... take a step back, we've stepped out of our bounds
+		else if (token[0] == '!')
+		{
+			*tokens = prev;
+			break;
+		}
+	}
+
+	if (ret->pixels) return ret;
+
+	return NULL;
+}
+
+atd_frame_t * ATD_LoadAnimation_ParseFrame (char **tokens)
+{
+	char *token;
+	atd_frame_t	*f;
+
+	f = Hunk_Alloc2(sizeof(atd_frame_t));
+	
+	// Set our defaults
+	f->bitmap = -1;		// This is set if it's ok
+	f->next = -1;
+	f->wait = 0;
+	f->x = 0;
+	f->y = 0;
+	f->listnext = NULL;
+	f->last_time = -1;
+
+	while (1)
+	{
+		char *prev = *tokens;
+		token = COM_Parse4(tokens);
+		if (!*tokens) break;
+
+		if (strcmp(token, "bitmap") == 0)
+		{
+			// Only 1 bitmap per animation please
+			if (f->bitmap != -1) return NULL;
+
+			// read data
+			token = COM_Parse4(tokens);
+			if (!*tokens) break;
+
+			f->bitmap = atoi(token);
+
+			// Invalid bitmap number
+			if (f->bitmap < 0) return NULL;	
+		}
+		else if (strcmp(token, "next") == 0)
+		{
+			// read data
+			token = COM_Parse4(tokens);
+			if (!*tokens) break;
+
+			f->next = atoi(token);
+		}
+		else if (strcmp(token, "x") == 0)
+		{
+			// read data
+			token = COM_Parse4(tokens);
+			if (!*tokens) break;
+
+			f->x = atoi(token);
+		}
+		else if (strcmp(token, "y") == 0)
+		{
+			// read data
+			token = COM_Parse4(tokens);
+			if (!*tokens) break;
+
+			f->y = atoi(token);
+		}
+		else if (strcmp(token, "wait") == 0)
+		{
+			// read data
+			token = COM_Parse4(tokens);
+			if (!*tokens) break;
+
+			f->wait = atof(token);
+		}
+		// Whoa.... take a step back, we've stepped out of our bounds
+		else if (token[0] == '!')
+		{
+			*tokens = prev;
+			break;
+		}
+	}
+
+	// Return the frame if ok
+	if (f->bitmap != -1) return f;
+
+	return NULL;
+}
+
+atd_t *ATD_LoadAnimation (char *tokens, byte **pic, int *width, int *height, int *clamp)
+{
+	atd_animation_t	*atd;
+	char *token;
+	int	colortype = 0;
+	int num_bitmaps = 0;
+	int num_frames = 0;
+	int i;
+	atd_bitmap_t	*lastbitmap = NULL, *bitmap;
+	atd_frame_t		*lastframe = NULL, *frame;
+
+	atd = (atd_animation_t*)Hunk_Alloc2(sizeof(atd_animation_t));
+	memset(atd,0,sizeof(atd_animation_t));
+	atd->type = atd_type_animation;
+	atd->bilinear = true;
+
+	*clamp = false;
+
+	// Find our type
+	while (1) {
+		token = COM_Parse4(&tokens);
+		if (!tokens) break;
+
+		// Look for 'colortype' key
+		if (strcmp(token, "colortype") == 0)
+		{
+			// read data
+			token = COM_Parse4(&tokens);
+			if (!tokens) return NULL;
+
+			colortype = atoi(token);
+		}
+		// Look for 'width' key
+		else if (strcmp(token, "width") == 0)
+		{
+			// read data
+			token = COM_Parse4(&tokens);
+			if (!tokens) return NULL;
+
+			*width = atoi(token);
+		}
+		// Look for 'height' key
+		else if (strcmp(token, "height") == 0)
+		{
+			// read data
+			token = COM_Parse4(&tokens);
+			if (!tokens) return NULL;
+
+			*height = atoi(token);
+		}
+		// Look for 'bilinear' key
+		else if (strcmp(token, "bilinear") == 0)
+		{
+			// read data
+			token = COM_Parse4(&tokens);
+			if (!tokens) return NULL;
+
+			atd->bilinear = atoi(token)!=0;
+		}
+		// Look for 'clamp' key
+		else if (strcmp(token, "clamp") == 0)
+		{
+			// read data
+			token = COM_Parse4(&tokens);
+			if (!tokens) return NULL;
+
+			*clamp = atoi(token)!=0;
+		}
+		// Parse bitmaps
+		else if (strcmp(token, "!bitmap") == 0)
+		{
+			bitmap = ATD_LoadAnimation_ParseBitmap(&tokens);
+
+			if (!bitmap) 
+			{
+				ri.Con_Printf (PRINT_ALL, "Error parsing ATD Animation bitmap %i\n", num_bitmaps);
+				return NULL;
+			}
+
+			if (!lastbitmap) atd->bitmaps = bitmap;
+			else lastbitmap->listnext = bitmap;
+
+			lastbitmap = bitmap;
+			num_bitmaps++;
+		}
+		// Parse frames
+		else if (strcmp(token, "!frame") == 0)
+		{
+			frame = ATD_LoadAnimation_ParseFrame(&tokens);
+
+			if (!frame) {
+				ri.Con_Printf (PRINT_ALL, "Error parsing ATD Animation frame %i\n", num_frames);
+				return NULL;
+			}
+
+			if (!lastframe) atd->frames = frame;
+			else lastframe->listnext = frame;
+
+			lastframe = frame;
+			num_frames++;
+		}
+		// Eat unknown crap
+		else
+		{
+			// now the data
+			token = COM_Parse4(&tokens);
+			if (!tokens) break;
+		}
+	}
+
+
+	if (!num_frames) 
+	{
+		ri.Con_Printf (PRINT_ALL, "Error parsing ATD Animation. No frames\n");
+		return NULL;
+	}
+
+	if (!num_bitmaps) 
+	{
+		ri.Con_Printf (PRINT_ALL, "Error parsing ATD Animation. No bitmaps\n");
+		return NULL;
+	}
+
+	if (colortype < 1 || colortype > 4) 
+	{
+		ri.Con_Printf (PRINT_ALL, "Error parsing ATD Animation. colortype out of range (0-4) - %i\n", colortype);
+		return NULL;
+	}
+
+	if (!IsPowerOf2(*width) || !IsPowerOf2(*height))
+	{
+		ri.Con_Printf (PRINT_ALL, "Error parsing ATD Animation. Width and Height must be POW2\n");
+		return NULL;
+	}
+
+	if (*width < 1 || *width > 256) 
+	{
+		ri.Con_Printf (PRINT_ALL, "Error parsing ATD Animation. width out of range (0-256) - %i\n", *width);
+		return NULL;
+	}
+
+	if (*height < 1 || *height > 256) 
+	{
+		ri.Con_Printf (PRINT_ALL, "Error parsing ATD Animation. height out of range (0-256) - %i\n", *height);
+		return NULL;
+	}
+
+	// Verify frames
+	i = 0;
+	for (frame = atd->frames; frame != NULL; frame=frame->listnext)
+	{
+		if (frame->bitmap >= num_bitmaps)
+		{
+			ri.Con_Printf (PRINT_ALL, "Error parsing ATD Animation. Bitmap index in frame (%i) out of range (0-%i) - %i\n", i, num_bitmaps-1, frame->bitmap);
+			return NULL;
+		}
+
+		if (frame->next >= num_frames && frame->next != -1)
+		{
+			ri.Con_Printf (PRINT_ALL, "Error parsing ATD Animation. Next frame index in frame (%i) out of range (0-%i) - %i\n", i, num_frames-1, frame->next);
+			return NULL;
+		}
+
+		i++;
+	}
+
+	if (gl_atd_subimage_update->value) *pic = atd_update_buffer;
+	else *pic = atd->pixels = Hunk_Alloc2((*width)*(*height)*4);
+
+	if (colortype & 1) memset(*pic, 255, (*width)*(*height)*4);
+	else memset(*pic, 127, (*width)*(*height)*4);
+
+	// Set next frame
+	atd->nextframe = atd->frames;
+
+	return (atd_t*) atd;
+}
+
+/*
+===============
+ATD Whitenoise
+===============
+*/
+
+int	rand1k[] = {
+#include "rand1k.h"
+};
+
+#define MASK_1K	0x3FF
+
+int		rand1k_index = 0;
+
+static void ATD_Update_WhiteNoise (image_t *image)
+{
+	static int last = 0;
+	int i;
+	byte v;
+	byte *buf = (byte *) atd_update_buffer;
+	int total = image->width * image->height;
+
+	for (i = 0; i < total; i++)
+	{
+		buf[i] = rand()&0xFF;
+	}
+
+	qglTexImage2D(GL_TEXTURE_2D, 
+					0,
+					GL_LUMINANCE,
+					image->width,
+					image->height,
+					0,
+					GL_LUMINANCE,
+					GL_UNSIGNED_BYTE,
+					atd_update_buffer);
+
+}
+
+atd_t *ATD_LoadWhiteNoise (char *tokens, byte **pic, int *width, int *height, int *clamp)
+{
+	atd_t	*atd;
+	char *token;
+
+	atd = (atd_t*)Hunk_Alloc2(sizeof(atd_t));
+	memset(atd,0,sizeof(atd_t));
+	atd->type = atd_type_whitenoise;
+	atd->bilinear = false;
+
+	*clamp = false;
+
+	// Find our type
+	while (1) {
+		token = COM_Parse4(&tokens);
+		if (!tokens) break;
+
+		// Look for 'width' key
+		if (strcmp(token, "width") == 0)
+		{
+			// read data
+			token = COM_Parse4(&tokens);
+			if (!tokens) return NULL;
+
+			*width = atoi(token);
+		}
+		// Look for 'height' key
+		else if (strcmp(token, "height") == 0)
+		{
+			// read data
+			token = COM_Parse4(&tokens);
+			if (!tokens) return NULL;
+
+			*height = atoi(token);
+		}
+		// Eat unknown crap
+		else
+		{
+			// now the data
+			token = COM_Parse4(&tokens);
+			if (!tokens) break;
+		}
+	}
+
+
+	if (!IsPowerOf2(*width) || !IsPowerOf2(*height))
+	{
+		ri.Con_Printf (PRINT_ALL, "Error parsing ATD Interform. Width and Height must be POW2\n");
+		return NULL;
+	}
+
+	if (*width < 1 || *width > 256) 
+	{
+		ri.Con_Printf (PRINT_ALL, "Error parsing ATD Interform. width out of range (0-256) - %i\n", *width);
+		return NULL;
+	}
+
+	if (*height < 1 || *height > 256) 
+	{
+		ri.Con_Printf (PRINT_ALL, "Error parsing ATD Interform. height out of range (0-256) - %i\n", *height);
+		return NULL;
+	}
+
+	memset(atd_update_buffer, 255, (*width)*(*height)*4);
+	*pic = (byte*) atd_update_buffer;
+
+	return (atd_t*) atd;
+}
+
+/*
+===============
+ATD_Load
+===============
+*/
+atd_t *ATD_Load (char *name, byte **pic, int *width, int *height, int *clamp)
+{
+	int			i;
+	char		*data, *tokens, *token;
+	atd_t		*atd = NULL;
+	atd_type_t	type = atd_type_unknown;
+	void		*data_base;
+
+	//
+	// load the file
+	//
+	i = ri.FS_LoadFile (name, (void **)&data);
+	if (!data)
+	{
+		return NULL;
+	}
+
+	// Allocate some storage
+	data_base = Hunk_Begin2(0x300000);
+
+	// Need to make it a null terminated string
+	tokens = malloc(i+1);
+	memcpy(tokens, data, i);
+	tokens[i] = 0;
+
+	ri.FS_FreeFile (data);
+	data = tokens;
+
+	// Read header
+	if (LittleLong(*(long*)data) != ATDHEADER) 
+	{
+		ri.Con_Printf (PRINT_ALL, "Missing ATD header in file %s\n", name);
+		goto end;
+	}
+
+	tokens += 4;
+
+	// Find our type
+	while (1) {
+		token = COM_Parse4(&tokens);
+		if (!tokens) break;
+
+		// Look for 'type' key
+		if (strcmp(token, "type") == 0)
+		{
+			// now the type
+			token = COM_Parse4(&tokens);
+			if (!tokens) break;
+
+			if (strcmp(token, "animation") == 0)
+				type = atd_type_animation;
+			else if (strcmp(token, "interform") == 0)
+				type = atd_type_interform;
+			else if (strcmp(token, "whitenoise") == 0)
+				type = atd_type_whitenoise;
+
+			break;
+
+		}
+		// Eat remaining crap
+		else
+		{
+			// now the data
+			token = COM_Parse4(&tokens);
+			if (!tokens) break;
+		}
+
+	}
+
+	// Turn off pic mip
+	no_pic_mip = true;
+
+	switch (type) 
+	{
+	case atd_type_animation:
+		atd = ATD_LoadAnimation (data+4, pic, width, height, clamp);
+		break;
+
+	case atd_type_interform:
+		atd = ATD_LoadInterform (data+4, pic, width, height, clamp);
+		break;
+
+	case atd_type_whitenoise:
+//		ri.Con_Printf (PRINT_ALL, "Unsupported ATD type (%i) in file %s\n", type, name);
+		//image = ATD_LoadWhitenoise (data+4);
+		atd = ATD_LoadWhiteNoise (data+4, pic, width, height, clamp);
+		break;
+
+	default:
+		ri.Con_Printf (PRINT_ALL, "Unknown ATD type in file %s\n", name);
+	}
+
+end:
+	free(data);
+
+	Hunk_End2();
+
+	// Um, not us
+	if (!atd) 
+	{
+		// Kill the hunk
+		Hunk_Free2(data_base);
+
+		ri.Con_Printf (PRINT_ALL, "Failed to load ATD %s\n", name);
+		return NULL;
+	}
+
+	return atd;
+}
+
+/*
+===============
+ATD_Free
+===============
+*/
+void ATD_Free (atd_t *atd)
+{
+	/*
+	if (atd->type == atd_type_interform) 
+	{
+		atd_interform_t *iform = (atd_interform_t*) atd;
+
+		if (iform->mother.pixels) free(iform->mother.pixels);
+		if (iform->father.pixels) free(iform->father.pixels);
+		if (iform->palette.pixels) free(iform->palette.pixels);
+	}
+	else if (atd->type == atd_type_animation) 
+	{
+		atd_animation_t *anim = (atd_animation_t*) atd;
+		atd_bitmap_t	*bitmap, *nextbitmap;
+		atd_frame_t		*frame, *nextframe;
+
+		nextbitmap = anim->bitmaps;
+		while (bitmap = nextbitmap)
+		{
+			nextbitmap = bitmap->listnext;
+			if (bitmap->pixels) free(bitmap->pixels);
+			free (bitmap);
+		}
+	}
+	*/
+
+	Hunk_Free2(atd);
+}
+
+
+/*
+===============
+ATD_Update
+===============
+*/
+void ATD_Update (image_t *image)
+{
+	// You've got to be kidding
+	if (!image->atd) 
+		return;
+
+	// Don't need to update it again this frame (note THIS FRAME)
+	if (image->atd->last_time && image->atd->last_time == r_newrefdef.time)
+		return;
+
+	if (image->atd->type == atd_type_animation) 
+	{
+		atd_animation_t *atd = (atd_animation_t *) image->atd;
+
+		// Requires a reset
+		if (r_newrefdef.time < image->atd->last_time) 
+		{
+			atd_frame_t		*frame;
+
+			for (frame = atd->frames; frame != NULL; frame = frame->listnext)
+				frame->last_time = 0;
+
+			atd->nextframe = atd->frames;
+			atd->est_next = 0;
+		}
+
+		if (atd->nextframe) ATD_Update_Animation(image);
+	}
+	else if (image->atd->type == atd_type_interform) 
+	{
+		ATD_Update_Interform(image, (r_newrefdef.time<image->atd->last_time || image->atd->last_time == 0));
+	}
+	else if (image->atd->type == atd_type_whitenoise) 
+	{
+		ATD_Update_WhiteNoise(image);
+	}
+
+	image->atd->last_time = r_newrefdef.time;
+
 }
 

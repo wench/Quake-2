@@ -158,9 +158,9 @@ void CL_RegisterTEntSounds (void)
 	cl_sfx_lightning = S_RegisterSound ("weapons/tesla.wav");
 	cl_sfx_disrexp = S_RegisterSound ("weapons/disrupthit.wav");
 	// version stuff
-	sprintf (name, "weapons/sound%d.wav", ROGUE_VERSION_ID);
-	if (name[0] == 'w')
-		name[0] = 'W';
+//	sprintf (name, "weapons/sound%d.wav", ROGUE_VERSION_ID);
+//	if (name[0] == 'w')
+//		name[0] = 'W';
 //PGM
 }	
 
@@ -1290,6 +1290,8 @@ void CL_AddBeams (void)
 			ent.angles[0] = pitch;
 			ent.angles[1] = yaw;
 			ent.angles[2] = rand()%360;
+			VectorSet(ent.scale, 1, 1, 1);
+			VectorSet(ent.rgb, 1, 1, 1);
 			V_AddEntity (&ent);			
 			return;
 		}
@@ -1312,6 +1314,8 @@ void CL_AddBeams (void)
 			}
 			
 //			Com_Printf("B: %d -> %d\n", b->entity, b->dest_entity);
+			VectorSet(ent.scale, 1, 1, 1);
+			VectorSet(ent.rgb, 1, 1, 1);
 			V_AddEntity (&ent);
 
 			for (j=0 ; j<3 ; j++)
@@ -1546,6 +1550,8 @@ void CL_AddPlayerBeams (void)
 			ent.angles[0] = pitch;
 			ent.angles[1] = yaw;
 			ent.angles[2] = rand()%360;
+			VectorSet(ent.scale, 1, 1, 1);
+			VectorSet(ent.rgb, 1, 1, 1);
 			V_AddEntity (&ent);			
 			return;
 		}
@@ -1579,6 +1585,8 @@ void CL_AddPlayerBeams (void)
 			}
 			
 //			Com_Printf("B: %d -> %d\n", b->entity, b->dest_entity);
+			VectorSet(ent.scale, 1, 1, 1);
+			VectorSet(ent.rgb, 1, 1, 1);
 			V_AddEntity (&ent);
 
 			for (j=0 ; j<3 ; j++)
@@ -1687,6 +1695,8 @@ void CL_AddExplosions (void)
 		ent->oldframe = ex->baseframe + f;
 		ent->backlerp = 1.0 - cl.lerpfrac;
 
+		VectorSet(ent->scale, 1, 1, 1);
+		VectorSet(ent->rgb, 1, 1, 1);
 		V_AddEntity (ent);
 	}
 }
@@ -1705,7 +1715,11 @@ void CL_AddLasers (void)
 	for (i=0, l=cl_lasers ; i< MAX_LASERS ; i++, l++)
 	{
 		if (l->endtime >= cl.time)
+		{
+			VectorSet(l->ent.scale, 1, 1, 1);
+			VectorSet(l->ent.rgb, 1, 1, 1);
 			V_AddEntity (&l->ent);
+		}
 	}
 }
 

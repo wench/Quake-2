@@ -338,6 +338,10 @@ typedef struct
 	int			body_que;			// dead bodies
 
 	int			power_cubes;		// ugly necessity for coop
+
+	// Aquakronox
+	char		*changemap_target;
+
 } level_locals_t;
 
 
@@ -364,6 +368,14 @@ typedef struct
 	float		maxyaw;
 	float		minpitch;
 	float		maxpitch;
+
+	// Anox
+	char		*spawncondition;
+	char		*npsimple;			// New Particles (Simple)
+	char		*np_0;				// New Particles (Complex)
+	char		*np_1;				// New Particles (Complex)
+	char		*np_2;				// New Particles (Complex)
+
 } spawn_temp_t;
 
 
@@ -415,11 +427,12 @@ typedef struct
 
 typedef struct
 {
-	mmove_t		*currentmove;
+	int			currentmove;						// Is an entitiy
 	int			aiflags;
 	int			nextframe;
 	float		scale;
 
+	mmove_t *	(*get_currentmove)(edict_t *self);	// Function that will get the current move struct
 	void		(*stand)(edict_t *self);
 	void		(*idle)(edict_t *self);
 	void		(*search)(edict_t *self);
@@ -430,6 +443,7 @@ typedef struct
 	void		(*melee)(edict_t *self);
 	void		(*sight)(edict_t *self, edict_t *other);
 	qboolean	(*checkattack)(edict_t *self);
+	void		(*custom_anim)(edict_t *self, char* animname);
 
 	float		pausetime;
 	float		attack_finished;
@@ -522,6 +536,7 @@ extern	cvar_t	*fraglimit;
 extern	cvar_t	*timelimit;
 extern	cvar_t	*password;
 extern	cvar_t	*spectator_password;
+extern	cvar_t	*needpass;
 extern	cvar_t	*g_select_empty;
 extern	cvar_t	*dedicated;
 
@@ -567,11 +582,13 @@ extern	cvar_t	*sv_maplist;
 //
 #define FFL_SPAWNTEMP		1
 #define FFL_NOSPAWN			2
+#define FFL_NOSAVE			4
 
 typedef enum {
 	F_INT, 
 	F_FLOAT,
 	F_LSTRING,			// string on disk, pointer in memory, TAG_LEVEL
+	F_LSTRING2,			// string on disk, pointer in memory, TAG_LEVEL
 	F_GSTRING,			// string on disk, pointer in memory, TAG_GAME
 	F_VECTOR,
 	F_ANGLEHACK,
@@ -959,6 +976,51 @@ struct gclient_s
 
 	edict_t		*chase_target;		// player we are chasing
 	qboolean	update_chase;		// need to update chase info?
+
+	int			frame_stand01;
+	int			frame_stand40;
+	int			frame_run1;
+	int			frame_run6;
+	int			frame_walk1;
+	int			frame_walk6;
+	int			frame_attack1;
+	int			frame_attack8;
+	int			frame_pain101;
+	int			frame_pain104;
+	int			frame_pain201;
+	int			frame_pain204;
+	int			frame_pain301;
+	int			frame_pain304;
+	int			frame_jump1;		// Begin jumping
+	int			frame_jump2;		// Moving in air
+	int			frame_jump3;		// Begin Landing
+	int			frame_jump6;		// Finish Landing
+	int			frame_flip01;
+	int			frame_flip12;
+	int			frame_salute01;
+	int			frame_salute11;
+	int			frame_taunt01;
+	int			frame_taunt17;
+	int			frame_wave01;
+	int			frame_wave11;
+	int			frame_point01;
+	int			frame_point12;
+	int			frame_crstnd01;
+	int			frame_crstnd19;
+	int			frame_crwalk1;
+	int			frame_crwalk6;
+	int			frame_crattak1;
+	int			frame_crattak9;
+	int			frame_crpain1;
+	int			frame_crpain4;
+	int			frame_crdeath1;
+	int			frame_crdeath5;
+	int			frame_death101;
+	int			frame_death106;
+	int			frame_death201;
+	int			frame_death206;
+	int			frame_death301;
+	int			frame_death308;
 };
 
 
@@ -984,7 +1046,6 @@ struct edict_s
 	//================================
 
 	int			svflags;
-	vec3_t		mins, maxs;
 	vec3_t		absmin, absmax, size;
 	solid_t		solid;
 	int			clipmask;
@@ -1109,5 +1170,51 @@ struct edict_s
 	// common data blocks
 	moveinfo_t		moveinfo;
 	monsterinfo_t	monsterinfo;
+
+	//
+	// Aquakronox
+	//
+
+	struct anox_entity_desc_s	*anox;
+	int							anim_start;
+	int							anim_count;
+	int							newscaling;
+	char						*default_anim;
+
+	char						*pathanim;
+	char						*sequence;			// APE Sequence 
+	float						falloff;			// Sound Falloff
 };
+
+typedef struct anox_entity_desc_s {
+	char		*classname;
+	char		*model_path;		// model_path
+	int			profile;			// 
+	vec3_t		scale;
+	char		*entity_type;
+	vec3_t		mins;
+	vec3_t		maxs;
+	qboolean	noshadow;			// shadow or noshadow
+	qboolean	solidflag;			// 1 or 0
+	float		walk_speed;
+	float		run_speed;
+	float		speed;				// ???
+	qboolean	lighting;			// 1 or 0
+	qboolean	blending;			// 1 or 0
+	char		*target_sequence;	// APE sequence to run when used?
+	char		*misc_value;
+	qboolean	no_mip;
+	char		*spawn_sequence;	// APE sequence to run when spaced or "none"
+	char		*description;
+
+	mmove_t		*moves;			// For char's
+
+	struct anox_entity_desc_s	*next;
+
+} anox_entity_desc_t;
+
+extern anox_entity_desc_t *anox_entities;
+void ANOX_load_entity_descs(void);
+void anox_setup_moves(anox_entity_desc_t *desc);
+anox_entity_desc_t *anox_find_desc(char *classname);
 
