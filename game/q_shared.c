@@ -894,7 +894,7 @@ void COM_FilePath (char *in, char *out)
 	while (s != in && *s != '/')
 		s--;
 
-	strncpy (out,in, s-in);
+	memcpy (out,in, s-in);
 	out[s-in] = 0;
 }
 

@@ -110,22 +110,6 @@ void Sys_Quit (void)
 	// shut down QHOST hooks if necessary
 	DeinitConProc ();
 
-	{
-		BOOL res;
-		int i;
-		static char nums[65536];
-		static char nums2[65536];
-		HDC hDCScreen = GetDC(NULL);
-
-		res = SetDeviceGammaRamp (hDCScreen, original_gamma);
-		ReleaseDC (NULL, hDCScreen);
-
-		if (!res) {
-			MessageBox(NULL, "Gamma Set failed", "Error", MB_ICONERROR);
-		}
-
-	}
-
 	exit (0);
 }
 

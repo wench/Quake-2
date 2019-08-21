@@ -35,6 +35,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <GL/glx.h>
 #endif
 
+#include"glext.h"
 qboolean QGL_Init( const char *dllname );
 void     QGL_Shutdown( void );
 
@@ -427,7 +428,7 @@ extern BOOL ( WINAPI * qwglSwapIntervalEXT)( int interval );
 
 extern BOOL (APIENTRY * qwglGetDeviceGammaRamp) (HDC, LPVOID);
 extern BOOL (APIENTRY * qwglSetDeviceGammaRamp) (HDC, LPVOID);
-
+extern BOOL qwglSetDeviceGammaRampTexture(HDC, LPWORD);
 /*
 ** WGL_ARB_extensions_string
 */
@@ -665,7 +666,30 @@ void Fake_glColorTableEXT( GLenum target, GLenum internalformat,
 #define GL_TEXTURE1_SGIS					0x835F
 #define GL_TEXTURE0_ARB						0x84C0
 #define GL_TEXTURE1_ARB						0x84C1
+#undef GL_TEXTURE0
+#undef GL_TEXTURE1
 
 extern int GL_TEXTURE0, GL_TEXTURE1;
+
+// GL_ARB_fragment_program
+extern PFNGLPROGRAMSTRINGARBPROC qglProgramStringARB;
+extern PFNGLBINDPROGRAMARBPROC qglBindProgramARB;
+extern PFNGLDELETEPROGRAMSARBPROC qglDeleteProgramsARB;
+extern PFNGLGENPROGRAMSARBPROC qglGenProgramsARB;
+extern PFNGLPROGRAMENVPARAMETER4DARBPROC qglProgramEnvParameter4dARB;
+extern PFNGLPROGRAMENVPARAMETER4DVARBPROC qglProgramEnvParameter4dvARB;
+extern PFNGLPROGRAMENVPARAMETER4FARBPROC qglProgramEnvParameter4fARB;
+extern PFNGLPROGRAMENVPARAMETER4FVARBPROC qglProgramEnvParameter4fvARB;
+extern PFNGLPROGRAMLOCALPARAMETER4DARBPROC qglProgramLocalParameter4dARB;
+extern PFNGLPROGRAMLOCALPARAMETER4DVARBPROC qglProgramLocalParameter4dvARB;
+extern PFNGLPROGRAMLOCALPARAMETER4FARBPROC qglProgramLocalParameter4fARB;
+extern PFNGLPROGRAMLOCALPARAMETER4FVARBPROC qglProgramLocalParameter4fvARB;
+extern PFNGLGETPROGRAMENVPARAMETERDVARBPROC qglGetProgramEnvParameterdvARB;
+extern PFNGLGETPROGRAMENVPARAMETERFVARBPROC qglGetProgramEnvParameterfvARB;
+extern PFNGLGETPROGRAMLOCALPARAMETERDVARBPROC qglGetProgramLocalParameterdvARB;
+extern PFNGLGETPROGRAMLOCALPARAMETERFVARBPROC qglGetProgramLocalParameterfvARB;
+extern PFNGLGETPROGRAMIVARBPROC qglGetProgramivARB;
+extern PFNGLGETPROGRAMSTRINGARBPROC qglGetProgramStringARB;
+extern PFNGLISPROGRAMARBPROC qglIsProgramARB;
 
 #endif

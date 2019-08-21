@@ -111,6 +111,8 @@ cvar_t  *gl_driver;
 cvar_t	*gl_lightmap;
 cvar_t	*gl_shadows;
 cvar_t	*gl_mode;
+cvar_t	*gl_width;
+cvar_t	*gl_height;
 cvar_t	*gl_dynamic;
 cvar_t  *gl_monolightmap;
 cvar_t	*gl_modulate;
@@ -1255,7 +1257,9 @@ void R_Register( void )
 	gl_modulate = ri.Cvar_Get ("gl_modulate", "1", CVAR_ARCHIVE );
 	gl_log = ri.Cvar_Get( "gl_log", "0", 0 );
 	gl_bitdepth = ri.Cvar_Get( "gl_bitdepth", "0", 0 );
-	gl_mode = ri.Cvar_Get( "gl_mode", "3", CVAR_ARCHIVE );
+	gl_mode = ri.Cvar_Get("gl_mode", "3", CVAR_ARCHIVE);
+	gl_width = ri.Cvar_Get("gl_width", "640", CVAR_ARCHIVE);
+	gl_height = ri.Cvar_Get("gl_height", "480", CVAR_ARCHIVE);
 	gl_lightmap = ri.Cvar_Get ("gl_lightmap", "0", 0);
 	gl_shadows = ri.Cvar_Get ("gl_shadows", "0", CVAR_ARCHIVE );
 	gl_dynamic = ri.Cvar_Get ("gl_dynamic", "1", 0);
@@ -1695,14 +1699,53 @@ int R_Init( void *hinstance, void *hWnd )
 		{
 			ri.Con_Printf( PRINT_ALL, "...ignoring WGL_3DFX_gamma_control\n" );
 		}
-	}
+	} 
 	else
 	{
 		ri.Con_Printf( PRINT_ALL, "...WGL_3DFX_gamma_control not found\n" );
-		if (gl_hardware_gamma->value) {
-			qwglGetDeviceGammaRamp = GetDeviceGammaRamp;
-			qwglSetDeviceGammaRamp = SetDeviceGammaRamp;
-			ri.Cvar_ForceSet("gl_using_hardware_gamma","1");
+		 	// GL_ARB_fragment_program
+	
+		if (strstr(gl_config.extensions_string, "GL_ARB_fragment_program"))
+		{
+			if (gl_hardware_gamma->value)
+			{
+				ri.Cvar_ForceSet("gl_using_hardware_gamma", "1");
+
+				ri.Con_Printf(PRINT_ALL,"using GL_ARB_fragment_program\n");
+
+				qglProgramStringARB = (PFNGLPROGRAMSTRINGARBPROC)qwglGetProcAddress("glProgramStringARB");
+				qglBindProgramARB = (PFNGLBINDPROGRAMARBPROC)qwglGetProcAddress("glBindProgramARB");
+				qglDeleteProgramsARB = (PFNGLDELETEPROGRAMSARBPROC)qwglGetProcAddress("glDeleteProgramsARB");
+				qglGenProgramsARB = (PFNGLGENPROGRAMSARBPROC)qwglGetProcAddress("glGenProgramsARB");
+				qglProgramEnvParameter4dARB = (PFNGLPROGRAMENVPARAMETER4DARBPROC)qwglGetProcAddress("glProgramEnvParameter4dARB");
+				qglProgramEnvParameter4dvARB = (PFNGLPROGRAMENVPARAMETER4DVARBPROC)qwglGetProcAddress("glProgramEnvParameter4dvARB");
+				qglProgramEnvParameter4fARB = (PFNGLPROGRAMENVPARAMETER4FARBPROC)qwglGetProcAddress("glProgramEnvParameter4fARB");
+				qglProgramEnvParameter4fvARB = (PFNGLPROGRAMENVPARAMETER4FVARBPROC)qwglGetProcAddress("glProgramEnvParameter4fvARB");
+				qglProgramLocalParameter4dARB = (PFNGLPROGRAMLOCALPARAMETER4DARBPROC)qwglGetProcAddress("glProgramLocalParameter4dARB");
+				qglProgramLocalParameter4dvARB = (PFNGLPROGRAMLOCALPARAMETER4DVARBPROC)qwglGetProcAddress("glProgramLocalParameter4dvARB");
+				qglProgramLocalParameter4fARB = (PFNGLPROGRAMLOCALPARAMETER4FARBPROC)qwglGetProcAddress("glProgramLocalParameter4fARB");
+				qglProgramLocalParameter4fvARB = (PFNGLPROGRAMLOCALPARAMETER4FVARBPROC)qwglGetProcAddress("glProgramLocalParameter4fvARB");
+				qglGetProgramEnvParameterdvARB = (PFNGLGETPROGRAMENVPARAMETERDVARBPROC)qwglGetProcAddress("glGetProgramEnvParameterdvARB");
+				qglGetProgramEnvParameterfvARB = (PFNGLGETPROGRAMENVPARAMETERFVARBPROC)qwglGetProcAddress("glGetProgramEnvParameterfvARB");
+				qglGetProgramLocalParameterdvARB = (PFNGLGETPROGRAMLOCALPARAMETERDVARBPROC)qwglGetProcAddress("glGetProgramLocalParameterdvARB");
+				qglGetProgramLocalParameterfvARB = (PFNGLGETPROGRAMLOCALPARAMETERFVARBPROC)qwglGetProcAddress("glGetProgramLocalParameterfvARB");
+				qglGetProgramivARB = (PFNGLGETPROGRAMIVARBPROC)qwglGetProcAddress("glGetProgramivARB");
+				qglGetProgramStringARB = (PFNGLGETPROGRAMSTRINGARBPROC)qwglGetProcAddress("glGetProgramStringARB");
+				qglIsProgramARB = (PFNGLISPROGRAMARBPROC)qwglGetProcAddress("glIsProgramARB");
+
+				qwglSetDeviceGammaRamp = (void*)qwglSetDeviceGammaRampTexture;
+			}
+			else
+			{
+				ri.Con_Printf(PRINT_ALL, "...ignoring GL_ARB_fragment_program\n");
+			}
+		}
+		else {
+			if (gl_hardware_gamma->value) {
+				qwglGetDeviceGammaRamp = GetDeviceGammaRamp;
+				qwglSetDeviceGammaRamp = SetDeviceGammaRamp;
+				ri.Cvar_ForceSet("gl_using_hardware_gamma", "1");
+			}
 		}
 	}
 
@@ -1873,6 +1916,7 @@ int R_Init( void *hinstance, void *hWnd )
 	{
 		ri.Con_Printf( PRINT_ALL, "...GL_ARB_texture_env_dot3 not found\n" );
 	}
+
 
 	GL_SetDefaultState();
 

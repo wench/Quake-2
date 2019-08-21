@@ -750,6 +750,27 @@ static void ( APIENTRY * dllVertex4sv )(const GLshort *v);
 static void ( APIENTRY * dllVertexPointer )(GLint size, GLenum type, GLsizei stride, const GLvoid *pointer);
 static void ( APIENTRY * dllViewport )(GLint x, GLint y, GLsizei width, GLsizei height);
 
+// GL_ARB_fragment_program
+PFNGLPROGRAMSTRINGARBPROC qglProgramStringARB = 0;
+PFNGLBINDPROGRAMARBPROC qglBindProgramARB = 0;
+PFNGLDELETEPROGRAMSARBPROC qglDeleteProgramsARB = 0;
+PFNGLGENPROGRAMSARBPROC qglGenProgramsARB = 0;
+PFNGLPROGRAMENVPARAMETER4DARBPROC qglProgramEnvParameter4dARB = 0;
+PFNGLPROGRAMENVPARAMETER4DVARBPROC qglProgramEnvParameter4dvARB = 0;
+PFNGLPROGRAMENVPARAMETER4FARBPROC qglProgramEnvParameter4fARB = 0;
+PFNGLPROGRAMENVPARAMETER4FVARBPROC qglProgramEnvParameter4fvARB = 0;
+PFNGLPROGRAMLOCALPARAMETER4DARBPROC qglProgramLocalParameter4dARB = 0;
+PFNGLPROGRAMLOCALPARAMETER4DVARBPROC qglProgramLocalParameter4dvARB = 0;
+PFNGLPROGRAMLOCALPARAMETER4FARBPROC qglProgramLocalParameter4fARB = 0;
+PFNGLPROGRAMLOCALPARAMETER4FVARBPROC qglProgramLocalParameter4fvARB = 0;
+PFNGLGETPROGRAMENVPARAMETERDVARBPROC qglGetProgramEnvParameterdvARB = 0;
+PFNGLGETPROGRAMENVPARAMETERFVARBPROC qglGetProgramEnvParameterfvARB = 0;
+PFNGLGETPROGRAMLOCALPARAMETERDVARBPROC qglGetProgramLocalParameterdvARB = 0;
+PFNGLGETPROGRAMLOCALPARAMETERFVARBPROC qglGetProgramLocalParameterfvARB = 0;
+PFNGLGETPROGRAMIVARBPROC qglGetProgramivARB = 0;
+PFNGLGETPROGRAMSTRINGARBPROC qglGetProgramStringARB = 0;
+PFNGLISPROGRAMARBPROC qglIsProgramARB = 0;
+
 static void APIENTRY logAccum(GLenum op, GLfloat value)
 {
 	fprintf( glw_state.log_fp, "glAccum\n" );

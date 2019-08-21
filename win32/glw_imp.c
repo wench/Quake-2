@@ -163,6 +163,7 @@ qboolean VID_CreateWindow( int width, int height, qboolean fullscreen )
 /*
 ** GLimp_SetMode
 */
+
 rserr_t GLimp_SetMode( int *pwidth, int *pheight, int mode, qboolean fullscreen )
 {
 	int width, height;
@@ -171,13 +172,16 @@ rserr_t GLimp_SetMode( int *pwidth, int *pheight, int mode, qboolean fullscreen 
 	ri.Con_Printf( PRINT_ALL, "Initializing OpenGL display\n");
 
 	ri.Con_Printf (PRINT_ALL, "...setting mode %d:", mode );
+	if (mode == 10) {
 
-	if ( !ri.Vid_GetModeInfo( &width, &height, mode ) )
+		width = gl_width->value;
+		height = gl_height->value;
+	}
+	else if ( !ri.Vid_GetModeInfo( &width, &height, mode ) )
 	{
 		ri.Con_Printf( PRINT_ALL, " invalid mode\n" );
 		return rserr_invalid_mode;
 	}
-
 	ri.Con_Printf( PRINT_ALL, " %d %d %s\n", width, height, win_fs[fullscreen] );
 
 	// destroy the existing window
@@ -625,6 +629,8 @@ qboolean GLimp_InitGL (void)
 	** print out PFD specifics 
 	*/
 	ri.Con_Printf( PRINT_ALL, "GL PFD: color(%d-bits) Z(%d-bit)\n", ( int ) pfd.cColorBits, ( int ) pfd.cDepthBits );
+
+
 	return true;
 
 fail:
@@ -678,6 +684,9 @@ void GLimp_BeginFrame( float camera_separation )
 ** as yet to be determined.  Probably better not to make this a GLimp
 ** function and instead do a call to GLimp_SwapBuffers.
 */
+static image_t *fbcopy = 0;
+static image_t *gamma_texture = 0;
+static int gamma_frag_prog = 0;
 void GLimp_EndFrame (void)
 {
 	int		err;
@@ -687,11 +696,114 @@ void GLimp_EndFrame (void)
 
 	if ( stricmp( gl_drawbuffer->string, "GL_BACK" ) == 0 )
 	{
-		if ( !qwglSwapBuffers( glw_state.hDC ) )
-			ri.Sys_Error( ERR_FATAL, "GLimp_EndFrame() - SwapBuffers() failed!\n" );
+		if (gamma_texture)
+		{
+			qglFinish();
+			if (!gamma_frag_prog)
+			{
+				char shader[2048] =
+					"!!ARBfp1.0\n"
+					"TEMP tmp, acc,tc;\n"
+					"TEX acc, fragment.texcoord[0], texture[0], 2D;\n"
+					"MOV tc.x, acc.r;"
+					"MOV tc.y, 0.0;"
+					"TEX tmp, tc, texture[1], 2D;\n"
+					"MOV acc.r, tmp.r;\n"
+					"TEX acc, fragment.texcoord[0], texture[0], 2D;\n"
+					"MOV tc.x, acc.g;"
+					"MOV tc.y, 0.25;"
+					"TEX tmp, tc, texture[1], 2D;\n"
+					"MOV acc.g, tmp.g;\n"
+					"TEX acc, fragment.texcoord[0], texture[0], 2D;\n"
+					"MOV tc.x, acc.b;"
+					"MOV tc.y, 0.5;"
+					"TEX tmp, tc, texture[1], 2D;\n"
+					"MOV acc.b, tmp.b;\n"
+					"MOV result.color, acc;\n"
+					"END\n";
+				err = qglGetError();
+				qglGenProgramsARB(1, &gamma_frag_prog);
+				err = qglGetError();
+				qglBindProgramARB(GL_FRAGMENT_PROGRAM_ARB, gamma_frag_prog);
+				err = qglGetError();
+				qglProgramStringARB(GL_FRAGMENT_PROGRAM_ARB, GL_PROGRAM_FORMAT_ASCII_ARB, strlen(shader), shader);
+				err = qglGetError();
+			}
+			if (!fbcopy) {
+				fbcopy = GL_LoadPic("framebuffercopy,", 0, vid.width, vid.height, it_clamped, 64);
+			}
+			qglBindProgramARB(GL_FRAGMENT_PROGRAM_ARB, gamma_frag_prog);
+			qglEnable(GL_FRAGMENT_PROGRAM_ARB);
+			qglEnable(GL_TEXTURE_2D);
+			GL_BindImage(fbcopy);
+			GL_MBindImage(GL_TEXTURE1, gamma_texture); 
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+			GL_MBindImage(GL_TEXTURE0, fbcopy);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+				//qglTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 4096, 4096, 0, GL_RGB, GL_UNSIGNED_BYTE,NULL);
+			glReadBuffer(GL_BACK);
+			GLenum error = qglGetError();
+
+			qglCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 0, 0, vid.width, vid.height, 0);
+			//glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0,0, 0, 0, vid.width, vid.height);
+			error = qglGetError();
+
+
+
+			GL_DisableAA();
+
+			//qglEnable(GL_BLEND);
+			qglEnable(GL_TEXTURE_2D);
+
+			qglTexCoord2f(1, 0);
+			qglBegin(GL_QUADS);
+
+			qglTexCoord2f(0, 1);
+			qglVertex2f(0, 0);
+			qglTexCoord2f(1, 1);
+			qglVertex2f(vid.width, 0);
+			qglTexCoord2f(1, 0);
+			qglVertex2f(vid.width, vid.height);
+			qglTexCoord2f(0, 0);
+			qglVertex2f(0, vid.height);
+
+			qglEnd();		
+			qglEnable(GL_TEXTURE_2D);
+			qglDisable(GL_BLEND);
+
+			GL_EnableAA();
+			qglBindProgramARB(GL_FRAGMENT_PROGRAM_ARB, 0);
+			qglDisable(GL_FRAGMENT_PROGRAM_ARB);
+			GL_MBind(GL_TEXTURE0,0);
+
+		}
+		if (!qwglSwapBuffers(glw_state.hDC)) {
+			ri.Sys_Error(ERR_FATAL, "GLimp_EndFrame() - SwapBuffers() failed!\n");
+		}
 	}
 }
 
+BOOL qwglSetDeviceGammaRampTexture(HDC unused, LPVOID ramp) {
+	if (!gamma_texture) gamma_texture = GL_LoadPic("framebuffercopy,", 0, 256,4, it_clamped, 64);
+	GL_BindImage(gamma_texture);
+	LPWORD src = ramp;
+	GLushort data[256 * 4 * 3];
+	memset(data, 0, sizeof(data));
+	for (int i = 0; i < 256; i++) {
+		int r = src[i];
+		int g = src[i + 256];
+		int b = src[i + 512];
+		data[i*3] = r;
+		data[i * 3 + 768 + 1] = g;
+		data[i * 3 + 768 * 2 + 2] = b;
+
+	}
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16, 256, 4, 0, GL_RGB, GL_UNSIGNED_SHORT, data);
+
+}
 /*
 ** GLimp_AppActivate
 */

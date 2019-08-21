@@ -333,6 +333,8 @@ extern cvar_t	*gl_particle_att_c;
 extern	cvar_t	*gl_nosubimage;
 extern	cvar_t	*gl_bitdepth;
 extern	cvar_t	*gl_mode;
+extern cvar_t	*gl_width;
+extern cvar_t	*gl_height;
 extern	cvar_t	*gl_log;
 extern	cvar_t	*gl_lightmap;
 extern	cvar_t	*gl_shadows;
@@ -469,6 +471,7 @@ void GL_ResampleTexture (unsigned *in, int inwidth, int inheight, unsigned *out,
 struct image_s *R_RegisterSkin (char *name);
 struct image_s *R_RegisterClamped (char *name);
 
+int GL_Upload32(unsigned *data, int width, int height, qboolean mipmap);
 void LoadPCX (char *filename, byte **pic, byte **palette, int *width, int *height);
 image_t *GL_LoadPic (char *name, byte *pic, int width, int height, imagetype_t type, int bits);
 image_t	*GL_FindImage (char *name, imagetype_t type);

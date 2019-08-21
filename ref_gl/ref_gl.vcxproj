@@ -154,6 +154,7 @@
     <ClInclude Include="anorms.h" />
     <ClInclude Include="anormtab.h" />
     <ClInclude Include="anoxnorms.h" />
+    <ClInclude Include="glext.h" />
     <ClInclude Include="gl_local.h" />
     <ClInclude Include="gl_model.h" />
     <ClInclude Include="qgl.h" />

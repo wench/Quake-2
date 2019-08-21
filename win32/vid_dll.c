@@ -494,12 +494,12 @@ vidmode_t vid_modes[] =
 	{ "Mode 7: 1152x864",  1152, 864,  7 },
 	{ "Mode 8: 1280x960",  1280, 960, 8 },
 	{ "Mode 9: 1600x1200", 1600, 1200, 9 },
-	{ "Mode 10: 2048x1536", 2048, 1536, 10 }
+	{ "Custom", -1, -1, 10 }
 };
 
 qboolean VID_GetModeInfo( int *width, int *height, int mode )
 {
-	if ( mode < 0 || mode >= VID_NUM_MODES )
+	if ( mode < 0 || mode >= VID_NUM_MODES ||mode == 10 )
 		return false;
 
 	*width  = vid_modes[mode].width;

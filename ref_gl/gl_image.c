@@ -1526,9 +1526,10 @@ int GL_Upload32 (unsigned *data, int width, int height,  qboolean mipmap)
 	c = width*height;
 	scan = ((byte *)data) + 3;
 	samples = gl_solid_format;
-	for (i=0 ; i<c ; i++, scan += 4)
+	if (data) {
+		for (i = 0; i < c; i++, scan += 4)
 	{
-		if ( *scan != 255 )
+		if (*scan != 255)
 		{
 			samples = gl_alpha_format;
 			if (*scan != 0) {
@@ -1536,7 +1537,7 @@ int GL_Upload32 (unsigned *data, int width, int height,  qboolean mipmap)
 				break;
 			}
 		}
-	}
+	}}
 
 	if (samples == gl_solid_format)
 	    comp = gl_tex_solid_format;
@@ -1562,13 +1563,13 @@ int GL_Upload32 (unsigned *data, int width, int height,  qboolean mipmap)
 	}
 #else
 
-	if (scaled_width == width && scaled_height == height)
+	if (!data ||(scaled_width == width && scaled_height == height))
 	{
 		if (!mipmap || gl_config.have_generate_mipmap)
 		{
 			if (mipmap) qglTexParameteri (GL_TEXTURE_2D, GL_GENERATE_MIPMAP_SGIS, TRUE);
 
-			if ( qglColorTableEXT && gl_ext_palettedtexture->value && samples == gl_solid_format )
+			if ( data&&qglColorTableEXT && gl_ext_palettedtexture->value && samples == gl_solid_format )
 			{
 				uploaded_paletted = true;
 				GL_BuildPalettedTexture( paletted_texture, ( unsigned char * ) data, scaled_width, scaled_height );
@@ -1590,7 +1591,7 @@ int GL_Upload32 (unsigned *data, int width, int height,  qboolean mipmap)
 
 			goto done;
 		}
-		memcpy (scaled, data, width*height*4);
+		if (data) memcpy (scaled, data, width*height*4);
 	}
 	else
 		GL_ResampleTexture (data, width, height, scaled, scaled_width, scaled_height);

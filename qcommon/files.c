@@ -232,6 +232,7 @@ int FS_FOpenFile (char *filename, FILE **file)
 //
 // search through the path, one element at a time
 //
+	Com_DPrintf("want to load:  %s\n", filename);
 	for (search = fs_searchpaths ; search ; search = search->next)
 	{
 	// is the element a pak file?
@@ -243,7 +244,7 @@ int FS_FOpenFile (char *filename, FILE **file)
 				if (!Q_strcasecmp (pak->files[i].name, filename))
 				{	// found it!
 					file_from_pak = 1;
-					Com_DPrintf ("PackFile: %s : %s\n",pak->filename, filename);
+					
 				// open a new file on the pakfile
 					*file = fopen (pak->filename, "rb");
 					if (!*file)
@@ -553,7 +554,7 @@ pack_t *FS_LoadDATFile(char *packfile)
 		for (i = 0; i < numpackfiles; i++)
 		{
 			int limit;
-			char*dot;
+			char*dot, *bsl;
 			strcpy(newfiles[i].name, slash + 1);
 			dot = strchr(newfiles[i].name, '.');
 			*dot = '/';
@@ -568,6 +569,9 @@ pack_t *FS_LoadDATFile(char *packfile)
 			if ((info[i].filepos + info[i].compressed) > limit) {
 				Com_Printf("packfile %s file %i %s failed to read length correctly %X is too long should be %X\n", packfile, i, info[i].name, info[i].compressed, limit - newfiles[i].filepos);
 			}
+			while (bsl = strchr(newfiles[i].name, '\\'))
+				*bsl = '/';
+			Com_Printf("added: %s\n", newfiles[i].name);
 		}
 	}
 
@@ -792,48 +796,123 @@ void FS_Link_f (void)
 	l->to = CopyString(Cmd_Argv(2));
 }
 
+bool wildcardmatch(char const *needle, char const *haystack) {
+	for (; *needle != '\0'; ++needle) {
+		switch (*needle) {
+		case '?':
+			if (*haystack == '\0')
+				return false;
+			++haystack;
+			break;
+		case '*': {
+			if (needle[1] == '\0')
+				return true;
+			size_t max = strlen(haystack);
+			for (size_t i = 0; i < max; i++)
+				if (wildcardmatch(needle + 1, haystack + i))
+					return true;
+			return false;
+		}
+		default:
+			if (*haystack != *needle)
+				return false;
+			++haystack;
+		}
+	}
+	return *haystack == '\0';
+}
+
 /*
 ** FS_ListFiles
 */
-char **FS_ListFiles( char *findname, int *numfiles, unsigned musthave, unsigned canthave )
+char **FS_ListFilesAll(char *findname, int *numfiles, unsigned musthave, unsigned canthave)
+{
+	searchpath_t *search;
+	char *s;
+	int nfiles = 0;
+	char **list = 0;
+
+
+
+	for (search = fs_searchpaths; search; search = search->next)
+	{
+		// is the element a pak file?
+		if (search->pack)
+		{
+			// look through all the pak file elements
+			pack_t* pak = search->pack;
+			for (int i = 0; i < pak->numfiles; i++)
+				if (wildcardmatch(findname, pak->files[i].name))
+					nfiles++;
+		}
+	}
+	nfiles++; // add space for a guard
+	*numfiles = nfiles;
+
+	if (!nfiles)
+		return NULL;
+
+	list = malloc(sizeof(char *) * nfiles);
+	memset(list, 0, sizeof(char *) * nfiles);
+
+	nfiles = 0;
+	for (search = fs_searchpaths; search; search = search->next)
+	{
+		// is the element a pak file?
+		if (search->pack)
+		{
+			// look through all the pak file elements
+			pack_t* pak = search->pack;
+			for (int i = 0; i < pak->numfiles; i++)
+				if (wildcardmatch(findname, pak->files[i].name) )
+				{
+					list[nfiles] = strdup(pak->files[i].name);
+					nfiles++;
+				}
+		
+		}
+	}
+	return list;
+}
+char **FS_ListFiles(char *findname, int *numfiles, unsigned musthave, unsigned canthave)
 {
 	char *s;
 	int nfiles = 0;
 	char **list = 0;
 
-	s = Sys_FindFirst( findname, musthave, canthave );
-	while ( s )
+	s = Sys_FindFirst(findname, musthave, canthave);
+	while (s)
 	{
-		if ( s[strlen(s)-1] != '.' )
+		if (s[strlen(s) - 1] != '.')
 			nfiles++;
-		s = Sys_FindNext( musthave, canthave );
+		s = Sys_FindNext(musthave, canthave);
 	}
-	Sys_FindClose ();
+	Sys_FindClose();
 
-	if ( !nfiles )
+	if (!nfiles)
 		return NULL;
 
 	nfiles++; // add space for a guard
 	*numfiles = nfiles;
 
-	list = malloc( sizeof( char * ) * nfiles );
-	memset( list, 0, sizeof( char * ) * nfiles );
+	list = malloc(sizeof(char *) * nfiles);
+	memset(list, 0, sizeof(char *) * nfiles);
 
-	s = Sys_FindFirst( findname, musthave, canthave );
+	s = Sys_FindFirst(findname, musthave, canthave);
 	nfiles = 0;
-	while ( s )
+	while (s)
 	{
-		if ( s[strlen(s)-1] != '.' )
+		if (s[strlen(s) - 1] != '.')
 		{
-			list[nfiles] = strdup( s );
+			list[nfiles] = strdup(s);
 #ifdef _WIN32
-			strlwr( list[nfiles] );
+			strlwr(list[nfiles]);
 #endif
 			nfiles++;
 		}
-		s = Sys_FindNext( musthave, canthave );
+		s = Sys_FindNext(musthave, canthave);
 	}
-	Sys_FindClose ();
+	Sys_FindClose();
 
 	return list;
 }
@@ -843,7 +922,7 @@ extern char **FS_ListFiles(char *, int *, unsigned, unsigned);
 */
 void FS_Dir_f( void )
 {
-	char	*path = NULL;
+	char	*path = "";
 	char	findname[1024];
 	char	wildcard[1024] = "*.*";
 	char	**dirnames;
@@ -854,11 +933,11 @@ void FS_Dir_f( void )
 		strcpy( wildcard, Cmd_Argv( 1 ) );
 	}
 
-	while ( ( path = FS_NextPath( path ) ) != NULL )
+	//while ( ( path = FS_NextPath( path ) ) != NULL )
 	{
 		char *tmp = findname;
 
-		Com_sprintf( findname, sizeof(findname), "%s/%s", path, wildcard );
+		Com_sprintf( findname, sizeof(findname), "%s",  wildcard );
 
 		while ( *tmp != 0 )
 		{
@@ -869,7 +948,7 @@ void FS_Dir_f( void )
 		Com_Printf( "Directory of %s\n", findname );
 		Com_Printf( "----\n" );
 
-		if ( ( dirnames = FS_ListFiles( findname, &ndirs, 0, 0 ) ) != 0 )
+		if ( ( dirnames = FS_ListFilesAll( findname, &ndirs, 0, 0 ) ) != 0 )
 		{
 			int i;
 

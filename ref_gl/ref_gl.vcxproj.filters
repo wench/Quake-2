@@ -101,6 +101,9 @@
     <ClInclude Include="..\win32\winquake.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="glext.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="ref_gl.def">
