@@ -42,8 +42,8 @@ typedef struct
 typedef struct
 {
 	char	name[128];
-	int		filepos, filelen;
-	int unk, checksum;
+	int		filepos;
+	int uncompressed, compressed, checksum;
 } adatfile_t;
 
 typedef struct
@@ -100,11 +100,11 @@ typedef struct
 
 #define IDMDAHEADER		(('1'<<24)+('A'<<16)+('D'<<8)+'M')
 
-#define	MAX_TRIANGLES	4096
-#define MAX_VERTS		2048
-#define MAX_FRAMES		512
-#define MAX_MD2SKINS	32
-#define	MAX_SKINNAME	64
+#define	MAX_TRIANGLES	4096*2
+#define MAX_VERTS		2048*2
+#define MAX_FRAMES		512*2
+#define MAX_MD2SKINS	32*2
+#define	MAX_SKINNAME	64*2
 
 typedef struct
 {
@@ -303,32 +303,32 @@ typedef struct miptex_s
 // upper design bounds
 // leaffaces, leafbrushes, planes, and verts are still bounded by
 // 16 bit short limits
-#define	MAX_MAP_MODELS		1024
-#define	MAX_MAP_BRUSHES		8192
-#define	MAX_MAP_ENTITIES	2048
-#define	MAX_MAP_ENTSTRING	0x40000
-#define	MAX_MAP_TEXINFO		8192
+#define	MAX_MAP_MODELS		1024*2
+#define	MAX_MAP_BRUSHES		8192*2
+#define	MAX_MAP_ENTITIES	2048*2
+#define	MAX_MAP_ENTSTRING	0x40000*2
+#define	MAX_MAP_TEXINFO		8192*2
 
-#define	MAX_MAP_AREAS		256
-#define	MAX_MAP_AREAPORTALS	1024
-#define	MAX_MAP_PLANES		65536
-#define	MAX_MAP_NODES		65536
-#define	MAX_MAP_BRUSHSIDES	65536
-#define	MAX_MAP_LEAFS		65536
-#define	MAX_MAP_VERTS		65536
-#define	MAX_MAP_FACES		65536
-#define	MAX_MAP_LEAFFACES	65536
-#define	MAX_MAP_LEAFBRUSHES 65536
-#define	MAX_MAP_PORTALS		65536
-#define	MAX_MAP_EDGES		128000
-#define	MAX_MAP_SURFEDGES	256000
-#define	MAX_MAP_LIGHTING	0x200000
-#define	MAX_MAP_VISIBILITY	0x100000
+#define	MAX_MAP_AREAS		256*2
+#define	MAX_MAP_AREAPORTALS	1024*2
+#define	MAX_MAP_PLANES		65536*2
+#define	MAX_MAP_NODES		65536*2
+#define	MAX_MAP_BRUSHSIDES	65536*2
+#define	MAX_MAP_LEAFS		65536*2
+#define	MAX_MAP_VERTS		65536*2
+#define	MAX_MAP_FACES		65536*2
+#define	MAX_MAP_LEAFFACES	65536*2
+#define	MAX_MAP_LEAFBRUSHES 65536*2
+#define	MAX_MAP_PORTALS		65536*2
+#define	MAX_MAP_EDGES		128000*2
+#define	MAX_MAP_SURFEDGES	256000*2
+#define	MAX_MAP_LIGHTING	0x200000*2
+#define	MAX_MAP_VISIBILITY	0x100000*2
 
 // key / value pair sizes
 
-#define	MAX_KEY		32
-#define	MAX_VALUE	1024
+#define	MAX_KEY		32*2
+#define	MAX_VALUE	1024*2
 
 //=============================================================================
 

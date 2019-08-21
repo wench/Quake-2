@@ -878,8 +878,8 @@ void Mod_LoadBrushModel (model_t *mod, void *buffer)
 	header = (dheader_t *)buffer;
 
 	i = LittleLong (header->version);
-	if (i != BSPVERSION)
-		ri.Sys_Error (ERR_DROP, "Mod_LoadBrushModel: %s has wrong version number (%i should be %i)", mod->name, i, BSPVERSION);
+	//if (i != BSPVERSION)
+		//ri.Sys_Error (ERR_DROP, "Mod_LoadBrushModel: %s has wrong version number (%i should be %i)", mod->name, i, BSPVERSION);
 
 // swap all the lumps
 	mod_base = (byte *)header;

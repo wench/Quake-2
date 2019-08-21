@@ -1,2 +1,8 @@
 debug
 release
+packages
+**/*.ipch
+**/*.dll
+**/*.exe
+**/*.lib
+/**/.vs

@@ -47,7 +47,7 @@ QUAKE FILESYSTEM
 typedef struct
 {
 	char	name[MAX_QPATH];
-	int		filepos, filelen;
+	int		filepos, filelen, compressed;
 } packfile_t;
 
 typedef struct pack_s
@@ -248,7 +248,11 @@ int FS_FOpenFile (char *filename, FILE **file)
 					*file = fopen (pak->filename, "rb");
 					if (!*file)
 						Com_Error (ERR_FATAL, "Couldn't reopen %s", pak->filename);	
-					fseek (*file, pak->files[i].filepos, SEEK_SET);
+					fseek(*file, pak->files[i].filepos, SEEK_SET);
+					if (pak->files[i].compressed) {
+						*file = DecompressANOXDATA(*file, pak->files[i].compressed, pak->files[i].filelen);
+					}
+					
 					return pak->files[i].filelen;
 				}
 		}
@@ -490,6 +494,7 @@ pack_t *FS_LoadPackFile (char *packfile)
 		strcpy (newfiles[i].name, info[i].name);
 		newfiles[i].filepos = LittleLong(info[i].filepos);
 		newfiles[i].filelen = LittleLong(info[i].filelen);
+		newfiles[i].compressed = 0;
 	}
 
 	pack = Z_Malloc (sizeof (pack_t));
@@ -529,7 +534,7 @@ pack_t *FS_LoadDATFile(char *packfile)
 	newfiles = Z_Malloc(numpackfiles * sizeof(packfile_t));
 
 	fseek(packhandle, header.dirofs, SEEK_SET);
-	fread(info, 1, header.dirlen, packhandle);
+	fread(info, 1, header.dirlen, packhandle);	
 
 	// crc the directory to check for modifications
 	checksum = Com_BlockChecksum((void *)info, header.dirlen);
@@ -547,6 +552,7 @@ pack_t *FS_LoadDATFile(char *packfile)
 
 		for (i = 0; i < numpackfiles; i++)
 		{
+			int limit;
 			char*dot;
 			strcpy(newfiles[i].name, slash + 1);
 			dot = strchr(newfiles[i].name, '.');
@@ -555,7 +561,13 @@ pack_t *FS_LoadDATFile(char *packfile)
 			info[i].name[127] = 0;
 			strcat_s(newfiles[i].name, sizeof(newfiles[i].name), info[i].name);
 			newfiles[i].filepos = LittleLong(info[i].filepos);
-			newfiles[i].filelen = LittleLong(info[i].filelen);
+			newfiles[i].filelen = LittleLong(info[i].uncompressed);
+			newfiles[i].compressed = LittleLong(info[i].compressed);
+			if (i < (numpackfiles - 1)) limit = info[i + 1].filepos;
+			else limit = header.dirofs;
+			if ((info[i].filepos + info[i].compressed) > limit) {
+				Com_Printf("packfile %s file %i %s failed to read length correctly %X is too long should be %X\n", packfile, i, info[i].name, info[i].compressed, limit - newfiles[i].filepos);
+			}
 		}
 	}
 

@@ -2211,7 +2211,7 @@ int Draw_GetPalette (void)
 	int		width, height;
 
 	// get the palette
-
+	// TODO make palette stuff optional
 	LoadPCX ("pics/colormap.pcx", &pic, &pal, &width, &height);
 	if (!pal)
 		ri.Sys_Error (ERR_FATAL, "Couldn't load pics/colormap.pcx");

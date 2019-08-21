@@ -39,6 +39,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define	CPUSTRING	"x86"
 #elif defined _M_ALPHA
 #define	CPUSTRING	"AXP"
+#elif defined _M_AMD64
+#define	CPUSTRING	"x64"
 #endif
 
 #elif defined __linux__
@@ -776,6 +778,7 @@ void Z_Free (void *ptr);
 void *Z_Malloc (int size);			// returns 0 filled memory
 void *Z_TagMalloc (int size, int tag);
 void Z_FreeTags (int tag);
+FILE *DecompressANOXDATA(FILE *source, int insize, int outsize);
 
 void Qcommon_Init (int argc, char **argv);
 void Qcommon_Frame (int msec);

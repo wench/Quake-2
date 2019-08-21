@@ -127,6 +127,7 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="anoxdecomp.cpp" />
     <ClCompile Include="client\cl_cin.c" />
     <ClCompile Include="client\cl_ents.c" />
     <ClCompile Include="client\cl_fx.c" />
@@ -208,7 +209,17 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">win32</AdditionalIncludeDirectories>
     </ResourceCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="packages\zlib.greedy.1.2.8.8\build\native\zlib.greedy.targets" Condition="Exists('packages\zlib.greedy.1.2.8.8\build\native\zlib.greedy.targets')" />
   </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('packages\zlib.greedy.1.2.8.8\build\native\zlib.greedy.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\zlib.greedy.1.2.8.8\build\native\zlib.greedy.targets'))" />
+  </Target>
 </Project>

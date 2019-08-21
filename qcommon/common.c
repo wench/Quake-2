@@ -1166,7 +1166,7 @@ just cleared malloc with counters now...
 
 ==============================================================================
 */
-
+// TODO threadsafe all this!
 #define	Z_MAGIC		0x1d1d
 
 
