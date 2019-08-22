@@ -1,8 +1,9 @@
 debug
 release
 packages
-**/*.ipch
-**/*.dll
-**/*.exe
-**/*.lib
-/**/.vs
+*.ipch
+*.dll
+*.exe
+*.lib
+.vs
+/.vs
