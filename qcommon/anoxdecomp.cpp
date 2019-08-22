@@ -8,7 +8,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 extern "C"{
-#include "qcommon/qcommon.h"
+#include "qcommon.h"
 }
 #if defined(MSDOS) || defined(OS2) || defined(WIN32) || defined(__CYGWIN__)
 #  include <fcntl.h>
@@ -18,7 +18,7 @@ extern "C"{
 #  define SET_BINARY_MODE(file)
 #endif
 #define CHUNK 16384
-
+#include "zip/unzip.h"
 struct ThreadData {
 	FILE*source;
 	FILE *dest;

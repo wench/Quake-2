@@ -1266,7 +1266,9 @@ Z_Malloc
 */
 void *Z_Malloc (int size)
 {
-	return Z_TagMalloc (size, 0);
+	void *ret = Z_TagMalloc(size, 0);
+		memset(ret, 0, size);
+	return ret;
 }
 
 

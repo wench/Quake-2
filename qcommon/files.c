@@ -38,7 +38,7 @@ QUAKE FILESYSTEM
 
 =============================================================================
 */
-
+#include "zip/unzip.h"
 
 //
 // in memory
@@ -52,10 +52,12 @@ typedef struct
 
 typedef struct pack_s
 {
-	char	filename[MAX_OSPATH];
+	char	filename[MAX_OSPATH];	
+	char	prefix[MAX_OSPATH];
 	FILE	*handle;
 	int		numfiles;
 	packfile_t	*files;
+	qboolean is_zip;
 } pack_t;
 
 char	fs_gamedir[MAX_OSPATH];
@@ -240,22 +242,33 @@ int FS_FOpenFile (char *filename, FILE **file)
 		{
 		// look through all the pak file elements
 			pak = search->pack;
-			for (i=0 ; i<pak->numfiles ; i++)
-				if (!Q_strcasecmp (pak->files[i].name, filename))
+			for (i = 0; i < pak->numfiles; i++)
+			{
+				strcpy_s(netpath, sizeof(netpath), pak->prefix);
+				strcat_s(netpath, sizeof(netpath), pak->files[i].name);
+
+				if (!Q_strfncmp(netpath, filename) || !Q_strfncmp(pak->files[i].name, filename))
 				{	// found it!
 					file_from_pak = 1;
-					
-				// open a new file on the pakfile
-					*file = fopen (pak->filename, "rb");
+
+					// open a new file on the pakfile
+					*file = fopen(pak->filename, "rb");
 					if (!*file)
-						Com_Error (ERR_FATAL, "Couldn't reopen %s", pak->filename);	
-					fseek(*file, pak->files[i].filepos, SEEK_SET);
-					if (pak->files[i].compressed) {
-						*file = DecompressANOXDATA(*file, pak->files[i].compressed, pak->files[i].filelen);
+						Com_Error(ERR_FATAL, "Couldn't reopen %s", pak->filename);
+					if (pak->is_zip) {
+						continue;
 					}
-					
+					else
+					{
+						fseek(*file, pak->files[i].filepos, SEEK_SET);
+						if (pak->files[i].compressed) {
+							*file = DecompressANOXDATA(*file, pak->files[i].compressed, pak->files[i].filelen);
+						}
+					}
+
 					return pak->files[i].filelen;
 				}
+			}
 		}
 		else
 		{		
@@ -496,6 +509,7 @@ pack_t *FS_LoadPackFile (char *packfile)
 		newfiles[i].filepos = LittleLong(info[i].filepos);
 		newfiles[i].filelen = LittleLong(info[i].filelen);
 		newfiles[i].compressed = 0;
+		Com_Printf("added: %s\n", newfiles[i].name);
 	}
 
 	pack = Z_Malloc (sizeof (pack_t));
@@ -503,7 +517,9 @@ pack_t *FS_LoadPackFile (char *packfile)
 	pack->handle = packhandle;
 	pack->numfiles = numpackfiles;
 	pack->files = newfiles;
-	
+	pack->is_zip = false;
+	pack->prefix[0] = 0;
+
 	Com_Printf ("Added packfile %s (%i files)\n", packfile, numpackfiles);
 	return pack;
 }
@@ -535,7 +551,7 @@ pack_t *FS_LoadDATFile(char *packfile)
 	newfiles = Z_Malloc(numpackfiles * sizeof(packfile_t));
 
 	fseek(packhandle, header.dirofs, SEEK_SET);
-	fread(info, 1, header.dirlen, packhandle);	
+	fread(info, 1, header.dirlen, packhandle);
 
 	// crc the directory to check for modifications
 	checksum = Com_BlockChecksum((void *)info, header.dirlen);
@@ -545,22 +561,16 @@ pack_t *FS_LoadDATFile(char *packfile)
 		return NULL;
 #endif
 	// parse the directory
+	pack = Z_Malloc(sizeof(pack_t));
 	{
-		char *slash = strrchr(packfile, '/');
-		char *bslash = strrchr(packfile, '\\');
-		if (bslash > slash)
-			slash = bslash;
+
 
 		for (i = 0; i < numpackfiles; i++)
 		{
 			int limit;
-			char*dot, *bsl;
-			strcpy(newfiles[i].name, slash + 1);
-			dot = strchr(newfiles[i].name, '.');
-			*dot = '/';
-			dot[1] = 0;
+			char *bsl;
 			info[i].name[127] = 0;
-			strcat_s(newfiles[i].name, sizeof(newfiles[i].name), info[i].name);
+			strcpy_s(newfiles[i].name, sizeof(newfiles[i].name), info[i].name);
 			newfiles[i].filepos = LittleLong(info[i].filepos);
 			newfiles[i].filelen = LittleLong(info[i].uncompressed);
 			newfiles[i].compressed = LittleLong(info[i].compressed);
@@ -571,15 +581,96 @@ pack_t *FS_LoadDATFile(char *packfile)
 			}
 			while (bsl = strchr(newfiles[i].name, '\\'))
 				*bsl = '/';
+			//Com_Printf("added: %s\n", newfiles[i].name);
+		}
+	}
+
+	strcpy_s(pack->filename, sizeof(pack->filename), packfile);
+	pack->handle = packhandle;
+	pack->numfiles = numpackfiles;
+	pack->files = newfiles;
+	pack->is_zip = false;
+	char *slash = strrchr(packfile, '/');
+	char *bslash = strrchr(packfile, '\\');
+	if (bslash > slash)
+		slash = bslash;
+
+	strcpy_s(pack->prefix, sizeof(pack->prefix), slash + 1);
+
+	char*dot = strchr(pack->prefix, '.');
+	*dot = 0;
+	strcat_s(pack->prefix, sizeof(pack->prefix), "/");
+
+	Com_Printf("Added packfile %s (%i files)\n", packfile, numpackfiles);
+	return pack;
+}
+pack_t *FS_LoadZIPFile(char *packfile)
+{
+	int				i;
+	packfile_t		*newfiles;
+	int				numpackfiles;
+	pack_t			*pack;
+	FILE			*packhandle;	
+	unsigned		checksum;
+	zlib_filefunc_def filefuncs;
+	unzFile unzfile;
+	unz_global_info global_info;
+
+	packhandle = fopen(packfile, "rb");
+	if (!packhandle)
+		return NULL;
+
+	qfill_fopen_filefunc(&filefuncs, packhandle);
+
+	unzfile = unzOpen2("", &filefuncs);
+
+	if (!unzfile) 
+		{
+		Com_Error(ERR_FATAL, "%s is not a zipfile", packfile);
+		unzClose(unzfile);
+		return NULL;
+	}
+	unzGetGlobalInfo(unzfile, &global_info);
+	numpackfiles = global_info.number_entry;
+
+	newfiles = Z_Malloc(numpackfiles * sizeof(packfile_t));
+	memset(newfiles, 0, numpackfiles * sizeof(packfile_t));
+
+	// parse the directory
+	{
+		i = 0;
+		for (unzGoToFirstFile(unzfile); unzGoToNextFile(unzfile) == UNZ_OK;i++)
+		{
+			char fn[256];
+			unz_file_info file_info;		
+			unzGetCurrentFileInfo(unzfile, &file_info, newfiles[i].name, sizeof(newfiles[i].name), 0, 0, 0, 0);
+			int limit;
+			char*dot, *bsl;
+			newfiles[i].filepos = 0;
+			newfiles[i].filelen = file_info.uncompressed_size;
+			newfiles[i].compressed = file_info.compressed_size;
+			while (bsl = strchr(newfiles[i].name, '\\'))
+				*bsl = '/';
 			Com_Printf("added: %s\n", newfiles[i].name);
 		}
 	}
 
 	pack = Z_Malloc(sizeof(pack_t));
-	strcpy_s(pack->filename,sizeof(pack->filename), packfile);
+	strcpy_s(pack->filename, sizeof(pack->filename), packfile);
 	pack->handle = packhandle;
 	pack->numfiles = numpackfiles;
 	pack->files = newfiles;
+	pack->is_zip = true;
+	char *slash = strrchr(packfile, '/');
+	char *bslash = strrchr(packfile, '\\');
+	if (bslash > slash)
+		slash = bslash;
+
+	strcpy_s(pack->prefix,sizeof(pack->prefix), slash + 1);
+
+	char*dot = strchr(pack->prefix, '.');
+	*dot = 0;
+	strcat_s(pack->prefix, sizeof(pack->prefix), "/");
 
 	Com_Printf("Added packfile %s (%i files)\n", packfile, numpackfiles);
 	return pack;
@@ -638,10 +729,36 @@ void FS_AddGameDirectory (char *dir)
 			//if (strrchr(dirnames[i], '/'))
 				//Com_Printf("%s\n", strrchr(dirnames[i], '/') + 1);
 			//else
-				Com_Printf("%s\n", dirnames[i]);
+			Com_Printf("%s\n", dirnames[i]);
 
 
 			pak = FS_LoadDATFile(dirnames[i]);
+			if (!pak)
+				continue;
+			search = Z_Malloc(sizeof(searchpath_t));
+			search->pack = pak;
+			search->next = fs_searchpaths;
+			fs_searchpaths = search;
+
+			free(dirnames[i]);
+		}
+		free(dirnames);
+	}
+	Com_Printf("\n");	
+	Com_sprintf(pakfile, sizeof(pakfile), "%s/*.zip", dir, i);
+	if ((dirnames = FS_ListFiles(pakfile, &ndirs, 0, SFF_SUBDIR | SFF_HIDDEN | SFF_SYSTEM)) != 0)
+	{
+		int i;
+
+		for (i = 0; i < ndirs - 1; i++)
+		{
+			//if (strrchr(dirnames[i], '/'))
+				//Com_Printf("%s\n", strrchr(dirnames[i], '/') + 1);
+			//else
+			Com_Printf("%s\n", dirnames[i]);
+
+
+			pak = FS_LoadZIPFile(dirnames[i]);
 			if (!pak)
 				continue;
 			search = Z_Malloc(sizeof(searchpath_t));

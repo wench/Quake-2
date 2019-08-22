@@ -127,7 +127,6 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="anoxdecomp.cpp" />
     <ClCompile Include="client\cl_cin.c" />
     <ClCompile Include="client\cl_ents.c" />
     <ClCompile Include="client\cl_fx.c" />
@@ -151,6 +150,7 @@
     <ClCompile Include="client\x86.c" />
     <ClCompile Include="game\m_flash.c" />
     <ClCompile Include="game\q_shared.c" />
+    <ClCompile Include="qcommon\anoxdecomp.cpp" />
     <ClCompile Include="qcommon\cmd.c" />
     <ClCompile Include="qcommon\cmodel.c" />
     <ClCompile Include="qcommon\common.c" />
@@ -160,6 +160,9 @@
     <ClCompile Include="qcommon\md4.c" />
     <ClCompile Include="qcommon\net_chan.c" />
     <ClCompile Include="qcommon\pmove.c" />
+    <ClCompile Include="qcommon\zip\ioapi.cpp" />
+    <ClCompile Include="qcommon\zip\unzip.cpp" />
+    <ClCompile Include="qcommon\zip\zip.cpp" />
     <ClCompile Include="server\sv_ccmds.c" />
     <ClCompile Include="server\sv_ents.c" />
     <ClCompile Include="server\sv_game.c" />
@@ -196,6 +199,9 @@
     <ClInclude Include="qcommon\bspfile.h" />
     <ClInclude Include="qcommon\qcommon.h" />
     <ClInclude Include="qcommon\qfiles.h" />
+    <ClInclude Include="qcommon\zip\ioapi.h" />
+    <ClInclude Include="qcommon\zip\unzip.h" />
+    <ClInclude Include="qcommon\zip\zip.h" />
     <ClInclude Include="server\server.h" />
     <ClInclude Include="win32\conproc.h" />
     <ClInclude Include="win32\winquake.h" />

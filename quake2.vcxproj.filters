@@ -162,6 +162,18 @@
     <ClCompile Include="client\x86.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="qcommon\zip\ioapi.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="qcommon\zip\unzip.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="qcommon\zip\zip.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="qcommon\anoxdecomp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="client\anorms.h">
@@ -223,6 +235,15 @@
     </ClInclude>
     <ClInclude Include="win32\winquake.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="qcommon\zip\ioapi.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="qcommon\zip\unzip.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="qcommon\zip\zip.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
