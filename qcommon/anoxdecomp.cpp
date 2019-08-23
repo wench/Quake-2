@@ -99,23 +99,16 @@ INT decompthreadproc(ThreadData*data)
 	__finally {
 		delete data;
 	}
+	return Z_OK;
 }INT decompthreadprocZ(ThreadDataZ*data)
 {
 	__try {
 		int ret;	
-		z_stream strm;
+
 		unsigned char in[CHUNK];
 		unsigned char out[CHUNK];
 
-		/* allocate inflate state */
-		strm.zalloc = Z_NULL;
-		strm.zfree = Z_NULL;
-		strm.opaque = Z_NULL;
-		strm.avail_in = 0;
-		strm.next_in = Z_NULL;
-		ret = inflateInit(&strm);
-		if (ret != Z_OK)
-			return ret;
+
 
 
 		/* decompress until deflate stream ends or end of file */
@@ -123,13 +116,8 @@ INT decompthreadproc(ThreadData*data)
 			int toget = CHUNK;
 			int have= unzReadCurrentFile(data->unzfile, in, CHUNK );
 			if (have == 0)break;
-			if (ferror(data->source)) {
-				(void)inflateEnd(&strm);
-				return Z_ERRNO;
-			}
-			if (strm.avail_in == 0 )
-				break;
-			strm.next_in = in;
+
+
 			/* run inflate() on input until output buffer not full */
 			
 			if (fwrite(in, 1, have, data->dest) != have || ferror(data->dest)) {
@@ -138,11 +126,12 @@ INT decompthreadproc(ThreadData*data)
 			
 
 			/* done when inflate() says it's done */
-		} while (ret != Z_STREAM_END);
+		} while (1);
 	}
 	__finally {
 		delete data;
 	}
+	return Z_OK;
 }
 extern "C" FILE *DecompressZIP(FILE *source, unzFile unzipfile, int insize, int outsize)
 {

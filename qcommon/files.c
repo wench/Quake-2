@@ -271,7 +271,7 @@ int FS_FOpenFile (char *filename, FILE **file)
 						if (unzOpenCurrentFile(unzfile) != UNZ_OK) return -1;
 
 						if (unzGetCurrentFileInfo(unzfile, &info, 0, 0, 0, 0, 0, 0) != UNZ_OK) return -1;
-						*file = DecompressZIP(file, unzfile, info.compressed_size, info.uncompressed_size);
+						*file = DecompressZIP(*file, unzfile, info.compressed_size, info.uncompressed_size);
 						return info.uncompressed_size;
 					}
 					else
@@ -376,7 +376,7 @@ Properly handles partial reads
 =================
 */
 void CDAudio_Stop(void);
-#define	MAX_READ	0x1000		// read in blocks of 64k
+#define	MAX_READ	0x100000		// read in blocks of 64k
 void FS_Read (void *buffer, int len, FILE *f)
 {
 	int		block, remaining;
@@ -764,7 +764,7 @@ void FS_AddGameDirectory (char *dir)
 		}
 		free(dirnames);
 	}
-	Com_Printf("\n");	/*
+	Com_Printf("\n");	
 	Com_sprintf(pakfile, sizeof(pakfile), "%s/*.zip", dir, i);
 	if ((dirnames = FS_ListFiles(pakfile, &ndirs, 0, SFF_SUBDIR | SFF_HIDDEN | SFF_SYSTEM)) != 0)
 	{
@@ -772,9 +772,6 @@ void FS_AddGameDirectory (char *dir)
 
 		for (i = 0; i < ndirs - 1; i++)
 		{
-			//if (strrchr(dirnames[i], '/'))
-				//Com_Printf("%s\n", strrchr(dirnames[i], '/') + 1);
-			//else
 			Com_Printf("%s\n", dirnames[i]);
 
 
@@ -789,7 +786,7 @@ void FS_AddGameDirectory (char *dir)
 			free(dirnames[i]);
 		}
 		free(dirnames);
-	}*/
+	}
 	Com_Printf("\n");
 
 }
