@@ -393,7 +393,7 @@ void GL_DrawAliasFrameLerp (dmdl_t *paliashdr, float backlerp, qboolean transpas
 				VectorSet(vec,(1+shadevector2[1])/2,
 							(1+shadevector2[2])/2,
 							(1+shadevector2[0])/2);
-				vec[4] = 1;
+				vec[3] = 1;
 				qglTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, vec);
 
 				GL_TexEnv(GL_COMBINE_ARB);

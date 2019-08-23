@@ -203,12 +203,14 @@ Used for streaming data out of either a pak file or
 a seperate file.
 ===========
 */
+FILE *DecompressZIP(FILE *source, unzFile unzipfile, int insize,int outsize);
 int file_from_pak = 0;
 #ifndef NO_ADDONS
 int FS_FOpenFile (char *filename, FILE **file)
 {
 	searchpath_t	*search;
 	char			netpath[MAX_OSPATH];
+	char			prefixedpath[MAX_OSPATH];
 	pack_t			*pak;
 	int				i;
 	filelink_t		*link;
@@ -221,11 +223,12 @@ int FS_FOpenFile (char *filename, FILE **file)
 		if (!strncmp (filename, link->from, link->fromlength))
 		{
 			Com_sprintf (netpath, sizeof(netpath), "%s%s",link->to, filename+link->fromlength);
-			*file = fopen (netpath, "rb");
-			if (*file)
+			//*file = fopen (netpath, "rb");
+			//if (*file)
 			{		
 				Com_DPrintf ("link file: %s\n",netpath);
-				return FS_filelength (*file);
+				filename = netpath;
+				//return FS_filelength (*file);
 			}
 			return -1;
 		}
@@ -244,10 +247,10 @@ int FS_FOpenFile (char *filename, FILE **file)
 			pak = search->pack;
 			for (i = 0; i < pak->numfiles; i++)
 			{
-				strcpy_s(netpath, sizeof(netpath), pak->prefix);
-				strcat_s(netpath, sizeof(netpath), pak->files[i].name);
+				strcpy_s(prefixedpath, sizeof(netpath), pak->prefix);
+				strcat_s(prefixedpath, sizeof(netpath), pak->files[i].name);
 
-				if (!Q_strfncmp(netpath, filename) || !Q_strfncmp(pak->files[i].name, filename))
+				if (!Q_strfncmp(prefixedpath, filename) || !Q_strfncmp(pak->files[i].name, filename))
 				{	// found it!
 					file_from_pak = 1;
 
@@ -256,7 +259,20 @@ int FS_FOpenFile (char *filename, FILE **file)
 					if (!*file)
 						Com_Error(ERR_FATAL, "Couldn't reopen %s", pak->filename);
 					if (pak->is_zip) {
-						continue;
+
+						zlib_filefunc_def filefuncs;
+						qfill_fopen_filefunc(&filefuncs, *file);
+
+						unzFile unzfile = unzOpen2("", &filefuncs);
+						if (unzLocateFile(unzfile, pak->files[i].name, 1) != UNZ_OK) return -1;
+
+						unz_file_info info;
+
+						if (unzOpenCurrentFile(unzfile) != UNZ_OK) return -1;
+
+						if (unzGetCurrentFileInfo(unzfile, &info, 0, 0, 0, 0, 0, 0) != UNZ_OK) return -1;
+						*file = DecompressZIP(file, unzfile, info.compressed_size, info.uncompressed_size);
+						return info.uncompressed_size;
 					}
 					else
 					{
@@ -387,12 +403,16 @@ void FS_Read (void *buffer, int len, FILE *f)
 				tries = 1;
 				CDAudio_Stop();
 			}
-			else
-				Com_Error (ERR_FATAL, "FS_Read: 0 bytes read");
+			else {
+				Com_Printf( "FS_Read: 0 bytes read");
+				return;
+			}
 		}
 
-		if (read == -1)
-			Com_Error (ERR_FATAL, "FS_Read: -1 bytes read");
+		if (read == -1) {
+			Com_Error(ERR_FATAL, "FS_Read: -1 bytes read");
+			return;
+		}
 
 		// do some progress bar thing here...
 
@@ -744,7 +764,7 @@ void FS_AddGameDirectory (char *dir)
 		}
 		free(dirnames);
 	}
-	Com_Printf("\n");	
+	Com_Printf("\n");	/*
 	Com_sprintf(pakfile, sizeof(pakfile), "%s/*.zip", dir, i);
 	if ((dirnames = FS_ListFiles(pakfile, &ndirs, 0, SFF_SUBDIR | SFF_HIDDEN | SFF_SYSTEM)) != 0)
 	{
@@ -769,7 +789,7 @@ void FS_AddGameDirectory (char *dir)
 			free(dirnames[i]);
 		}
 		free(dirnames);
-	}
+	}*/
 	Com_Printf("\n");
 
 }

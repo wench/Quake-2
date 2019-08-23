@@ -143,11 +143,14 @@ long ZCALLBACK fseek_file_func (voidpf opaque, voidpf stream,
     return ret;
 }
 
-int ZCALLBACK fclose_file_func (voidpf opaque, voidpf stream)
+int ZCALLBACK fclose_file_func(voidpf opaque, voidpf stream)
 {
 	int ret;
-    ret = fclose((FILE *)stream);
-    return ret;
+	ret = fclose((FILE *)stream);
+	return ret;
+}int ZCALLBACK fclose_file_func_null(voidpf opaque, voidpf stream)
+{
+	return 1;
 }
 
 int ZCALLBACK ferror_file_func (voidpf opaque, voidpf stream)
@@ -176,7 +179,7 @@ void qfill_fopen_filefunc(zlib_filefunc_def* pzlib_filefunc_def, FILE*file)
 	pzlib_filefunc_def->zwrite_file = fwrite_file_func;
 	pzlib_filefunc_def->ztell_file = ftell_file_func;
 	pzlib_filefunc_def->zseek_file = fseek_file_func;
-	pzlib_filefunc_def->zclose_file = 0;
+	pzlib_filefunc_def->zclose_file = fclose_file_func_null;
 	pzlib_filefunc_def->zerror_file = ferror_file_func;
 	pzlib_filefunc_def->opaque = file;
 }

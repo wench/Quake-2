@@ -28,6 +28,17 @@ struct ThreadData {
 		fclose(dest);
 	}
 
+}; struct ThreadDataZ {
+	FILE*source;
+	FILE *dest;
+	int size_read;
+	unzFile unzfile;
+	~ThreadDataZ() {
+		fclose(source);
+		fclose(dest);
+		unzClose(unzfile);
+	}
+
 };
 INT decompthreadproc(ThreadData*data)
 {
@@ -53,7 +64,7 @@ INT decompthreadproc(ThreadData*data)
 		do {
 			int toget = min(remaining, CHUNK);
 			strm.avail_in = fread(in, 1, CHUNK, data->source);
-				if (ferror(data->source)) {
+			if (ferror(data->source)) {
 				(void)inflateEnd(&strm);
 				return Z_ERRNO;
 			}
@@ -85,11 +96,72 @@ INT decompthreadproc(ThreadData*data)
 			/* done when inflate() says it's done */
 		} while (ret != Z_STREAM_END);
 	}
-	__finally{
+	__finally {
+		delete data;
+	}
+}INT decompthreadprocZ(ThreadDataZ*data)
+{
+	__try {
+		int ret;	
+		z_stream strm;
+		unsigned char in[CHUNK];
+		unsigned char out[CHUNK];
+
+		/* allocate inflate state */
+		strm.zalloc = Z_NULL;
+		strm.zfree = Z_NULL;
+		strm.opaque = Z_NULL;
+		strm.avail_in = 0;
+		strm.next_in = Z_NULL;
+		ret = inflateInit(&strm);
+		if (ret != Z_OK)
+			return ret;
+
+
+		/* decompress until deflate stream ends or end of file */
+		do {
+			int toget = CHUNK;
+			int have= unzReadCurrentFile(data->unzfile, in, CHUNK );
+			if (have == 0)break;
+			if (ferror(data->source)) {
+				(void)inflateEnd(&strm);
+				return Z_ERRNO;
+			}
+			if (strm.avail_in == 0 )
+				break;
+			strm.next_in = in;
+			/* run inflate() on input until output buffer not full */
+			
+			if (fwrite(in, 1, have, data->dest) != have || ferror(data->dest)) {
+				break;
+			}
+			
+
+			/* done when inflate() says it's done */
+		} while (ret != Z_STREAM_END);
+	}
+	__finally {
 		delete data;
 	}
 }
+extern "C" FILE *DecompressZIP(FILE *source, unzFile unzipfile, int insize, int outsize)
+{
+	int handles[2];
+	_pipe(handles, outsize, _O_BINARY);
+	ThreadDataZ *data = new ThreadDataZ;
+	data->dest = fdopen(handles[1], "wb");
+	data->unzfile = unzipfile;
+	data->source = source;
+	data->size_read = outsize;
+	HANDLE thread = CreateThread(NULL, 4096, (LPTHREAD_START_ROUTINE)&decompthreadprocZ, data, 0, NULL);
 
+	if (!thread) {
+		delete data;
+		return 0;
+	}
+	CloseHandle(thread);
+	return fdopen(handles[0], "rb");
+}
 extern "C" FILE *DecompressANOXDATA(FILE *source, int insize, int outsize)
 {
 	int handles[2];

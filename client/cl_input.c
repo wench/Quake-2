@@ -462,7 +462,7 @@ CL_SendCmd
 void CL_SendCmd (void)
 {
 	sizebuf_t	buf;
-	byte		data[128];
+	byte		data[128] = { 0 };
 	int			i;
 	usercmd_t	*cmd, *oldcmd;
 	usercmd_t	nullcmd;
@@ -474,6 +474,7 @@ void CL_SendCmd (void)
 	i = cls.netchan.outgoing_sequence & (CMD_BACKUP-1);
 	cmd = &cl.cmds[i];
 	cl.cmd_time[i] = cls.realtime;	// for netgraph ping calculation
+	buf.data = data;	
 
 	*cmd = CL_CreateCmd ();
 

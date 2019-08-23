@@ -186,7 +186,7 @@ void Com_Error (int code, char *fmt, ...)
 	recursive = true;
 
 	va_start (argptr,fmt);
-	vsprintf (msg,fmt,argptr);
+	vsprintf_s (msg,sizeof(msg),fmt,argptr);
 	va_end (argptr);
 	
 	if (code == ERR_DISCONNECT)
@@ -1188,6 +1188,7 @@ Z_Free
 */
 void Z_Free (void *ptr)
 {
+	Sys_LockMemory();
 	zhead_t	*z;
 
 	z = ((zhead_t *)ptr) - 1;
@@ -1201,6 +1202,7 @@ void Z_Free (void *ptr)
 	z_count--;
 	z_bytes -= z->size;
 	free (z);
+	Sys_UnlockMemory();
 }
 
 
@@ -1221,6 +1223,7 @@ Z_FreeTags
 */
 void Z_FreeTags (int tag)
 {
+	Sys_LockMemory();
 	zhead_t	*z, *next;
 
 	for (z=z_chain.next ; z != &z_chain ; z=next)
@@ -1229,6 +1232,7 @@ void Z_FreeTags (int tag)
 		if (z->tag == tag)
 			Z_Free ((void *)(z+1));
 	}
+	Sys_UnlockMemory();
 }
 
 /*
@@ -1238,6 +1242,7 @@ Z_TagMalloc
 */
 void *Z_TagMalloc (int size, int tag)
 {
+	Sys_LockMemory();
 	zhead_t	*z;
 	
 	size = size + sizeof(zhead_t);
@@ -1256,6 +1261,7 @@ void *Z_TagMalloc (int size, int tag)
 	z_chain.next->prev = z;
 	z_chain.next = z;
 
+	Sys_UnlockMemory();
 	return (void *)(z+1);
 }
 

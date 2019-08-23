@@ -356,6 +356,7 @@ void SV_WipeModelInfo()
 	memset(&sv.md2_info[0], 0, MAX_MODELS * sizeof(md2_info_t*));
 }
 
+
 md2_info_t *SV_GetModelInfo (int index)
 {
 	int size;

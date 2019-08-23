@@ -85,16 +85,11 @@ void Sys_Error (char *error, ...)
 		CloseHandle (qwclsemaphore);
 
 // shut down QHOST hooks if necessary
-	DeinitConProc ();
-
-	{
-		HDC hDCScreen = GetDC(NULL);
-		SetDeviceGammaRamp (hDCScreen, original_gamma);
-		ReleaseDC (NULL, hDCScreen);
-	}
+	//DeinitConProc ();
 
 
-	exit (1);
+
+	//exit (1);
 }
 
 void Sys_Quit (void)
@@ -509,7 +504,7 @@ void *Sys_GetGameAPI (void *parms)
 
 	// check the current debug directory first for development purposes
 	_getcwd (cwd, sizeof(cwd));
-	Com_sprintf (name, sizeof(name), "%s/%s/%s", cwd, debugdir, gamename);
+	Com_sprintf (name, sizeof(name), "%s/%s", debugdir, gamename);
 	game_library = LoadLibrary ( name );
 	if (game_library)
 	{
@@ -631,7 +626,7 @@ void ErrorExit(LPTSTR lpszFunction, DWORD dw)
 	LocalFree(lpMsgBuf);
 	LocalFree(lpDisplayBuf);
 }
-//int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+CRITICAL_SECTION critSecMemory;
 int main(int argc, char **argv)
 {
     MSG				msg;
@@ -639,26 +634,14 @@ int main(int argc, char **argv)
 	char			*cddir;
 	TCHAR dir[1024];
 
-	{
-		BOOL res;
-		HDC hDCScreen = GetDCEx(NULL,NULL,0);
-		int r = SetICMMode(hDCScreen, ICM_OFF);
-		res = GetDeviceGammaRamp (hDCScreen, original_gamma);
-		DWORD error = GetLastError();
-		ErrorExit("GetDeviceGammaRamp", error);
-
-		ReleaseDC (NULL, hDCScreen);
-
-		if (!res) {
-		//	MessageBox(NULL, "Gamma get failed", "Error", MB_ICONERROR);
-		}
-	}
 	hinput = GetStdHandle(STD_INPUT_HANDLE);
 	houtput = GetStdHandle(STD_OUTPUT_HANDLE);
 
 	global_hInstance = GetModuleHandle(NULL);
 
 	GetCurrentDirectory(1024,dir);
+
+	InitializeCriticalSection(&critSecMemory);
 
 
 
@@ -721,4 +704,15 @@ int main(int argc, char **argv)
 
 	// never gets here
     return TRUE;
+}
+
+
+void Sys_LockMemory()
+{
+	EnterCriticalSection(&critSecMemory);
+}
+void Sys_UnlockMemory()
+{
+	LeaveCriticalSection(&critSecMemory);
+
 }
