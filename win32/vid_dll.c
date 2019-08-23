@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // Main windowed and fullscreen graphics interface module. This module
 // is used for both the software and OpenGL rendering versions of the
 // Quake refresh engine.
-#pragma optmize(disable)
+#pragma optmize(off)
 #include <assert.h>
 #include <float.h>
 
@@ -675,8 +675,14 @@ void VID_CheckChanges (void)
 		vid_fullscreen->modified = true;
 		cl.refresh_prepped = false;
 		cls.disable_screen = true;
+#ifdef _DEBUG
+		char dbgstr[] = "DEBUG/";
+#else
+		char dbgstr[] = "";
+#endif
 
-		Com_sprintf( name, sizeof(name), "ref_%s_anox.dll", vid_ref->string );
+
+		Com_sprintf( name, sizeof(name), "%sref_%s_anox.dll", dbgstr,vid_ref->string );
 		if ( !VID_LoadRefresh( name ) )
 		{
 			if ( strcmp (vid_ref->string, "gl") == 0 )
