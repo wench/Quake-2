@@ -730,7 +730,7 @@ void GLimp_EndFrame (void)
 				err = qglGetError();
 			}
 			if (!fbcopy) {
-				fbcopy = GL_LoadPic("framebuffercopy,", 0, vid.width, vid.height, it_clamped, 64);
+				fbcopy = GL_LoadPic("framebuffercopy,", 0, vid.width, vid.height, it_clamped, 64, 0);
 			}
 			qglBindProgramARB(GL_FRAGMENT_PROGRAM_ARB, gamma_frag_prog);
 			qglEnable(GL_FRAGMENT_PROGRAM_ARB);
@@ -787,7 +787,7 @@ void GLimp_EndFrame (void)
 }
 
 BOOL APIENTRY qwglSetDeviceGammaRampTexture(HDC unused, LPVOID ramp) {
-	if (!gamma_texture) gamma_texture = GL_LoadPic("framebuffercopy,", 0, 256,4, it_clamped, 64);
+	if (!gamma_texture) gamma_texture = GL_LoadPic("framebuffercopy,", 0, 256,4, it_clamped, 64, 0);
 	GL_BindImage(gamma_texture);
 	LPWORD src = ramp;
 	GLushort data[256 * 4 * 3];
@@ -802,7 +802,7 @@ BOOL APIENTRY qwglSetDeviceGammaRampTexture(HDC unused, LPVOID ramp) {
 
 	}
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16, 256, 4, 0, GL_RGB, GL_UNSIGNED_SHORT, data);
-
+	return TRUE;
 }
 /*
 ** GLimp_AppActivate

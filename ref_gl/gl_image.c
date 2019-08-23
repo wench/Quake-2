@@ -31,7 +31,7 @@ cvar_t		*intensity;
 
 unsigned	d_8to24table[256];
 
-int GL_Upload8 (byte *data, int width, int height,  qboolean mipmap, qboolean is_sky );
+int GL_Upload8 (byte *data, byte* palette, int width, int height,  qboolean mipmap, qboolean is_sky );
 int GL_Upload32 (unsigned *data, int width, int height,  qboolean mipmap);
 
 
@@ -276,7 +276,7 @@ gltmode_t gl_solid_modes[] = {
 };
 
 #define NUM_GL_SOLID_MODES (sizeof(gl_solid_modes) / sizeof (gltmode_t))
-
+byte gPalette[768];
 /*
 ===============
 GL_TextureMode
@@ -535,7 +535,7 @@ void Scrap_Upload (void)
 {
 	scrap_uploads++;
 	GL_Bind(TEXNUM_SCRAPS);
-	GL_Upload8 (scrap_texels[0], BLOCK_WIDTH, BLOCK_HEIGHT, false, false );
+	GL_Upload8 (scrap_texels[0], gPalette, BLOCK_WIDTH, BLOCK_HEIGHT, false, false );
 	scrap_dirty = false;
 }
 
@@ -1699,9 +1699,9 @@ static qboolean IsPowerOf2( int value )
 	}
 }
 
-int GL_Upload8 (byte *data, int width, int height,  qboolean mipmap, qboolean is_sky )
+int GL_Upload8 (byte *data, byte* palette, int width, int height,  qboolean mipmap, qboolean is_sky )
 {
-	unsigned	trans[512*256];
+	unsigned	trans[640*256];
 	int			i, s;
 	int			p;
 
@@ -1732,7 +1732,11 @@ int GL_Upload8 (byte *data, int width, int height,  qboolean mipmap, qboolean is
 		for (i=0 ; i<s ; i++)
 		{
 			p = data[i];
-			trans[i] = d_8to24table[p];
+
+			((byte *)&trans[i])[0] = (&palette[p * 3])[0];
+			((byte *)&trans[i])[1] = ((byte *)&palette[p * 3])[1];
+			((byte *)&trans[i])[2] = ((byte *)&palette[p * 3])[2];
+			((byte *)&trans[i])[3] = 0xff;
 
 			if (p == 255)
 			{	// transparent, so scan around for another color
@@ -1749,9 +1753,10 @@ int GL_Upload8 (byte *data, int width, int height,  qboolean mipmap, qboolean is
 				else
 					p = 0;
 				// copy rgb components
-				((byte *)&trans[i])[0] = ((byte *)&d_8to24table[p])[0];
-				((byte *)&trans[i])[1] = ((byte *)&d_8to24table[p])[1];
-				((byte *)&trans[i])[2] = ((byte *)&d_8to24table[p])[2];
+				((byte *)&trans[i])[0] = (&palette[p*3])[0];
+				((byte *)&trans[i])[1] = ((byte *)&palette[p*3])[1];
+				((byte *)&trans[i])[2] = ((byte *)&palette[p*3])[2];
+				((byte *)&trans[i])[3] = 0;
 			}
 		}
 
@@ -1768,7 +1773,7 @@ GL_LoadPic
 This is also used as an entry point for the generated r_notexture
 ================
 */
-image_t *GL_LoadPic (char *name, byte *pic, int width, int height, imagetype_t type, int bits)
+image_t *GL_LoadPic (char *name, byte *pic, int width, int height, imagetype_t type, int bits, byte* palette)
 {
 	image_t		*image;
 	int			i;
@@ -1866,7 +1871,7 @@ nonscrap:
 		image->texnum = TEXNUM_IMAGES + (image - gltextures);
 		GL_Bind(image->texnum);
 		if (bits == 8)
-			image->has_alpha = GL_Upload8 (pic, width, height, (image->type != it_pic && image->type != it_sky && image->type != it_clamped), image->type == it_sky );
+			image->has_alpha = GL_Upload8 (pic, palette, width, height, (image->type != it_pic && image->type != it_sky && image->type != it_clamped), image->type == it_sky );
 		else
 			image->has_alpha = GL_Upload32 ((unsigned *)pic, width, height, (image->type != it_pic && image->type != it_sky && image->type != it_clamped) );
 		image->upload_width = upload_width;		// after power of 2 and scales
@@ -1910,7 +1915,7 @@ image_t *GL_LoadWal (char *name, char *filename)
 	height = LittleLong (mt->height);
 	ofs = LittleLong (mt->offsets[0]);
 
-	image = GL_LoadPic (name, (byte *)mt + ofs, width, height, it_wall, 8);
+	image = GL_LoadPic (name, (byte *)mt + ofs, width, height, it_wall, 8, gPalette);
 
 	ri.FS_FreeFile ((void *)mt);
 
@@ -1967,7 +1972,7 @@ image_t	*GL_FindImage (char *name, imagetype_t type)
 
 		if (pic) 
 		{
-			image = GL_LoadPic (name, pic, width, height, type, 32);
+			image = GL_LoadPic (name, pic, width, height, type, 32,0);
 			free(pic);
 			pic = NULL;
 		}
@@ -1984,7 +1989,7 @@ image_t	*GL_FindImage (char *name, imagetype_t type)
 
 		if (pic) 
 		{
-			image = GL_LoadPic (name, pic, width, height, type, 32);
+			image = GL_LoadPic (name, pic, width, height, type, 32,0);
 			free(pic);
 			pic = NULL;
 		}
@@ -2001,7 +2006,7 @@ image_t	*GL_FindImage (char *name, imagetype_t type)
 
 		if (pic) 
 		{
-			image = GL_LoadPic (name, pic, width, height, type, 8);
+			image = GL_LoadPic (name, pic, width, height, type, 8,palette);
 			free(pic);
 			free(palette);
 		}
@@ -2020,7 +2025,7 @@ image_t	*GL_FindImage (char *name, imagetype_t type)
 
 		if (atd) 
 		{
-			image = GL_LoadPic (name, pic, width, height, type, 32);
+			image = GL_LoadPic (name, pic, width, height, type, 32,0);
 			image->atd = atd;
 
 			// Ok just make sure the filtering modes are correct
@@ -2203,6 +2208,7 @@ void GL_FreeUnusedImages (void)
 Draw_GetPalette
 ===============
 */
+
 int Draw_GetPalette (void)
 {
 	int		i;
@@ -2213,16 +2219,23 @@ int Draw_GetPalette (void)
 
 	// get the palette
 	// TODO make palette stuff optional
-	LoadPCX ("pics/colormap.pcx", &pic, &pal, &width, &height);
+	LoadPCX("graphics/colormap.pcx", &pic, &pal, &width, &height);
 	if (!pal)
-		ri.Sys_Error (ERR_FATAL, "Couldn't load pics/colormap.pcx");
+	{
+		LoadPCX("pics/colormap.pcx", &pic, &pal, &width, &height);
+		if (!pal)
+			ri.Sys_Error(ERR_FATAL, "Couldn't load pics/colormap.pcx");
+	}
 
 	for (i=0 ; i<256 ; i++)
 	{
 		r = pal[i*3+0];
 		g = pal[i*3+1];
 		b = pal[i*3+2];
-		
+		gPalette[i * 3 + 0] = r;
+		gPalette[i * 3 + 1] = g;
+		gPalette[i * 3 + 2] = b;
+
 		v = (255<<24) + (r<<0) + (g<<8) + (b<<16);
 		d_8to24table[i] = LittleLong(v);
 	}
