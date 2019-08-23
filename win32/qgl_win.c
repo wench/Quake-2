@@ -412,6 +412,7 @@ void ( APIENTRY * qglActiveTextureARB) ( GLenum );
 void ( APIENTRY * qglClientActiveTextureARB) ( GLenum );
 void ( APIENTRY * qglTBufferMask3DFX) (GLuint);
 void ( __stdcall * qgrTBufferWriteMaskExt) (unsigned int);
+extern BOOL APIENTRY qwglSetDeviceGammaRampTexture (HDC, LPVOID);
 
 static void ( APIENTRY * dllAccum )(GLenum op, GLfloat value);
 static void ( APIENTRY * dllAlphaFunc )(GLenum func, GLclampf ref);

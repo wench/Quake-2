@@ -786,7 +786,7 @@ void GLimp_EndFrame (void)
 	}
 }
 
-BOOL qwglSetDeviceGammaRampTexture(HDC unused, LPVOID ramp) {
+BOOL APIENTRY qwglSetDeviceGammaRampTexture(HDC unused, LPVOID ramp) {
 	if (!gamma_texture) gamma_texture = GL_LoadPic("framebuffercopy,", 0, 256,4, it_clamped, 64);
 	GL_BindImage(gamma_texture);
 	LPWORD src = ramp;
