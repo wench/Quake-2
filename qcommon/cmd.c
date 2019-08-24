@@ -89,7 +89,7 @@ Adds command text at the end of the buffer
 */
 void Cbuf_AddText (char *text)
 {
-	int		l;
+	size_t		l;
 	
 	l = strlen (text);
 
@@ -98,7 +98,7 @@ void Cbuf_AddText (char *text)
 		Com_Printf ("Cbuf_AddText: overflow\n");
 		return;
 	}
-	SZ_Write (&cmd_text, text, strlen (text));
+	SZ_Write (&cmd_text, text,(int) strlen (text));
 }
 
 
@@ -296,7 +296,7 @@ will keep the demoloop from immediately starting
 qboolean Cbuf_AddLateCommands (void)
 {
 	int		i, j;
-	int		s;
+	size_t		s;
 	char	*text, *build, c;
 	int		argc;
 	qboolean	ret;
@@ -541,7 +541,7 @@ Cmd_MacroExpandString
 */
 char *Cmd_MacroExpandString (char *text)
 {
-	int		i, j, count, len;
+	size_t		i, j, count, len;
 	qboolean	inquote;
 	char	*scan;
 	static	char	expanded[MAX_STRING_CHARS];
@@ -655,7 +655,7 @@ void Cmd_TokenizeString (char *text, qboolean macroExpand)
 		// set cmd_args to everything after the first arg
 		if (cmd_argc == 1)
 		{
-			int		l;
+			size_t		l;
 
 			strcpy (cmd_args, text);
 
@@ -772,7 +772,7 @@ Cmd_CompleteCommand
 char *Cmd_CompleteCommand (char *partial)
 {
 	cmd_function_t	*cmd;
-	int				len;
+	size_t				len;
 	cmdalias_t		*a;
 	
 	len = strlen(partial);

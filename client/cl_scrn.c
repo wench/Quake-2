@@ -870,7 +870,7 @@ SCR_DrawField
 void SCR_DrawField (int x, int y, int color, int width, int value)
 {
 	char	num[16], *ptr;
-	int		l;
+	size_t		l;
 	int		frame;
 
 	if (width < 1)
@@ -887,7 +887,7 @@ void SCR_DrawField (int x, int y, int color, int width, int value)
 	l = strlen(num);
 	if (l > width)
 		l = width;
-	x += 2 + CHAR_WIDTH*(width - l);
+	x += 2 + CHAR_WIDTH*(width - (int) l);
 
 	ptr = num;
 	while (*ptr && l)

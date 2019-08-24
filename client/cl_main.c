@@ -580,7 +580,7 @@ void CL_Rcon_f (void)
 			to.port = BigShort (PORT_SERVER);
 	}
 	
-	NET_SendPacket (NS_CLIENT, strlen(message)+1, message, to);
+	NET_SendPacket (NS_CLIENT,(int) strlen(message)+1, message, to);
 }
 
 
@@ -686,7 +686,7 @@ Contents allows \n escape character
 void CL_Packet_f (void)
 {
 	char	send[2048];
-	int		i, l;
+	size_t		i, l;
 	char	*in, *out;
 	netadr_t	adr;
 

@@ -84,10 +84,10 @@ typedef struct sizebuf_s
 	int		readcount;
 } sizebuf_t;
 
-void SZ_Init (sizebuf_t *buf, byte *data, int length);
+void SZ_Init (sizebuf_t *buf, byte *data, size_t length);
 void SZ_Clear (sizebuf_t *buf);
-void *SZ_GetSpace (sizebuf_t *buf, int length);
-void SZ_Write (sizebuf_t *buf, void *data, int length);
+void *SZ_GetSpace (sizebuf_t *buf, size_t length);
+void SZ_Write (sizebuf_t *buf, void *data, size_t length);
 void SZ_Print (sizebuf_t *buf, char *data);	// strcats onto the sizebuf
 
 //============================================================================
@@ -523,6 +523,7 @@ extern	qboolean	userinfo_modified;
 // this is set each time a CVAR_USERINFO variable is changed
 // so that the client knows to send it to the server
 
+
 /*
 ==============================================================
 
@@ -616,8 +617,8 @@ void Netchan_Init (void);
 void Netchan_Setup (netsrc_t sock, netchan_t *chan, netadr_t adr, int qport);
 
 qboolean Netchan_NeedReliable (netchan_t *chan);
-void Netchan_Transmit (netchan_t *chan, int length, byte *data);
-void Netchan_OutOfBand (int net_socket, netadr_t adr, int length, byte *data);
+void Netchan_Transmit (netchan_t *chan, size_t length, byte *data);
+void Netchan_OutOfBand (int net_socket, netadr_t adr, size_t length, byte *data);
 void Netchan_OutOfBandPrint (int net_socket, netadr_t adr, char *format, ...);
 qboolean Netchan_Process (netchan_t *chan, sizebuf_t *msg);
 
@@ -775,8 +776,8 @@ extern	int		time_before_ref;
 extern	int		time_after_ref;
 
 void Z_Free (void *ptr);
-void *Z_Malloc (int size);			// returns 0 filled memory
-void *Z_TagMalloc (int size, int tag);
+void *Z_Malloc (size_t size);			// returns 0 filled memory
+void *Z_TagMalloc (size_t size, int tag);
 void Z_FreeTags (int tag);
 FILE *DecompressANOXDATA(FILE *source, int insize, int outsize);
 

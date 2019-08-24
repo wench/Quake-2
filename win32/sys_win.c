@@ -363,7 +363,7 @@ void Sys_ConsoleOutput (char *string)
 		WriteFile(houtput, text, console_textlen+2, &dummy, NULL);
 	}
 
-	WriteFile(houtput, string, strlen(string), &dummy, NULL);
+	WriteFile(houtput, string, (int)strlen(string), &dummy, NULL);
 
 	if (console_textlen)
 		WriteFile(houtput, console_text, console_textlen, &dummy, NULL);
@@ -479,32 +479,21 @@ void *Sys_GetGameAPI (void *parms)
 	char	name[MAX_OSPATH];
 	char	*path;
 	char	cwd[MAX_OSPATH];
-#if defined _M_IX86
-	const char *gamename = "gamex86.dll";
+	const char *gamename = "game" STR_ARCH "_anox";
 
 #ifdef NDEBUG
-	const char *debugdir = "release";
+		const char *debug = "";
 #else
-	const char *debugdir = "debug";
+	const char *debug = "_debug";
 #endif
 
-#elif defined _M_ALPHA
-	const char *gamename = "gameaxp.dll";
-
-#ifdef NDEBUG
-	const char *debugdir = "releaseaxp";
-#else
-	const char *debugdir = "debugaxp";
-#endif
-
-#endif
 
 	if (game_library)
 		Com_Error (ERR_FATAL, "Sys_GetGameAPI without Sys_UnloadingGame");
 
 	// check the current debug directory first for development purposes
 	_getcwd (cwd, sizeof(cwd));
-	Com_sprintf (name, sizeof(name), "%s/%s", debugdir, gamename);
+	Com_sprintf (name, sizeof(name), "%s%s.dll", gamename, debug);
 	game_library = LoadLibrary ( name );
 	if (game_library)
 	{
@@ -696,7 +685,7 @@ int main(int argc, char **argv)
 //			Con_Printf ("time:%5.2f - %5.2f = %5.2f\n", newtime, oldtime, time);
 
 		//	_controlfp( ~( _EM_ZERODIVIDE /*| _EM_INVALID*/ ), _MCW_EM );
-		_controlfp( _PC_24, _MCW_PC );
+		//_controlfp( _PC_24, _MCW_PC );
 		Qcommon_Frame (time);
 
 		oldtime = newtime;

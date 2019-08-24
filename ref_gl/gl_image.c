@@ -902,7 +902,7 @@ void LoadPNG (char *name, byte **pic, int *width, int *height, qboolean hunk)
     int pbit_depth;
 	int pcolor_type;
 	byte *picture;
-	int row, rowbytes;
+	size_t row, rowbytes;
 
 	*pic = NULL;
 
@@ -1075,7 +1075,7 @@ void LoadPNG_8Bit (char *name, byte **pic, int *width, int *height, qboolean hun
     int pbit_depth;
 	int pcolor_type;
 	byte *picture;
-	int row, rowbytes;
+	size_t row, rowbytes;
 
 	*pic = NULL;
 
@@ -1932,7 +1932,7 @@ Finds or loads the given image
 image_t	*GL_FindImage (char *name, imagetype_t type)
 {
 	image_t	*image = NULL;
-	int		i, len;
+	size_t		i, len;
 	int		width, height;
 	char	newname[MAX_QPATH];
 
@@ -2113,7 +2113,7 @@ image_t	*GL_FindImage (char *name, imagetype_t type)
 
 void GL_FindImage2 (char *name, byte **pic, int *width, int *height, qboolean hunk)
 {
-	int		i, len;
+	size_t		i, len;
 	char	newname[MAX_QPATH];
 
 	*pic = NULL;
@@ -2795,7 +2795,7 @@ static void ATD_Update_Animation (image_t *image)
 			int *dest, *src;
 			
 			dest = atd->pixels + frame->x + frame->y*image->width;
-			src = bitmap->pixels;
+			src =(int*) bitmap->pixels;
 
 			for (i = 0; i < bitmap->height; i++)
 			{
@@ -3132,8 +3132,8 @@ atd_t *ATD_LoadAnimation (char *tokens, byte **pic, int *width, int *height, int
 		i++;
 	}
 
-	if (gl_atd_subimage_update->value) *pic = atd_update_buffer;
-	else *pic = atd->pixels = Hunk_Alloc2((*width)*(*height)*4);
+	if (gl_atd_subimage_update->value) *pic =(byte**)&atd_update_buffer[0];
+	else *pic = (byte**)(atd->pixels = Hunk_Alloc2((*width)*(*height)*4));
 
 	if (colortype & 1) memset(*pic, 255, (*width)*(*height)*4);
 	else memset(*pic, 127, (*width)*(*height)*4);

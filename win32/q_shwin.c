@@ -227,30 +227,30 @@ void Sys_Mkdir (char *path)
 
 char	findbase[MAX_OSPATH];
 char	findpath[MAX_OSPATH];
-int		findhandle;
+HANDLE findhandle= INVALID_HANDLE_VALUE;
 
-static qboolean CompareAttributes( unsigned found, unsigned musthave, unsigned canthave )
+static qboolean CompareAttributes( DWORD found, unsigned musthave, unsigned canthave )
 {
-	if ( ( found & _A_RDONLY ) && ( canthave & SFF_RDONLY ) )
+	if ( ( found & FILE_ATTRIBUTE_READONLY) && ( canthave & SFF_RDONLY ) )
 		return false;
-	if ( ( found & _A_HIDDEN ) && ( canthave & SFF_HIDDEN ) )
+	if ( ( found & FILE_ATTRIBUTE_HIDDEN) && ( canthave & SFF_HIDDEN ) )
 		return false;
-	if ( ( found & _A_SYSTEM ) && ( canthave & SFF_SYSTEM ) )
+	if ( ( found & FILE_ATTRIBUTE_SYSTEM) && ( canthave & SFF_SYSTEM ) )
 		return false;
-	if ( ( found & _A_SUBDIR ) && ( canthave & SFF_SUBDIR ) )
+	if ( ( found & FILE_ATTRIBUTE_DIRECTORY) && ( canthave & SFF_SUBDIR ) )
 		return false;
-	if ( ( found & _A_ARCH ) && ( canthave & SFF_ARCH ) )
+	if ( ( found & FILE_ATTRIBUTE_ARCHIVE) && ( canthave & SFF_ARCH ) )
 		return false;
 
-	if ( ( musthave & SFF_RDONLY ) && !( found & _A_RDONLY ) )
+	if ( ( musthave & SFF_RDONLY ) && !( found & FILE_ATTRIBUTE_READONLY) )
 		return false;
-	if ( ( musthave & SFF_HIDDEN ) && !( found & _A_HIDDEN ) )
+	if ( ( musthave & SFF_HIDDEN ) && !( found & FILE_ATTRIBUTE_HIDDEN) )
 		return false;
-	if ( ( musthave & SFF_SYSTEM ) && !( found & _A_SYSTEM ) )
+	if ( ( musthave & SFF_SYSTEM ) && !( found & FILE_ATTRIBUTE_SYSTEM) )
 		return false;
-	if ( ( musthave & SFF_SUBDIR ) && !( found & _A_SUBDIR ) )
+	if ( ( musthave & SFF_SUBDIR ) && !( found & FILE_ATTRIBUTE_DIRECTORY) )
 		return false;
-	if ( ( musthave & SFF_ARCH ) && !( found & _A_ARCH ) )
+	if ( ( musthave & SFF_ARCH ) && !( found & FILE_ATTRIBUTE_ARCHIVE) )
 		return false;
 
 	return true;
@@ -258,42 +258,42 @@ static qboolean CompareAttributes( unsigned found, unsigned musthave, unsigned c
 
 char *Sys_FindFirst (char *path, unsigned musthave, unsigned canthave )
 {
-	struct _finddata_t findinfo;
+	WIN32_FIND_DATAA  findinfo;
 
-	if (findhandle)
+	if (findhandle != INVALID_HANDLE_VALUE)
 		Sys_Error ("Sys_BeginFind without close");
-	findhandle = 0;
+	findhandle = INVALID_HANDLE_VALUE;
 
 	COM_FilePath (path, findbase);
-	findhandle = _findfirst (path, &findinfo);
-	if (findhandle == -1)
+	findhandle = FindFirstFileA(path, &findinfo);
+	if (findhandle == INVALID_HANDLE_VALUE)
 		return NULL;
-	if ( !CompareAttributes( findinfo.attrib, musthave, canthave ) )
+	if ( !CompareAttributes( findinfo.dwFileAttributes, musthave, canthave ) )
 		return NULL;
-	Com_sprintf (findpath, sizeof(findpath), "%s/%s", findbase, findinfo.name);
+	Com_sprintf (findpath, sizeof(findpath), "%s/%s", findbase, findinfo.cFileName);
 	return findpath;
 }
 
 char *Sys_FindNext ( unsigned musthave, unsigned canthave )
 {
-	struct _finddata_t findinfo;
+	WIN32_FIND_DATAA  findinfo;
 
-	if (findhandle == -1)
+	if (findhandle == INVALID_HANDLE_VALUE)
 		return NULL;
-	if (_findnext (findhandle, &findinfo) == -1)
+	if (FindNextFileA(findhandle, &findinfo) == -1)
 		return NULL;
-	if ( !CompareAttributes( findinfo.attrib, musthave, canthave ) )
+	if ( !CompareAttributes( findinfo.dwFileAttributes, musthave, canthave ) )
 		return NULL;
 
-	Com_sprintf (findpath, sizeof(findpath), "%s/%s", findbase, findinfo.name);
+	Com_sprintf (findpath, sizeof(findpath), "%s/%s", findbase, findinfo.cFileName);
 	return findpath;
 }
 
 void Sys_FindClose (void)
 {
-	if (findhandle != -1)
-		_findclose (findhandle);
-	findhandle = 0;
+	if (findhandle != INVALID_HANDLE_VALUE)
+		FindClose(findhandle);
+	findhandle = INVALID_HANDLE_VALUE;
 }
 
 

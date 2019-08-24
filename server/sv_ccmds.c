@@ -192,7 +192,7 @@ CopyFile
 void CopyFile (char *src, char *dst)
 {
 	FILE	*f1, *f2;
-	int		l;
+	size_t		l;
 	byte	buffer[65536];
 
 	Com_DPrintf ("CopyFile (%s, %s)\n", src, dst);
@@ -228,7 +228,7 @@ SV_CopySaveGame
 void SV_CopySaveGame (char *src, char *dst)
 {
 	char	name[MAX_OSPATH], name2[MAX_OSPATH];
-	int		l, len;
+	size_t		l, len;
 	char	*found;
 
 	Com_DPrintf("SV_CopySaveGame(%s, %s)\n", src, dst);
@@ -736,7 +736,7 @@ SV_Status_f
 */
 void SV_Status_f (void)
 {
-	int			i, j, l;
+	size_t			i, j, l;
 	client_t	*cl;
 	char		*s;
 	int			ping;

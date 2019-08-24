@@ -93,9 +93,9 @@ static md2_info_t *SV_LoadAliasInfo (void *buffer, int modfilelen)
 	int					num_frames;
 	int					framesize;
 	int					ofs_frames;
-	int					len;
+	size_t					len;
 	char				prevname[17];
-	int					prevlen;
+	size_t					prevlen;
 	
 	// Note anox header will work, just the extra anox fields wont be valid for Q2 MD2s
 	header = (dmdl_anox_t *)buffer;
@@ -204,7 +204,7 @@ static md2_info_t *SV_LoadAliasInfo (void *buffer, int modfilelen)
 	for (i = 0; i < num_frames; i++)
 	{
 		char type = 0;
-		int anim_name_len;
+		size_t anim_name_len;
 
 		pinframe = (daliasframe_t*) ((byte*)header + ofs_frames + i*framesize);
 
@@ -749,7 +749,7 @@ void SV_Map (qboolean attractloop, char *levelstring, qboolean loadgame)
 {
 	char	level[MAX_QPATH];
 	char	*ch;
-	int		l;
+	size_t		l;
 	char	spawnpoint[MAX_QPATH];
 
 	sv.loadgame = loadgame;

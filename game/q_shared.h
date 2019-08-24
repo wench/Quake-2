@@ -19,6 +19,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 	
 // q_shared.h -- included first by ALL program modules
+#ifndef QSHARED_INCLUDED
+#define QSHARED_INCLUDED
 
 #ifdef _WIN32
 // unknown pragmas are SUPPOSED to be ignored, but....
@@ -50,6 +52,18 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define idaxp	1
 #else
 #define idaxp	0
+#endif
+#if (defined _M_IX86 || defined __i386__) 
+#define STR_ARCH "x86"
+#elif defined _M_ALPHA 
+#define STR_ARCH "axp"
+#elif (defined _M_X64)
+#define STR_ARCH "x64"
+#define C_ONLY
+#elif (defined _M_ARM )
+#define STR_ARCH "arm"
+#elif (defined _M_ARM64  )
+#define STR_ARCH "arm64"
 #endif
 
 typedef unsigned char 		byte;
@@ -224,7 +238,7 @@ char *COM_Parse4 (char **data_p);
 char *COM_Parse5 (char **data_p);
 // data is an in/out parm, returns a parsed out token
 
-void Com_sprintf (char *dest, int size, char *fmt, ...);
+void Com_sprintf (char *dest, size_t size, char *fmt, ...);
 
 void Com_PageInMemory (byte *buffer, int size);
 
@@ -233,9 +247,9 @@ void Com_PageInMemory (byte *buffer, int size);
 // portable case insensitive compare
 int Q_stricmp (char *s1, char *s2);
 int Q_strcasecmp(char *s1, char *s2);
-int Q_strncasecmp(char *s1, char *s2, int n);
+int Q_strncasecmp(char *s1, char *s2, size_t n);
 int Q_strfncmp(char *s1, char *s2);
-int Q_strnfncmp(char *s1, char *s2, int n);
+int Q_strnfncmp(char *s1, char *s2, size_t n);
 
 //=============================================
 
@@ -1256,3 +1270,5 @@ typedef struct md2_info_s
 	md2_frameset_t		*frameset;
 
 } md2_info_t;
+
+#endif

@@ -49,7 +49,7 @@ char *ANOX_parse_entity(char *classname, char *entities)
 	//
 	token = COM_Parse3(&entities, false);
 	if (!entities) goto error;
-	i = strlen(token);
+	i = (int)strlen(token);
 	if (i > 5 && token[i-5] == '!') 
 	{
 		desc->profile = *(int*)(token+i-4);

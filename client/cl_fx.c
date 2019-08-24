@@ -92,7 +92,7 @@ void CL_RunLightStyles (void)
 void CL_SetLightstyle (int i)
 {
 	char	*s;
-	int		j, k;
+	size_t		j, k;
 
 	s = cl.configstrings[i+CS_LIGHTS];
 
@@ -100,7 +100,7 @@ void CL_SetLightstyle (int i)
 	if (j >= MAX_QPATH)
 		Com_Error (ERR_DROP, "svc_lightstyle length=%i", j);
 
-	cl_lightstyle[i].length = j;
+	cl_lightstyle[i].length = (int)j;
 
 	for (k=0 ; k<j ; k++)
 		cl_lightstyle[i].map[k] = (float)(s[k]-'a')/(float)('m'-'a');

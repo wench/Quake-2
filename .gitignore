@@ -1,5 +1,5 @@
-debug
-release
+debug*
+release*
 packages
 *.ipch
 *.dll
@@ -8,3 +8,4 @@ packages
 .vs
 /.vs
 *.user
+*.bsc

@@ -640,7 +640,7 @@ static menuaction_s		s_keys_help_computer_action;
 static void M_UnbindCommand (char *command)
 {
 	int		j;
-	int		l;
+	size_t		l;
 	char	*b;
 
 	l = strlen(command);
@@ -659,7 +659,7 @@ static void M_FindKeysForCommand (char *command, int *twokeys)
 {
 	int		count;
 	int		j;
-	int		l;
+	size_t		l;
 	char	*b;
 
 	twokeys[0] = twokeys[1] = -1;
@@ -709,7 +709,7 @@ static void DrawKeyBindingFunc( void *self )
 
 		Menu_DrawString( a->generic.x + a->generic.parent->x + 16, a->generic.y + a->generic.parent->y, name );
 
-		x = strlen(name) * 8;
+		x =(int) strlen(name) * 8;
 
 		if (keys[1] != -1)
 		{
@@ -1781,7 +1781,7 @@ void M_Credits_MenuDraw( void )
 		{
 			int x;
 
-			x = ( viddef.width - strlen( credits[i] ) * 8 - stringoffset * 8 ) / 2 + ( j + stringoffset ) * 8;
+			x =(int) ( viddef.width - strlen( credits[i] ) * 8 - stringoffset * 8 ) / 2 + ( j + stringoffset ) * 8;
 
 			if ( bold )
 				re.DrawChar( x, y, credits[i][j+stringoffset] + 128 );
@@ -2569,7 +2569,7 @@ void StartServer_MenuInit( void )
     char  shortname[MAX_TOKEN_CHARS];
     char  longname[MAX_TOKEN_CHARS];
 		char  scratch[200];
-		int		j, l;
+		size_t		j, l;
 
 		strcpy( shortname, COM_Parse( &s ) );
 		l = strlen(shortname);
@@ -3671,7 +3671,7 @@ qboolean PlayerConfig_MenuInit( void )
 	s_player_name_field.length	= 20;
 	s_player_name_field.visible_length = 20;
 	strcpy( s_player_name_field.buffer, name->string );
-	s_player_name_field.cursor = strlen( name->string );
+	s_player_name_field.cursor =(int) strlen( name->string );
 
 	s_player_model_title.generic.type = MTYPE_SEPARATOR;
 	s_player_model_title.generic.name = "model";

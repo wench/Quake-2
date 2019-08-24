@@ -379,8 +379,8 @@ void CDAudio_Stop(void);
 #define	MAX_READ	0x100000		// read in blocks of 64k
 void FS_Read (void *buffer, int len, FILE *f)
 {
-	int		block, remaining;
-	int		read;
+	size_t		block, remaining;
+	size_t		read;
 	byte	*buf;
 	int		tries;
 
@@ -926,7 +926,7 @@ void FS_Link_f (void)
 	l->next = fs_links;
 	fs_links = l;
 	l->from = CopyString(Cmd_Argv(1));
-	l->fromlength = strlen(l->from);
+	l->fromlength =(int) strlen(l->from);
 	l->to = CopyString(Cmd_Argv(2));
 }
 

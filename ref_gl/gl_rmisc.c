@@ -62,7 +62,7 @@ void R_InitParticleTexture (void)
 			data[y][x][3] = dottexture[x][y]*255;
 		}
 	}
-	r_particletexture = GL_LoadPic ("***particle***", (byte *)data, 8, 8, it_sprite, 32);
+	r_particletexture = GL_LoadPic ("***particle***", (byte *)data, 8, 8, it_sprite, 32,0);
 
 	//
 	// also use this for bad textures, but without alpha
@@ -77,7 +77,7 @@ void R_InitParticleTexture (void)
 			data[y][x][3] = 255;
 		}
 	}
-	r_notexture = GL_LoadPic ("***r_notexture***", (byte *)data, 8, 8, it_wall, 32);
+	r_notexture = GL_LoadPic ("***r_notexture***", (byte *)data, 8, 8, it_wall, 32,0);
 
 	if (gl_config.have_cube_map && gl_config.have_dot3)
 	{
@@ -180,7 +180,7 @@ void R_InitParticleTexture (void)
 			}
 		}
 
-		r_norm_cube = GL_LoadPic ("***r_norm_cube***", &cube[0][0][0][0], mapSize, mapSize, it_cubemap_ext, 32);
+		r_norm_cube = GL_LoadPic ("***r_norm_cube***", &cube[0][0][0][0], mapSize, mapSize, it_cubemap_ext, 32,0);
 
 		GL_BindImage(r_notexture);
 	}
@@ -208,7 +208,7 @@ void R_InitParticleTexture (void)
 				data[y][x][3] = (int) (255*f);
 			}
 		}
-		r_newparticletexture = GL_LoadPic ("***newparticle***", (byte *)data, 16, 16, it_clamped, 32);
+		r_newparticletexture = GL_LoadPic ("***newparticle***", (byte *)data, 16, 16, it_clamped, 32,0);
 	}
 
 }

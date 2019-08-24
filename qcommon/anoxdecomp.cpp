@@ -63,7 +63,7 @@ INT decompthreadproc(ThreadData*data)
 		/* decompress until deflate stream ends or end of file */
 		do {
 			int toget = min(remaining, CHUNK);
-			strm.avail_in = fread(in, 1, CHUNK, data->source);
+			strm.avail_in =(uInt) fread(in, 1, CHUNK, data->source);
 			if (ferror(data->source)) {
 				(void)inflateEnd(&strm);
 				return Z_ERRNO;

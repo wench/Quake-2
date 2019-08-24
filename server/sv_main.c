@@ -112,8 +112,8 @@ char	*SV_StatusString (void)
 	static char	status[MAX_MSGLEN - 16];
 	int		i;
 	client_t	*cl;
-	int		statusLength;
-	int		playerLength;
+	size_t		statusLength;
+	size_t		playerLength;
 
 	strcpy (status, Cvar_Serverinfo());
 	strcat (status, "\n");

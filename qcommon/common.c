@@ -47,6 +47,7 @@ cvar_t	*dedicated;
 
 FILE	*logfile;
 
+
 int			server_state;
 
 // host_speeds times
@@ -352,7 +353,7 @@ void MSG_WriteString (sizebuf_t *sb, char *s)
 	if (!s)
 		SZ_Write (sb, "", 1);
 	else
-		SZ_Write (sb, s, strlen(s)+1);
+		SZ_Write (sb, s, (int)strlen(s)+1);
 }
 
 void MSG_WriteCoord (sizebuf_t *sb, float f)
@@ -962,7 +963,7 @@ void SZ_Clear (sizebuf_t *buf)
 	buf->overflowed = false;
 }
 
-void *SZ_GetSpace (sizebuf_t *buf, int length)
+void *SZ_GetSpace (sizebuf_t *buf, size_t length)
 {
 	void	*data;
 	
@@ -980,7 +981,7 @@ void *SZ_GetSpace (sizebuf_t *buf, int length)
 	}
 
 	data = buf->data + buf->cursize;
-	buf->cursize += length;
+	buf->cursize += (int)length;
 	
 	return data;
 }
@@ -992,7 +993,7 @@ void SZ_Write (sizebuf_t *buf, void *data, int length)
 
 void SZ_Print (sizebuf_t *buf, char *data)
 {
-	int		len;
+	size_t		len;
 	
 	len = strlen(data)+1;
 
@@ -1166,7 +1167,7 @@ just cleared malloc with counters now...
 
 ==============================================================================
 */
-// TODO threadsafe all this!
+
 #define	Z_MAGIC		0x1d1d
 
 
@@ -1175,11 +1176,11 @@ typedef struct zhead_s
 	struct zhead_s	*prev, *next;
 	short	magic;
 	short	tag;			// for group free
-	int		size;
+	size_t		size;
 } zhead_t;
 
 zhead_t		z_chain;
-int		z_count, z_bytes;
+size_t		z_count, z_bytes;
 
 /*
 ========================
@@ -1240,7 +1241,7 @@ void Z_FreeTags (int tag)
 Z_TagMalloc
 ========================
 */
-void *Z_TagMalloc (int size, int tag)
+void *Z_TagMalloc (size_t size, int tag)
 {
 	Sys_LockMemory();
 	zhead_t	*z;
@@ -1270,7 +1271,7 @@ void *Z_TagMalloc (int size, int tag)
 Z_Malloc
 ========================
 */
-void *Z_Malloc (int size)
+void *Z_Malloc (size_t size)
 {
 	void *ret = Z_TagMalloc(size, 0);
 		memset(ret, 0, size);

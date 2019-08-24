@@ -676,13 +676,13 @@ void VID_CheckChanges (void)
 		cl.refresh_prepped = false;
 		cls.disable_screen = true;
 #ifdef _DEBUG
-		char dbgstr[] = "DEBUG/";
+		char dbgstr[] = "_DEBUG";
 #else
 		char dbgstr[] = "";
 #endif
 
 
-		Com_sprintf( name, sizeof(name), "%sref_%s_anox.dll", dbgstr,vid_ref->string );
+		Com_sprintf( name, sizeof(name), "ref_%s_anox_"STR_ARCH"%s.dll",vid_ref->string, dbgstr);
 		if ( !VID_LoadRefresh( name ) )
 		{
 			if ( strcmp (vid_ref->string, "gl") == 0 )

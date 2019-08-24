@@ -1369,7 +1369,7 @@ MDA MODELS (Alias + Extras)
 */
 
 // Parse a profile
-mda_pass_t* Mod_ParsePass (model_t *mod, void **tokens, float minmax[2])
+mda_pass_t* Mod_ParsePass (model_t *mod, char **tokens, float minmax[2])
 {
 	int			i;
 	char		*token;
@@ -1668,7 +1668,7 @@ mda_pass_t* Mod_ParsePass (model_t *mod, void **tokens, float minmax[2])
 }
 
 // Parse a profile
-mda_skin_t* Mod_ParseSkin (model_t *mod, void **tokens, int *mask)
+mda_skin_t* Mod_ParseSkin (model_t *mod, char **tokens, int *mask)
 {
 	float		solid[2], trans[2], *type, minmax[2];
 	qboolean	sort_blend_explicit = false;
@@ -1763,7 +1763,7 @@ mda_skin_t* Mod_ParseSkin (model_t *mod, void **tokens, int *mask)
 }
 
 // Parse a profile
-mda_profile_t* Mod_ParseProfile (model_t *mod, dmdl_anox_t *anox, void **tokens)
+mda_profile_t* Mod_ParseProfile (model_t *mod, dmdl_anox_t *anox, CHAR **tokens)
 {
 	int			num_skins = 0;
 	int			mask = 0;

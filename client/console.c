@@ -426,7 +426,7 @@ Con_CenteredPrint
 */
 void Con_CenteredPrint (char *text)
 {
-	int		l;
+	size_t		l;
 	char	buffer[1024];
 
 	l = strlen(text);
@@ -568,10 +568,11 @@ Draws the console with the solid background
 */
 void Con_DrawConsole (float frac)
 {
-	int				i, j, x, y, n;
-	int				rows;
+	size_t				 n,i,j;
+	int  x, y;
+	size_t				rows;
 	char			*text;
-	int				row;
+	size_t				row;
 	int				lines;
 	char			version[64];
 	char			dlbar[1024];
@@ -584,12 +585,12 @@ void Con_DrawConsole (float frac)
 		lines = viddef.height;
 
 // draw the background
-	re.DrawStretchPic (0, -viddef.height+lines, viddef.width, viddef.height, "update", "conback");
+	re.DrawStretchPic (0, -viddef.height+lines, viddef.width, viddef.height, "anoxstartup", "conback");
 	SCR_AddDirtyPoint (0,0);
 	SCR_AddDirtyPoint (viddef.width-1,lines-1);
 
 	Com_sprintf (version, sizeof(version), "v%4.2f", VERSION);
-	for (x=0 ; x<5 ; x++)
+	for ( x=0 ; x<5 ; x++)
 		re.DrawChar (viddef.width-44+x*8, lines-12, 128 + version[x] );
 
 // draw the text
@@ -609,7 +610,7 @@ void Con_DrawConsole (float frac)
 	if (con.display != con.current)
 	{
 	// draw arrows to show the buffer is backscrolled
-		for (x=0 ; x<con.linewidth ; x+=4)
+		for ( x=0 ; x<con.linewidth ; x+=4)
 			re.DrawChar ( (x+1)<<3, y, '^');
 	
 		y -= 8;
@@ -626,7 +627,7 @@ void Con_DrawConsole (float frac)
 			
 		text = con.text + (row % con.totallines)*con.linewidth;
 
-		for (x=0 ; x<con.linewidth ; x++)
+		for (int x=0 ; x<con.linewidth ; x++)
 			re.DrawChar ( (x+1)<<3, y, text[x]);
 	}
 
@@ -639,11 +640,11 @@ void Con_DrawConsole (float frac)
 		else
 			text = cls.downloadname;
 
-		x = con.linewidth - ((con.linewidth * 7) / 40);
-		y = x - strlen(text) - 8;
+		 x = con.linewidth - ((con.linewidth * 7) / 40);
+		y = x - (int)strlen(text) - 8;
 		i = con.linewidth/3;
 		if (strlen(text) > i) {
-			y = x - i - 11;
+			y = x - (int)i - 11;
 			strncpy(dlbar, text, i);
 			dlbar[i] = 0;
 			strcat(dlbar, "...");
@@ -669,9 +670,9 @@ void Con_DrawConsole (float frac)
 		sprintf(dlbar + strlen(dlbar), " %02d%%", cls.downloadpercent);
 
 		// draw it
-		y = con.vislines-12;
+		 y = con.vislines-12;
 		for (i = 0; i < strlen(dlbar); i++)
-			re.DrawChar ( (i+1)<<3, y, dlbar[i]);
+			re.DrawChar ( (int)(i+1)<<3, y, dlbar[i]);
 	}
 //ZOID
 

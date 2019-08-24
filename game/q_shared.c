@@ -1600,7 +1600,7 @@ int Q_stricmp (char *s1, char *s2)
 }
 
 
-int Q_strncasecmp(char *s1, char *s2, int n)
+int Q_strncasecmp(char *s1, char *s2, size_t n)
 {
 	int		c1, c2;
 
@@ -1625,7 +1625,7 @@ int Q_strncasecmp(char *s1, char *s2, int n)
 
 	return 0;		// strings are equal
 }
-int Q_strnfncmp(char *s1, char *s2, int n)
+int Q_strnfncmp(char *s1, char *s2, size_t n)
 {
 	int		c1, c2;
 
@@ -1664,14 +1664,14 @@ int Q_strfncmp(char *s1, char *s2)
 
 
 
-void Com_sprintf (char *dest, int size, char *fmt, ...)
+void Com_sprintf (char *dest, size_t size, char *fmt, ...)
 {
 	int		len;
 	va_list		argptr;
 	char	bigbuffer[0x10000];
 
 	va_start (argptr,fmt);
-	len = vsprintf (bigbuffer,fmt,argptr);
+	len = vsprintf_s (bigbuffer,sizeof(bigbuffer),fmt,argptr);
 	va_end (argptr);
 	if (len >= size)
 		Com_Printf ("Com_sprintf: overflow of %i in %i\n", len, size);

@@ -726,7 +726,7 @@ void GLimp_EndFrame (void)
 				err = qglGetError();
 				qglBindProgramARB(GL_FRAGMENT_PROGRAM_ARB, gamma_frag_prog);
 				err = qglGetError();
-				qglProgramStringARB(GL_FRAGMENT_PROGRAM_ARB, GL_PROGRAM_FORMAT_ASCII_ARB, strlen(shader), shader);
+				qglProgramStringARB(GL_FRAGMENT_PROGRAM_ARB, GL_PROGRAM_FORMAT_ASCII_ARB, (int)strlen(shader), shader);
 				err = qglGetError();
 			}
 			if (!fbcopy) {

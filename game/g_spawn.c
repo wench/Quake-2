@@ -342,7 +342,7 @@ ED_NewString
 char *ED_NewString (char *string)
 {
 	char	*newb, *new_p;
-	int		i,l;
+	size_t		i,l;
 	
 	l = strlen(string) + 1;
 
@@ -375,7 +375,7 @@ ED_NewString2
 char *ED_NewString2 (char *string)
 {
 	char	*newb, *new_p;
-	int		i,l;
+	size_t		i,l;
 	
 	l = strlen(string) + 1;
 
@@ -465,6 +465,7 @@ char *ED_ParseEdict (char *data, edict_t *ent)
 	qboolean	init;
 	char		keyname[256];
 	char		*com_token;
+	char *entstart = data;
 
 	init = false;
 	memset (&st, 0, sizeof(st));
