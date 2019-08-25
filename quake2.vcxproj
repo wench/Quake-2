@@ -257,10 +257,17 @@
     <ClCompile Include="client\console.c" />
     <ClCompile Include="client\keys.c" />
     <ClCompile Include="client\menu.c" />
+    <ClCompile Include="client\mpglib\mcommon.c" />
+    <ClCompile Include="client\mpglib\dct64_i386.c" />
+    <ClCompile Include="client\mpglib\decode_i386.c" />
+    <ClCompile Include="client\mpglib\interface.c" />
+    <ClCompile Include="client\mpglib\layer3.c" />
+    <ClCompile Include="client\mpglib\tabinit.c" />
     <ClCompile Include="client\qmenu.c" />
     <ClCompile Include="client\snd_dma.c" />
     <ClCompile Include="client\snd_mem.c" />
     <ClCompile Include="client\snd_mix.c" />
+    <ClCompile Include="client\snd_mp3.cpp" />
     <ClCompile Include="client\x86.c" />
     <ClCompile Include="game\m_flash.c" />
     <ClCompile Include="game\q_shared.c" />
@@ -302,6 +309,9 @@
     <ClInclude Include="client\console.h" />
     <ClInclude Include="client\input.h" />
     <ClInclude Include="client\keys.h" />
+    <ClInclude Include="client\mpglib\huffman.h" />
+    <ClInclude Include="client\mpglib\mpg123.h" />
+    <ClInclude Include="client\mpglib\mpglib.h" />
     <ClInclude Include="client\qmenu.h" />
     <ClInclude Include="client\ref.h" />
     <ClInclude Include="client\screen.h" />
@@ -332,6 +342,9 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="client\mpglib\Makefile" />
+    <None Include="client\mpglib\README" />
+    <None Include="client\mpglib\TODO" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

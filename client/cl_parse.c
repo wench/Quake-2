@@ -539,7 +539,11 @@ void CL_ParseConfigString (void)
 	else if (i == CS_CDTRACK)
 	{
 		if (cl.refresh_prepped)
-			CDAudio_Play (atoi(cl.configstrings[CS_CDTRACK]), true);
+		{
+			char c = cl.configstrings[CS_CDTRACK][0];
+			if(c>='1' && c<='9' || !S_PlayMp3Music(cl.configstrings[CS_CDTRACK]))
+				CDAudio_Play (atoi(cl.configstrings[CS_CDTRACK]), true);
+		}
 	}
 	else if (i >= CS_MODELS && i < CS_MODELS+MAX_MODELS)
 	{

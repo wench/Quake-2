@@ -258,7 +258,7 @@ static qboolean CompareAttributes( DWORD found, unsigned musthave, unsigned cant
 
 char *Sys_FindFirst (char *path, unsigned musthave, unsigned canthave )
 {
-	WIN32_FIND_DATAA  findinfo;
+	WIN32_FIND_DATAA  findinfo = { 0 };
 
 	if (findhandle != INVALID_HANDLE_VALUE)
 		Sys_Error ("Sys_BeginFind without close");
@@ -276,11 +276,11 @@ char *Sys_FindFirst (char *path, unsigned musthave, unsigned canthave )
 
 char *Sys_FindNext ( unsigned musthave, unsigned canthave )
 {
-	WIN32_FIND_DATAA  findinfo;
+	WIN32_FIND_DATAA  findinfo = { 0 };
 
 	if (findhandle == INVALID_HANDLE_VALUE)
 		return NULL;
-	if (FindNextFileA(findhandle, &findinfo) == -1)
+	if (FindNextFileA(findhandle, &findinfo) == -1 || findinfo.cFileName[0] == 0)
 		return NULL;
 	if ( !CompareAttributes( findinfo.dwFileAttributes, musthave, canthave ) )
 		return NULL;

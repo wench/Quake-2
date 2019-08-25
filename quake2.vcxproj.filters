@@ -13,6 +13,9 @@
       <UniqueIdentifier>{2e628edf-eb8a-4672-9800-b7d570453f53}</UniqueIdentifier>
       <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;cnt;rtf;gif;jpg;jpeg;jpe</Extensions>
     </Filter>
+    <Filter Include="mpglib">
+      <UniqueIdentifier>{b444ea9e-b20e-4134-8853-0767ad7ec28b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="win32\cd_win.c">
@@ -174,6 +177,27 @@
     <ClCompile Include="qcommon\anoxdecomp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="client\mpglib\dct64_i386.c">
+      <Filter>mpglib</Filter>
+    </ClCompile>
+    <ClCompile Include="client\mpglib\decode_i386.c">
+      <Filter>mpglib</Filter>
+    </ClCompile>
+    <ClCompile Include="client\mpglib\interface.c">
+      <Filter>mpglib</Filter>
+    </ClCompile>
+    <ClCompile Include="client\mpglib\layer3.c">
+      <Filter>mpglib</Filter>
+    </ClCompile>
+    <ClCompile Include="client\mpglib\tabinit.c">
+      <Filter>mpglib</Filter>
+    </ClCompile>
+    <ClCompile Include="client\snd_mp3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="client\mpglib\mcommon.c">
+      <Filter>mpglib</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="client\anorms.h">
@@ -245,6 +269,15 @@
     <ClInclude Include="qcommon\zip\zip.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="client\mpglib\huffman.h">
+      <Filter>mpglib</Filter>
+    </ClInclude>
+    <ClInclude Include="client\mpglib\mpg123.h">
+      <Filter>mpglib</Filter>
+    </ClInclude>
+    <ClInclude Include="client\mpglib\mpglib.h">
+      <Filter>mpglib</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="win32\q2.ico">
@@ -258,5 +291,14 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="client\mpglib\Makefile">
+      <Filter>mpglib</Filter>
+    </None>
+    <None Include="client\mpglib\README">
+      <Filter>mpglib</Filter>
+    </None>
+    <None Include="client\mpglib\TODO">
+      <Filter>mpglib</Filter>
+    </None>
   </ItemGroup>
 </Project>

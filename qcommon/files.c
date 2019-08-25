@@ -84,6 +84,7 @@ typedef struct searchpath_s
 
 searchpath_t	*fs_searchpaths;
 searchpath_t	*fs_base_searchpaths;	// without gamedirs
+searchpath_t	*missing = 0;
 
 
 /*
@@ -238,6 +239,16 @@ int FS_FOpenFile (char *filename, FILE **file)
 // search through the path, one element at a time
 //
 	Com_DPrintf("want to load:  %s\n", filename);
+	for (search = missing; search; search = search->next)
+	{
+		if (!Q_strfncmp(search->filename, filename))
+		{
+			Com_DPrintf("FindFile: can't find %s\n", filename);
+			*file = NULL;
+			return -1;
+
+		}
+	}
 	for (search = fs_searchpaths ; search ; search = search->next)
 	{
 	// is the element a pak file?
@@ -304,6 +315,10 @@ int FS_FOpenFile (char *filename, FILE **file)
 	}
 	
 	Com_DPrintf ("FindFile: can't find %s\n", filename);
+	searchpath_t *m = Z_Malloc(sizeof(searchpath_t));
+	m->next = missing;
+	missing = m;
+	strcpy_s(m->filename, sizeof(m->filename), filename);
 	
 	*file = NULL;
 	return -1;

@@ -223,6 +223,9 @@ void S_PaintChannelFrom16 (channel_t *ch, sfxcache_t *sc, int endtime, int offse
 
 void S_PaintChannels(int endtime)
 {
+	__try
+	{
+		Sys_lockSound();
 	int 	i;
 	int 	end;
 	channel_t *ch;
@@ -274,6 +277,8 @@ void S_PaintChannels(int endtime)
 			{
 				s = i&(MAX_RAW_SAMPLES-1);
 				paintbuffer[i-paintedtime] = s_rawsamples[s];
+				
+
 			}
 //		if (i != end)
 //			Com_Printf ("partial stream\n");
@@ -344,6 +349,12 @@ void S_PaintChannels(int endtime)
 	// transfer out according to DMA format
 		S_TransferPaintBuffer(end);
 		paintedtime = end;
+	}
+	}
+	_finally
+	{
+		Sys_UnlockSound();
+
 	}
 }
 

@@ -907,18 +907,23 @@ S_RawSamples
 Cinematic streaming and voice over network
 ============
 */
-void S_RawSamples (int samples, int rate, int width, int channels, byte *data)
+int S_RawSamples (int samples, int rate, int width, int channels, byte *data)
 {
-	int		i;
+	__try
+	{
+		Sys_lockSound();
+	int		i, used;
 	int		src, dst;
 	float	scale;
 
 	if (!sound_started)
-		return;
+		return 0;
 
 	if (s_rawend < paintedtime)
 		s_rawend = paintedtime;
 	scale = (float)rate / dma.speed;
+	
+	used = s_rawend;
 
 //Com_Printf ("%i < %i < %i\n", soundtime, paintedtime, s_rawend);
 	if (channels == 2 && width == 2)
@@ -995,6 +1000,14 @@ void S_RawSamples (int samples, int rate, int width, int channels, byte *data)
 			s_rawsamples[dst].right = (((byte *)data)[src]-128) << 16;
 		}
 	}
+	return samples;
+	}
+	_finally
+	{
+		Sys_UnlockSound();
+
+	}
+
 }
 
 //=============================================================================
@@ -1146,6 +1159,7 @@ void S_Update_(void)
 	S_PaintChannels (endtime);
 
 	SNDDMA_Submit ();
+	S_ProduceMp3Samples();
 }
 
 /*

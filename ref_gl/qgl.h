@@ -428,7 +428,7 @@ extern BOOL ( WINAPI * qwglSwapIntervalEXT)( int interval );
 
 extern BOOL (APIENTRY * qwglGetDeviceGammaRamp) (HDC, LPVOID);
 extern BOOL (APIENTRY * qwglSetDeviceGammaRamp) (HDC, LPVOID);
-extern BOOL APIENTRY qwglSetDeviceGammaRampTexture(HDC, LPWORD);
+extern BOOL APIENTRY qwglSetDeviceGammaRampTexture(HDC, LPVOID);
 /*
 ** WGL_ARB_extensions_string
 */

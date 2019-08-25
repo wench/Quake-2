@@ -71,6 +71,7 @@ LPDIRECTSOUND pDS;
 LPDIRECTSOUNDBUFFER pDSBuf, pDSPBuf;
 
 HINSTANCE hInstDS;
+CRITICAL_SECTION cs_sound = { 0 };
 
 qboolean SNDDMA_InitDirect (void);
 qboolean SNDDMA_InitWav (void);
@@ -92,6 +93,15 @@ static const char *DSoundError( int error )
 	}
 
 	return "unknown";
+}
+
+void Sys_lockSound()
+{
+	EnterCriticalSection(&cs_sound);
+}
+void Sys_UnlockSound()
+{
+	LeaveCriticalSection(&cs_sound);
 }
 
 /*
@@ -594,6 +604,7 @@ int SNDDMA_Init(void)
 {
 	sndinitstat	stat;
 
+	InitializeCriticalSection(&cs_sound);
 	memset ((void *)&dma, 0, sizeof (dma));
 
 	s_wavonly = Cvar_Get ("s_wavonly", "0", 0);

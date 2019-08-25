@@ -97,7 +97,23 @@ static int CDAudio_GetAudioDiskInfo(void)
 		Com_DPrintf("CDAudio: no music tracks\n");
 		return -1;
 	}
+	if (mciStatusParms.dwReturn == 1)
+	{
+		mciStatusParms.dwItem = MCI_CDA_STATUS_TYPE_TRACK;
+		mciStatusParms.dwTrack = 1;
+		dwReturn = mciSendCommand(wDeviceID, MCI_STATUS, MCI_STATUS_ITEM | MCI_WAIT | MCI_TRACK, (DWORD_PTR)(LPVOID)&mciStatusParms);
+		if (dwReturn)
+		{
+			Com_DPrintf("CDAudio: get track type - status failed\n");
+			return -1;
+		}
 
+		if (mciStatusParms.dwReturn != MCI_CDA_TRACK_AUDIO)
+		{
+			Com_DPrintf("CDAudio: only track is not a music track\n");
+			return -1;
+		}
+	}
 	cdValid = true;
 	maxTrack = mciStatusParms.dwReturn;
 
@@ -111,15 +127,22 @@ void CDAudio_Play2(int track, qboolean looping)
 	DWORD				dwReturn;
     MCI_PLAY_PARMS		mciPlayParms;
 	MCI_STATUS_PARMS	mciStatusParms;
+	char mp3[MAX_QPATH];
+	Com_sprintf(mp3, sizeof(mp3), "music/cdmp3s/track%i.mp3", track);
 
 	if (!enabled)
+	{
+		S_PlayMp3Music(mp3);
 		return;
+	}
 	
 	if (!cdValid)
 	{
 		CDAudio_GetAudioDiskInfo();
-		if (!cdValid)
+		if (!cdValid) {
+			S_PlayMp3Music(mp3);
 			return;
+		}
 	}
 
 	track = remap[track];
@@ -127,6 +150,7 @@ void CDAudio_Play2(int track, qboolean looping)
 	if (track < 1 || track > maxTrack)
 	{
 		CDAudio_Stop();
+		S_PlayMp3Music(mp3);
 		return;
 	}
 
@@ -137,11 +161,13 @@ void CDAudio_Play2(int track, qboolean looping)
 	if (dwReturn)
 	{
 		Com_DPrintf("MCI_STATUS failed (%i)\n", dwReturn);
+		S_PlayMp3Music(mp3);
 		return;
 	}
 	if (mciStatusParms.dwReturn != MCI_CDA_TRACK_AUDIO)
 	{
 		Com_Printf("CDAudio: track %i is not audio\n", track);
+		S_PlayMp3Music(mp3);
 		return;
 	}
 
@@ -169,6 +195,8 @@ void CDAudio_Play2(int track, qboolean looping)
 	if (dwReturn)
 	{
 		Com_DPrintf("CDAudio: MCI_PLAY failed (%i)\n", dwReturn);
+		S_PlayMp3Music(mp3);
+
 		return;
 	}
 
@@ -176,8 +204,10 @@ void CDAudio_Play2(int track, qboolean looping)
 	playTrack = track;
 	playing = true;
 
-	if ( Cvar_VariableValue( "cd_nocd" ) )
-		CDAudio_Pause ();
+	if (Cvar_VariableValue("cd_nocd")) {
+		CDAudio_Pause();
+		S_PlayMp3Music(mp3);
+	}
 }
 
 
@@ -192,6 +222,8 @@ void CDAudio_Play(int track, qboolean looping)
 void CDAudio_Stop(void)
 {
 	DWORD	dwReturn;
+	
+	S_StopMp3Music();
 
 	if (!enabled)
 		return;
