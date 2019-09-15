@@ -919,7 +919,7 @@ int S_RawSamples (int samples, int rate, int width, int channels, byte *data)
 	if (!sound_started)
 		return 0;
 
-	if (s_rawend < paintedtime)
+	//if (s_rawend < paintedtime)
 		s_rawend = paintedtime;
 	scale = (float)rate / dma.speed;
 	
@@ -932,6 +932,7 @@ int S_RawSamples (int samples, int rate, int width, int channels, byte *data)
 		{	// optimized case
 			for (i=0 ; i<samples ; i++)
 			{
+
 				dst = s_rawend&(MAX_RAW_SAMPLES-1);
 				s_rawend++;
 				s_rawsamples[dst].left =
@@ -1000,7 +1001,7 @@ int S_RawSamples (int samples, int rate, int width, int channels, byte *data)
 			s_rawsamples[dst].right = (((byte *)data)[src]-128) << 16;
 		}
 	}
-	return samples;
+	return (s_rawend-used)/scale;
 	}
 	_finally
 	{
@@ -1159,7 +1160,6 @@ void S_Update_(void)
 	S_PaintChannels (endtime);
 
 	SNDDMA_Submit ();
-	S_ProduceMp3Samples();
 }
 
 /*

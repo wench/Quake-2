@@ -487,7 +487,7 @@ void Mod_LoadTexinfo (lump_t *l)
 		    out->next = NULL;
 
 		Com_sprintf (name, sizeof(name), "textures/%s", in->texture);
-		out->image = GL_FindImage (name, it_wall);
+		out->image = GL_FindImage (name,0, it_wall);
 		if (!out->image)
 		{
 			ri.Con_Printf (PRINT_ALL, "Couldn't load %s\n", name);
@@ -990,7 +990,7 @@ void Mod_AutoGenAnoxProfile(model_t *mod, dmdl_anox_t *anox)
 			strcat(pass->imagename, skinnames[i+skin_counter*anox->num_passes]);
 
 			// Get the image
-			mod->skins[i] = pass->image = GL_FindImage (pass->imagename, it_skin);
+			mod->skins[i] = pass->image = GL_FindImage (pass->imagename,0, it_skin);
 
 			// Cull
 			pass->cull_mode = GL_FRONT;
@@ -1326,7 +1326,7 @@ void Mod_LoadAliasModel (model_t *mod, void *buffer, qboolean gen_profiles)
 
 		for (i=0 ; i<pheader->num_skins ; i++)
 		{
-			mod->skins[i] = GL_FindImage ((char *)pheader + pheader->ofs_skins + i*MAX_SKINNAME
+			mod->skins[i] = GL_FindImage ((char *)pheader + pheader->ofs_skins + i*MAX_SKINNAME,0
 				, it_skin);
 		}
 
@@ -1418,7 +1418,7 @@ mda_pass_t* Mod_ParsePass (model_t *mod, char **tokens, float minmax[2])
 			if (!*tokens) return NULL;
 
 			strcpy(pass->imagename, token);
-			pass->image = GL_FindImage(pass->imagename, it_skin );
+			pass->image = GL_FindImage(pass->imagename,0, it_skin );
 		}
 		else if (Q_stricmp(token, "blendmode") == 0)
 		{
@@ -2075,7 +2075,7 @@ void Mod_LoadSpriteModel (model_t *mod, void *buffer)
 		sprout->frames[i].origin_x = LittleLong (sprin->frames[i].origin_x);
 		sprout->frames[i].origin_y = LittleLong (sprin->frames[i].origin_y);
 		memcpy (sprout->frames[i].name, sprin->frames[i].name, MAX_SKINNAME);
-		mod->skins[i] = GL_FindImage (sprout->frames[i].name,
+		mod->skins[i] = GL_FindImage (sprout->frames[i].name,0,
 			it_sprite);
 	}
 
@@ -2140,7 +2140,7 @@ struct model_s *R_RegisterModel (char *name)
 		{
 			sprout = (dsprite_t *)mod->extradata;
 			for (i=0 ; i<sprout->numframes ; i++)
-				mod->skins[i] = GL_FindImage (sprout->frames[i].name, it_sprite);
+				mod->skins[i] = GL_FindImage (sprout->frames[i].name, 0,it_sprite);
 		}
 		else if (mod->type == mod_alias)
 		{
@@ -2158,7 +2158,7 @@ struct model_s *R_RegisterModel (char *name)
 					{
 						for (pass = skin->passes; pass != NULL; pass = pass->next)
 						{
-							pass->image = GL_FindImage (pass->imagename, it_skin);
+							pass->image = GL_FindImage (pass->imagename,0, it_skin);
 						}
 					}
 				}
@@ -2174,10 +2174,10 @@ struct model_s *R_RegisterModel (char *name)
 						strcat(skinname, "/");
 						strcat(skinname, (char *)pheader + pheader->ofs_skins + i*MAX_SKINNAME);
 
-						mod->skins[i] = GL_FindImage (skinname, it_skin);
+						mod->skins[i] = GL_FindImage (skinname, 0,it_skin);
 					}
 					else
-						mod->skins[i] = GL_FindImage ((char *)pheader + pheader->ofs_skins + i*MAX_SKINNAME, it_skin);
+						mod->skins[i] = GL_FindImage ((char *)pheader + pheader->ofs_skins + i*MAX_SKINNAME, 0,it_skin);
 				}
 			}
 //PGM

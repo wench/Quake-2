@@ -369,10 +369,12 @@ sndinitstat SNDDMA_InitDirect (void)
 
 	if (s_khz->value == 44)
 		dma.speed = 44100;
-	if (s_khz->value == 22)
+	else if (s_khz->value == 22)
 		dma.speed = 22050;
-	else
+	else if (s_khz->value == 11)
 		dma.speed = 11025;
+	else
+		dma.speed = s_khz->value * 1000;
 
 	Com_Printf( "Initializing DirectSound\n");
 

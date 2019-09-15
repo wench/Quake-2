@@ -138,6 +138,10 @@ extern	playsound_t	s_pendingplays;
 #define	MAX_RAW_SAMPLES	8192
 extern	portable_samplepair_t	s_rawsamples[MAX_RAW_SAMPLES];
 
+extern int music_read_pos;
+extern int music_write_pos;
+extern	portable_samplepair_t	s_musicsamples[MAX_RAW_SAMPLES];
+
 extern cvar_t	*s_volume;
 extern cvar_t	*s_nosound;
 extern cvar_t	*s_loadas8bit;
@@ -163,6 +167,15 @@ channel_t *S_PickChannel(int entnum, int entchannel);
 // spatializes a channel
 void S_Spatialize(channel_t *ch);
 
-void S_ProduceMp3Samples();
+void S_ProduceMp3Samples(int consumed);
 void Sys_lockSound();
 void Sys_UnlockSound();
+
+#ifdef __cplusplus
+class soundlocker
+{
+public:
+	soundlocker() { Sys_lockSound(); }
+	~soundlocker() { Sys_UnlockSound(); }
+};
+#endif

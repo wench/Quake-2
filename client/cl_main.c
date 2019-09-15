@@ -1493,7 +1493,7 @@ void CL_InitLocal (void)
 	gender->modified = false; // clear this so we know when user sets it manually
 
 	cl_vwep = Cvar_Get ("cl_vwep", "1", CVAR_ARCHIVE);
-	cl_thirdperson = Cvar_Get ("cl_thirdpereson", "1", 0);
+	cl_thirdperson = Cvar_Get ("cl_thirdpereson", "1", CVAR_USERINFO);
 
 
 	//

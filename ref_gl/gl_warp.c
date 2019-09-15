@@ -641,11 +641,11 @@ void R_SetSky (char *name, float rotate, vec3_t axis)
 		// chop down rotating skies for less memory
 
 		Com_sprintf (pathname, sizeof(pathname), "env/%s%s.tga", skyname, suf[i]);
-		sky_images[i] = GL_FindImage (pathname, it_sky);
+		sky_images[i] = GL_FindImage (pathname,0, it_sky);
 		if (!sky_images[i] || sky_images[i] == r_notexture) 
 		{
 			Com_sprintf (pathname, sizeof(pathname), "graphics/sky/%s%s", skyname, suf[i]);
-			sky_images[i] = GL_FindImage (pathname, it_sky);
+			sky_images[i] = GL_FindImage (pathname,0, it_sky);
 		}
 
 		if (!sky_images[i])

@@ -35,6 +35,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "../ref_gl/gl_local.h"
 #include "glw_win.h"
 #include "winquake.h"
+#include <VersionHelpers.h>
 
 static qboolean GLimp_SwitchFullscreen( int width, int height );
 qboolean GLimp_InitGL (void);
@@ -51,7 +52,7 @@ static qboolean VerifyDriver( void )
 	char buffer[1024];
 
 	strcpy( buffer, qglGetString( GL_RENDERER ) );
-	strlwr( buffer );
+	_strlwr( buffer );
 	if ( strcmp( buffer, "gdi generic" ) == 0 )
 		if ( !glw_state.mcd_accelerated )
 			return false;
@@ -694,7 +695,7 @@ void GLimp_EndFrame (void)
 	err = qglGetError();
 	assert( err == GL_NO_ERROR );
 
-	if ( stricmp( gl_drawbuffer->string, "GL_BACK" ) == 0 )
+	if ( _stricmp( gl_drawbuffer->string, "GL_BACK" ) == 0 )
 	{
 		if (gamma_texture)
 		{
@@ -706,15 +707,13 @@ void GLimp_EndFrame (void)
 					"TEMP tmp, acc,tc;\n"
 					"TEX acc, fragment.texcoord[0], texture[0], 2D;\n"
 					"MOV tc.x, acc.r;"
-					"MOV tc.y, 0.0;"
+					"MOV tc.y, 0.0125;"
 					"TEX tmp, tc, texture[1], 2D;\n"
 					"MOV acc.r, tmp.r;\n"
-					"TEX acc, fragment.texcoord[0], texture[0], 2D;\n"
 					"MOV tc.x, acc.g;"
 					"MOV tc.y, 0.25;"
 					"TEX tmp, tc, texture[1], 2D;\n"
 					"MOV acc.g, tmp.g;\n"
-					"TEX acc, fragment.texcoord[0], texture[0], 2D;\n"
 					"MOV tc.x, acc.b;"
 					"MOV tc.y, 0.5;"
 					"TEX tmp, tc, texture[1], 2D;\n"
@@ -787,7 +786,7 @@ void GLimp_EndFrame (void)
 }
 
 BOOL APIENTRY qwglSetDeviceGammaRampTexture(HDC unused, LPVOID ramp) {
-	if (!gamma_texture) gamma_texture = GL_LoadPic("framebuffercopy,", 0, 256,4, it_clamped, 64, 0);
+	if (!gamma_texture) gamma_texture = GL_LoadPic("gammatexture,", 0, 256,4, it_clamped, 64, 0);
 	GL_BindImage(gamma_texture);
 	LPWORD src = ramp;
 	GLushort data[256 * 4 * 3];

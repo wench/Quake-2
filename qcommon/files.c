@@ -238,12 +238,12 @@ int FS_FOpenFile (char *filename, FILE **file)
 //
 // search through the path, one element at a time
 //
-	Com_DPrintf("want to load:  %s\n", filename);
+	//Com_DPrintf("want to load:  %s\n", filename);
 	for (search = missing; search; search = search->next)
 	{
 		if (!Q_strfncmp(search->filename, filename))
 		{
-			Com_DPrintf("FindFile: can't find %s\n", filename);
+			//Com_DPrintf("FindFile: can't find %s\n", filename);
 			*file = NULL;
 			return -1;
 

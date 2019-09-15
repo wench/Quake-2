@@ -874,10 +874,10 @@ void SP_worldspawn (edict_t *ent)
 	// load the ape file and partse data from it if we can
 	char apename[MAX_QPATH];
 	Com_sprintf(apename, sizeof(apename), "gameflow/%s.ape", level.mapname);
-	char *apedata=0, *data=0, music[MAX_QPATH]="music/";
+	char *apedata = 0, *data = 0, music[MAX_QPATH] = { 0 };
 	int size =gi.FS_LoadFile(apename, &apedata);
 	data = apedata;
-	while (size)
+	while (size>0)
 	{
 		while (size && *data <= ' ' ||*data >=0x7f)
 		{
@@ -886,6 +886,7 @@ void SP_worldspawn (edict_t *ent)
 		}
 		if (!memcmp(data, "playlevelmusic",14))
 		{
+			strcpy_s(music, sizeof(music), "music/");
 			strcat_s(music, sizeof(music),data + 15);
 			Com_Printf("level music is %s\n",music);
 			break;
@@ -896,7 +897,7 @@ void SP_worldspawn (edict_t *ent)
 			data++;
 		}
 	}
-	gi.FS_FreeFile(apedata);
+	if (apedata)gi.FS_FreeFile(apedata);
 		if (st.sky && st.sky[0])
 		gi.configstring (CS_SKY, st.sky);
 	else
@@ -907,7 +908,7 @@ void SP_worldspawn (edict_t *ent)
 	gi.configstring (CS_SKYAXIS, va("%f %f %f",
 		st.skyaxis[0], st.skyaxis[1], st.skyaxis[2]) );
 
-	if (music) 
+	if (*music) 
 		gi.configstring(CS_CDTRACK, music);
 	else
 	gi.configstring(CS_CDTRACK, va("%i", ent->sounds));

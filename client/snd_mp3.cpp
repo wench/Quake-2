@@ -8,11 +8,12 @@ char *mp3data = 0;
 int mp3_size = 0;
 mpstr mp = { 0 };
 qboolean mp3loaded = qfalse;
-int samples_size = 0;
-char samples[MAX_RAW_SAMPLES*4 + 4608];
+int sample_numbytes = 0;
+char samples[MAX_RAW_SAMPLES*8 + 4608];
 HANDLE hExit=0; // tell thread to exit
 HANDLE hMore = 0;
 int decodethread(LPVOID data);
+int samplesconsumed = MAX_RAW_SAMPLES;
 static const int freqs_mp3[9] = { 44100, 48000, 32000,
 				  22050, 24000, 16000 ,
 				  11025 , 12000 , 8000 };
@@ -26,10 +27,11 @@ qboolean S_PlayMp3Music(char*filename)
 		mp3loaded = qfalse;
 		mp3data = 0;
 		mp3_size = FS_LoadFile(filename, (void**)&mp3data);
+		//char outfn[MAX_QPATH];		
 		if (!mp3data)return qfalse;
 		InitMP3(&mp);
 		mp3loaded = qtrue;
-		if (decodeMP3(&mp, mp3data, mp3_size, samples, sizeof(samples), &samples_size) != MP3_OK)
+		if (decodeMP3(&mp, mp3data, mp3_size, samples, sizeof(samples), &sample_numbytes) != MP3_OK)
 		{
 			S_StopMp3Music();
 			return qfalse;
@@ -45,7 +47,9 @@ qboolean S_PlayMp3Music(char*filename)
 			CL_Snd_Restart_f();
 		}
 		HANDLE thread = CreateThread(NULL, 4096, (LPTHREAD_START_ROUTINE)&decodethread, 0, 0, NULL);
-
+		samplesconsumed = MAX_RAW_SAMPLES;
+		while (!hMore)Sleep(0);
+		SetEvent(hMore);
 		return qtrue;
 
 
@@ -71,29 +75,47 @@ void S_StopMp3Music()
 
 	}
 	Sys_UnlockSound();
+	while (hExit)Sleep(0);
 }
 
-void S_ProduceMp3Samples()
+void S_ProduceMp3Samples(int consumed)
 {
-	if (hMore) SetEvent(hMore);
+	if (mp3loaded)
+	{
+		consumed;
+		int needed = consumed;
+		int freq = freqs_mp3[mp.fr.sampling_frequency];
+		int channels = 1 + (mp.fr.stereo != 0);
+		int avail = sample_numbytes / (channels * 2);
 
+		if (needed > avail) needed = avail;
+
+		int bytesused = S_RawSamples((int)needed, freq, 2, channels, (byte*)samples) * channels * 2;
+		if (bytesused > sample_numbytes) bytesused = sample_numbytes;
+
+		// copy remaining to beginning of buffer and adjust amount
+		int bytesunused = sample_numbytes - bytesused;
+		if (bytesunused)memmove(samples, samples + bytesused, bytesunused);
+		sample_numbytes = bytesunused;
+		if (hMore) SetEvent(hMore);
+	}
 }
 
 
 int decodethread(LPVOID data )
 {
-	LARGE_INTEGER StartingTime, EndingTime, ElapsedMicroseconds;
-	LARGE_INTEGER Frequency;
-	QueryPerformanceFrequency(&Frequency);
-	QueryPerformanceCounter(&StartingTime);
+//	LARGE_INTEGER StartingTime, EndingTime, ElapsedMicroseconds;
+	//LARGE_INTEGER Frequency;
+	//QueryPerformanceFrequency(&Frequency);
+	//QueryPerformanceCounter(&StartingTime);
 
 
-	hExit = CreateEvent(NULL, TRUE, FALSE, 0);
-	hMore = CreateEvent(NULL, FALSE, FALSE, 0);
+	HANDLE myExit = hExit = CreateEvent(NULL, TRUE, FALSE, 0);
+	HANDLE mymore = hMore = CreateEvent(NULL, FALSE, FALSE, 0);
 	while (1) {
-		int signaled = WaitForSingleObject(hExit, 100);
-		if (signaled == WAIT_OBJECT_0) {
-			CloseHandle(hExit);
+		if (WaitForSingleObject(myExit, 0) == WAIT_OBJECT_0) {
+				soundlocker sndlocker;
+				if(myExit)CloseHandle(myExit);
 			hExit = 0;
 			return 0;
 		}
@@ -103,19 +125,24 @@ int decodethread(LPVOID data )
 		int in_size = 0;
 
 		int channels = 1 + (mp.fr.stereo != 0);
-		while (samples_size < MAX_RAW_SAMPLES*channels * 2)
+		while (sample_numbytes < MAX_RAW_SAMPLES*channels * 2)
 		{
-
+			if (WaitForSingleObject(myExit, 0) == WAIT_OBJECT_0) {
+				soundlocker sndlocker;
+				if (myExit)CloseHandle(myExit);
+				hExit = 0;
+				return 0;
+			}
 			char*start;
-			size_t remaining = sizeof(samples) - samples_size;;
+			size_t remaining = sizeof(samples) - sample_numbytes;
 			int amount = 0;
-			start = samples + samples_size;
+			start = samples + sample_numbytes;
 			switch (decodeMP3(&mp, in, in_size, start, remaining, &amount))
 			{
 			case MP3_NEED_MORE:
 				if (in != mp3data) {
 					in = mp3data; in_size = mp3_size;
-					samples_size += amount;
+					sample_numbytes += amount;
 					break;
 				}
 
@@ -128,15 +155,23 @@ int decodethread(LPVOID data )
 
 			case MP3_OK:
 				in = 0; in_size = 0;
-				samples_size += amount;
+				sample_numbytes += amount;
 				break;
 			}
 
 		}
-		signaled = WaitForSingleObject(hMore, 40);
-		///if (signaled == WAIT_OBJECT_0) 
+		HANDLE handles[] = { myExit, hMore };
+		DWORD signaled = WaitForMultipleObjects(2, handles,FALSE, INFINITE);
+		if (signaled == WAIT_OBJECT_0) {
+			soundlocker sndlocker;
+			if (myExit)CloseHandle(myExit);
+			hExit = 0;
+			return 0;
+		}
+		
+		
 		{
-
+			/*
 			QueryPerformanceCounter(&EndingTime);
 			ElapsedMicroseconds.QuadPart = EndingTime.QuadPart - StartingTime.QuadPart;
 			StartingTime.QuadPart = EndingTime.QuadPart;
@@ -145,13 +180,15 @@ int decodethread(LPVOID data )
 			ElapsedMicroseconds.QuadPart /= Frequency.QuadPart;
 
 			int freq = freqs_mp3[mp.fr.sampling_frequency];
-			LONGLONG needed = min((ElapsedMicroseconds.QuadPart*freq) / 1000, MAX_RAW_SAMPLES);
-			int used = S_RawSamples((int)needed, freq, 2, channels, (byte*)samples);
+			//int	needed = min((ElapsedMicroseconds.QuadPart*freq) / 1000, MAX_RAW_SAMPLES);
+			needed = samplesconsumed;
+
+			int bytesused = needed* channels * 2;
 
 			// copy remaining to beginning of buffer and adjust amount
-			int unused = samples_size - used * channels * 2;
-			memmove(samples, samples + used * channels * 2, unused);
-			samples_size = unused;
+			int bytesunused = sample_numbytes - bytesused;
+			memmove(samples, samples + bytesused, bytesunused);
+			sample_numbytes = bytesunused;*/
 		}
 
 

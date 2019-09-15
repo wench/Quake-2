@@ -571,7 +571,7 @@ void LoadPCX (char *filename, byte **pic, byte **palette, int *width, int *heigh
 	len = ri.FS_LoadFile (filename, (void **)&raw);
 	if (!raw)
 	{
-		ri.Con_Printf (PRINT_DEVELOPER, "Bad pcx file %s\n", filename);
+		//ri.Con_Printf (PRINT_DEVELOPER, "Bad pcx file %s\n", filename);
 		return;
 	}
 
@@ -691,7 +691,7 @@ void LoadTGA (char *name, byte **pic, int *width, int *height, qboolean hunk)
 	length = ri.FS_LoadFile (name, (void **)&buffer);
 	if (!buffer)
 	{
-		ri.Con_Printf (PRINT_DEVELOPER, "Bad tga file %s\n", name);
+		//ri.Con_Printf (PRINT_DEVELOPER, "Bad tga file %s\n", name);
 		return;
 	}
 
@@ -1929,7 +1929,7 @@ GL_FindImage
 Finds or loads the given image
 ===============
 */
-image_t	*GL_FindImage (char *name, imagetype_t type)
+image_t	*GL_FindImage (char *name, char *fallback, imagetype_t type)
 {
 	image_t	*image = NULL;
 	size_t		i, len;
@@ -1948,7 +1948,7 @@ image_t	*GL_FindImage (char *name, imagetype_t type)
 	// look for it
 	for (i=0, image=gltextures ; i<numgltextures ; i++,image++)
 	{
-		if (!Q_strcasecmp(name, image->name))
+		if (!Q_strcasecmp(name, image->name) || fallback && !Q_strcasecmp(fallback, image->name))
 		{
 			image->registration_sequence = registration_sequence;
 			return image;
@@ -2102,8 +2102,27 @@ image_t	*GL_FindImage (char *name, imagetype_t type)
 	// Now just put the 'bad' texture
 	if (!image)
 	{
-		ri.Con_Printf (PRINT_ALL, "GL_FindImage: can't load %s\n", name);
-		image = r_notexture;
+		if (fallback) return GL_FindImage(fallback, 0, type);
+		ri.Con_Printf(PRINT_ALL, "GL_FindImage: can't load %s\n", name);
+		// find a free image_t
+		for (i = 0, image = gltextures; i < numgltextures; i++, image++)
+		{
+			if (!image->texnum)
+				break;
+		}
+		if (i == numgltextures)
+		{
+			if (numgltextures == MAX_GLTEXTURES)
+				ri.Sys_Error(ERR_DROP, "MAX_GLTEXTURES");
+			numgltextures++;
+		}
+		image = &gltextures[i];
+		*image = *r_notexture;
+
+		if (strlen(name) >= sizeof(image->name))
+			ri.Sys_Error(ERR_DROP, "Draw_LoadPic: \"%s\" is too long", name);
+		strcpy(image->name, name);
+		image->registration_sequence = registration_sequence;
 	}
 
 	return image;
@@ -2154,7 +2173,7 @@ R_RegisterSkin
 */
 struct image_s *R_RegisterSkin (char *name)
 {
-	return GL_FindImage (name, it_skin);
+	return GL_FindImage (name, 0,it_skin);
 }
 
 
@@ -2165,7 +2184,7 @@ R_RegisterClamped
 */
 struct image_s *R_RegisterClamped (char *name)
 {
-	return GL_FindImage (name, it_clamped);
+	return GL_FindImage (name,0, it_clamped);
 }
 
 

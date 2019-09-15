@@ -128,7 +128,7 @@ void CDAudio_Play2(int track, qboolean looping)
     MCI_PLAY_PARMS		mciPlayParms;
 	MCI_STATUS_PARMS	mciStatusParms;
 	char mp3[MAX_QPATH];
-	Com_sprintf(mp3, sizeof(mp3), "music/cdmp3s/track%i.mp3", track);
+	Com_sprintf(mp3, sizeof(mp3), "music/cdmp3s/track %i.mp3", track);
 
 	if (!enabled)
 	{
@@ -342,7 +342,7 @@ static void CD_f (void)
 		CDAudio_CloseDoor();
 		return;
 	}
-
+	/*
 	if (!cdValid)
 	{
 		CDAudio_GetAudioDiskInfo();
@@ -351,7 +351,7 @@ static void CD_f (void)
 			Com_Printf("No CD in player.\n");
 			return;
 		}
-	}
+	}*/
 
 	if (Q_strcasecmp(command, "play") == 0)
 	{

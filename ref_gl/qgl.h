@@ -511,7 +511,7 @@ extern qboolean use_WGL_3DFX_multisample;
 #define	SAMPLES_3DFX					0x86B4
 #define	MULTISAMPLE_BIT_3DFX			0x20000000
 
-/*
+/*swap
 ** GL_3DFX_tbuffer
 */
 extern  void ( APIENTRY * qglTBufferMask3DFX) (GLuint mask);

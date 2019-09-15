@@ -142,7 +142,7 @@ int decodeMP3( mpstr *mp,char *in,int isize,char *out,
 
 	if(in) {
 		if(addbuf(mp,in,isize) == NULL) {
-			return MP3_ERR;
+			
 		}
 	}
 
@@ -152,7 +152,8 @@ int decodeMP3( mpstr *mp,char *in,int isize,char *out,
 			return MP3_NEED_MORE;
 		}
 		read_head(mp);
-		decode_header(&mp->fr,mp->header);
+		if(!decode_header(&mp->fr,mp->header))
+			return MP3_ERR;
 		mp->framesize = mp->fr.framesize;
 	}
 

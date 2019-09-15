@@ -474,7 +474,7 @@ struct image_s *R_RegisterClamped (char *name);
 int GL_Upload32(unsigned *data, int width, int height, qboolean mipmap);
 void LoadPCX (char *filename, byte **pic, byte **palette, int *width, int *height);
 image_t *GL_LoadPic (char *name, byte *pic, int width, int height, imagetype_t type, int bits, byte* palette);
-image_t	*GL_FindImage (char *name, imagetype_t type);
+image_t	*GL_FindImage (char *name, char *fallback, imagetype_t type);
 void	GL_TextureMode( char *string );
 void	GL_TextureCinMode( char *string );
 void	GL_ImageList_f (void);

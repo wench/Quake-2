@@ -101,7 +101,7 @@
       <BrowseInformation>true</BrowseInformation>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <TreatSpecificWarningsAsErrors>4267;4133</TreatSpecificWarningsAsErrors>
     </ClCompile>
@@ -109,8 +109,6 @@
       <AdditionalDependencies>user32.lib;gdi32.lib;opengl32.lib;winmm.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ModuleDefinitionFile>.\ref_gl.def</ModuleDefinitionFile>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>c:/games/quake2/ref_gl.pdb</ProgramDatabaseFile>
       <GenerateMapFile>true</GenerateMapFile>
       <MapFileName>.\debug/ref_gl.map</MapFileName>
       <SubSystem>Windows</SubSystem>

@@ -36,8 +36,7 @@ Draw_InitLocal
 void Draw_InitLocal (void)
 {
 	// load console characters (don't bilerp characters)
-	draw_chars = GL_FindImage("graphics/fonts/conchars.pcx", it_pic);
-	if  (!draw_chars) draw_chars = GL_FindImage("pics/conchars.pcx", it_pic);
+	draw_chars = GL_FindImage("graphics/fonts/conchars.pcx", "pics/conchars.pcx", it_pic);
 	GL_BindImage( draw_chars );
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -98,23 +97,37 @@ void Draw_Char (int x, int y, int num)
 Draw_FindPic
 =============
 */
-image_t	*Draw_FindPic (char *name)
+image_t	*Draw_FindPic(char *name)
 {
 	image_t *gl;
 
 	if (name[0] != '/' && name[0] != '\\')
 	{
-		char	fullname[MAX_QPATH];
+		char	fullname[MAX_QPATH], altname[MAX_QPATH];
 		Com_sprintf(fullname, sizeof(fullname), "graphics/%s", name);
-		gl = GL_FindImage(fullname, it_pic);
-		if (!Q_strcasecmp(gl->name,"***r_notexture***")
-		) {
-			Com_sprintf(fullname, sizeof(fullname), "pics/%s", name);
-			gl = GL_FindImage(fullname, it_pic); \
-		}
+		Com_sprintf(altname, sizeof(altname), "pics/%s", name);
+		gl = GL_FindImage(fullname, altname, it_pic);
+
 	}
 	else
-		gl = GL_FindImage (name+1, it_pic);
+		gl = Draw_FindPic(name + 1);
+
+	return gl;
+}
+image_t	*Draw_FindPic2(char *name, char *alt)
+{
+	image_t *gl;
+
+	if (name[0] != '/' && name[0] != '\\')
+	{
+		char	fullname[MAX_QPATH], altname[MAX_QPATH];
+		Com_sprintf(fullname, sizeof(fullname), "graphics/%s", name);
+		Com_sprintf(altname, sizeof(altname), "pics/%s", alt);
+		gl = GL_FindImage(fullname, altname, it_pic);
+
+	}
+	else
+		gl = Draw_FindPic(name + 1);
 
 	return gl;
 }
@@ -147,10 +160,8 @@ void Draw_StretchPic (int x, int y, int w, int h, char *pic, char*alt)
 {
 	image_t *gl;
 
-	gl = Draw_FindPic (pic);
-
-	if (!gl || !Q_strcasecmp(gl->name, "***r_notexture***"))
-		gl = Draw_FindPic(alt);
+	gl = Draw_FindPic2(pic,alt);
+	
 
 	if (!gl || !Q_strcasecmp(gl->name, "***r_notexture***"))
 	{

@@ -9,3 +9,6 @@ packages
 /.vs
 *.user
 *.bsc
+/opengl_gamma
+*.pdb
+*.obj

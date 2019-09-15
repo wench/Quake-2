@@ -235,6 +235,7 @@ void S_PaintChannels(int endtime)
 
 	snd_vol = s_volume->value*256;
 
+	S_ProduceMp3Samples(endtime - paintedtime);
 //Com_Printf ("%i to %i\n", paintedtime, endtime);
 	while (paintedtime < endtime)
 	{
@@ -280,10 +281,10 @@ void S_PaintChannels(int endtime)
 				
 
 			}
-//		if (i != end)
-//			Com_Printf ("partial stream\n");
-//		else
-//			Com_Printf ("full stream\n");
+		/*if (i != end)
+			Com_Printf ("partial stream\n");
+		else
+			Com_Printf ("full stream\n");*/
 			for ( ; i<end ; i++)
 			{
 				paintbuffer[i-paintedtime].left =
