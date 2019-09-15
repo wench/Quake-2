@@ -1,0 +1,2 @@
+#define REFGLGAMMA_API __declspec(dllexport)
+#define REFGLGAMMA_API __declspec(dllimport)
