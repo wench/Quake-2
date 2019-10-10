@@ -18,151 +18,145 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="win32\cd_win.c">
+    <ClCompile Include="win32\cd_win.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="client\cl_cin.c">
+    <ClCompile Include="client\cl_cin.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="client\cl_ents.c">
+    <ClCompile Include="client\cl_ents.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="client\cl_fx.c">
+    <ClCompile Include="client\cl_fx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="client\cl_input.c">
+    <ClCompile Include="client\cl_input.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="client\cl_inv.c">
+    <ClCompile Include="client\cl_inv.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="client\cl_main.c">
+    <ClCompile Include="client\cl_main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="client\cl_newfx.c">
+    <ClCompile Include="client\cl_newfx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="client\cl_newparts.c">
+    <ClCompile Include="client\cl_newparts.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="client\cl_parse.c">
+    <ClCompile Include="client\cl_parse.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="client\cl_pred.c">
+    <ClCompile Include="client\cl_pred.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="client\cl_scrn.c">
+    <ClCompile Include="client\cl_scrn.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="client\cl_tent.c">
+    <ClCompile Include="client\cl_tent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="client\cl_view.c">
+    <ClCompile Include="client\cl_view.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="qcommon\cmd.c">
+    <ClCompile Include="qcommon\cmd.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="qcommon\cmodel.c">
+    <ClCompile Include="qcommon\cmodel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="qcommon\common.c">
+    <ClCompile Include="qcommon\common.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="win32\conproc.c">
+    <ClCompile Include="win32\conproc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="client\console.c">
+    <ClCompile Include="client\console.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="qcommon\crc.c">
+    <ClCompile Include="qcommon\crc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="qcommon\cvar.c">
+    <ClCompile Include="qcommon\cvar.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="qcommon\files.c">
+    <ClCompile Include="qcommon\files.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="win32\in_win.c">
+    <ClCompile Include="win32\in_win.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="client\keys.c">
+    <ClCompile Include="client\keys.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="game\m_flash.c">
+    <ClCompile Include="qcommon\md4.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="qcommon\md4.c">
+    <ClCompile Include="client\menu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="client\menu.c">
+    <ClCompile Include="qcommon\net_chan.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="qcommon\net_chan.c">
+    <ClCompile Include="win32\net_wins.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="win32\net_wins.c">
+    <ClCompile Include="qcommon\pmove.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="qcommon\pmove.c">
+    <ClCompile Include="win32\q_shwin.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="game\q_shared.c">
+    <ClCompile Include="client\qmenu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="win32\q_shwin.c">
+    <ClCompile Include="client\snd_dma.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="client\qmenu.c">
+    <ClCompile Include="client\snd_mem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="client\snd_dma.c">
+    <ClCompile Include="client\snd_mix.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="client\snd_mem.c">
+    <ClCompile Include="win32\snd_win.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="client\snd_mix.c">
+    <ClCompile Include="server\sv_ccmds.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="win32\snd_win.c">
+    <ClCompile Include="server\sv_ents.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="server\sv_ccmds.c">
+    <ClCompile Include="server\sv_game.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="server\sv_ents.c">
+    <ClCompile Include="server\sv_init.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="server\sv_game.c">
+    <ClCompile Include="server\sv_main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="server\sv_init.c">
+    <ClCompile Include="server\sv_send.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="server\sv_main.c">
+    <ClCompile Include="server\sv_user.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="server\sv_send.c">
+    <ClCompile Include="server\sv_world.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="server\sv_user.c">
+    <ClCompile Include="win32\sys_win.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="server\sv_world.c">
+    <ClCompile Include="win32\vid_dll.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="win32\sys_win.c">
+    <ClCompile Include="win32\vid_menu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="win32\vid_dll.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="win32\vid_menu.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="client\x86.c">
+    <ClCompile Include="client\x86.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="qcommon\zip\ioapi.cpp">
@@ -177,26 +171,32 @@
     <ClCompile Include="qcommon\anoxdecomp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="client\mpglib\dct64_i386.c">
+    <ClCompile Include="client\mpglib\dct64_i386.cpp">
       <Filter>mpglib</Filter>
     </ClCompile>
-    <ClCompile Include="client\mpglib\decode_i386.c">
+    <ClCompile Include="client\mpglib\decode_i386.cpp">
       <Filter>mpglib</Filter>
     </ClCompile>
-    <ClCompile Include="client\mpglib\interface.c">
+    <ClCompile Include="client\mpglib\interface.cpp">
       <Filter>mpglib</Filter>
     </ClCompile>
-    <ClCompile Include="client\mpglib\layer3.c">
+    <ClCompile Include="client\mpglib\layer3.cpp">
       <Filter>mpglib</Filter>
     </ClCompile>
-    <ClCompile Include="client\mpglib\tabinit.c">
+    <ClCompile Include="client\mpglib\tabinit.cpp">
       <Filter>mpglib</Filter>
     </ClCompile>
     <ClCompile Include="client\snd_mp3.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="client\mpglib\mcommon.c">
+    <ClCompile Include="client\mpglib\mcommon.cpp">
       <Filter>mpglib</Filter>
+    </ClCompile>
+    <ClCompile Include="game\m_flash.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\q_shared.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

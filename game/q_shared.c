@@ -1053,7 +1053,7 @@ char	*va(char *format, ...)
 	static char		string[1024];
 	
 	va_start (argptr, format);
-	vsprintf (string, format,argptr);
+	vsprintf_s (string, sizeof(string),format,argptr);
 	va_end (argptr);
 
 	return string;	

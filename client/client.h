@@ -155,7 +155,7 @@ typedef struct
 	FILE		*cinematic_file;
 	int			cinematictime;		// cls.realtime for first cinematic frame
 	int			cinematicframe;
-	char		cinematicpalette[768];
+	unsigned char	cinematicpalette[768];
 	qboolean	cinematicpalette_active;
 
 	//
@@ -210,12 +210,14 @@ typedef enum {
 	dl_single
 } dltype_t;		// download type
 
-typedef enum {key_game, key_console, key_message, key_menu} keydest_t;
+typedef enum { key_game, key_console, key_message, key_menu } keydest_t;
+typedef enum { gim_interact, gim_move } gameinputmode_t;
 
 typedef struct
 {
 	connstate_t	state;
-	keydest_t	key_dest;
+	keydest_t	key_dest; 
+	gameinputmode_t	gim;
 
 	int			framecount;
 	int			realtime;			// always increasing, no clamping, etc
@@ -400,7 +402,7 @@ void CL_RailTrail (vec3_t start, vec3_t end);
 void CL_BubbleTrail (vec3_t start, vec3_t end);
 void CL_FlagTrail (vec3_t start, vec3_t end, float color);
 void CL_ClearNewParticles (void);
-
+qboolean CL_IsMoving();
 // RAFAEL
 void CL_IonripperTrail (vec3_t start, vec3_t end);
 
@@ -428,6 +430,7 @@ void CL_ParticleSmokeEffect (vec3_t org, vec3_t dir, int color, int count, int m
 void CL_Widowbeamout (cl_sustain_t *self);
 void CL_Nukeblast (cl_sustain_t *self);
 void CL_WidowSplash (vec3_t org);
+void CL_changetogameimputmode(gameinputmode_t gim);
 // PGM
 // ========
 
@@ -446,6 +449,7 @@ void CL_SetLightstyle (int i);
 void CL_RunParticles (void);
 void CL_RunDLights (void);
 void CL_RunLightStyles (void);
+void CL_ClearParticles(void);
 
 void CL_AddEntities (void);
 void CL_AddDLights (void);

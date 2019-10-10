@@ -69,8 +69,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 
 typedef unsigned char 		byte;
-typedef enum {qfalse, qtrue}	qboolean;
 
+#ifdef __cplusplus 
+typedef bool qboolean;
+const bool qfalse = false;
+const bool qtrue = true;
+
+
+#else
+typedef enum { qfalse, qtrue }	qboolean;
+#endif
 
 #ifndef NULL
 #define NULL ((void *)0)
@@ -252,6 +260,7 @@ int Q_strcasecmp(char *s1, char *s2);
 int Q_strncasecmp(char *s1, char *s2, size_t n);
 int Q_strfncmp(char *s1, char *s2);
 int Q_strnfncmp(char *s1, char *s2, size_t n);
+char* Q_strdup( char const* _String);
 
 //=============================================
 
@@ -346,6 +355,11 @@ typedef struct cvar_s
 	qboolean	modified;	// set each time the cvar is changed
 	float		value;
 	struct cvar_s *next;
+
+
+	__declspec(property(get = getbool, put = setbool)) qboolean boolvalue;
+	qboolean getbool() { return value != 0; }
+	void setbool(qboolean v) { value = v ? 1 : 0; }
 } cvar_t;
 
 #endif		// CVAR
@@ -429,6 +443,7 @@ COLLISION DETECTION
 
 // gi.BoxEdicts() can return a list of either solid or trigger entities
 // FIXME: eliminate AREA_ distinction?
+#define AREA_ALL		0
 #define	AREA_SOLID		1
 #define	AREA_TRIGGERS	2
 
@@ -475,7 +490,7 @@ typedef struct mapsurface_s  // used internally due to name len probs //ZOID
 } mapsurface_t;
 
 // a trace is returned when a box is swept through the world
-typedef struct
+__declspec(align(8)) struct trace_s
 {
 	qboolean	allsolid;	// if true, plane is not valid
 	qboolean	startsolid;	// if true, the initial point was in a solid area
@@ -485,8 +500,8 @@ typedef struct
 	csurface_t	*surface;	// surface hit
 	int			contents;	// contents on other side of surface hit
 	struct edict_s	*ent;		// not set by CM_*() functions
-} trace_t;
-
+};
+typedef struct trace_s trace_t;
 
 
 // pmove_state_t is the information necessary for client side movement
@@ -1273,4 +1288,6 @@ typedef struct md2_info_s
 
 } md2_info_t;
 
+#ifdef __cplusplus 
+#endif
 #endif

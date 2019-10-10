@@ -124,7 +124,7 @@ typedef struct
 	void	(*setmodel) (edict_t *ent, char *name);
 
 	// collision detection
-	trace_t	(*trace) (vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, edict_t *passent, int contentmask);
+	trace_t	(__vectorcall*trace) (vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, edict_t *passent, int contentmask);
 	int		(*pointcontents) (vec3_t point);
 	qboolean	(*inPVS) (vec3_t p1, vec3_t p2);
 	qboolean	(*inPHS) (vec3_t p1, vec3_t p2);
@@ -156,6 +156,10 @@ typedef struct
 	void	*(*TagMalloc) (size_t size, int tag);
 	void	(*TagFree) (void *block);
 	void	(*FreeTags) (int tag);
+#ifdef __cplusplus
+	template<typename T> T* TTagMalloc(size_t size, int tag) { return (T*)TagMalloc(size, tag); }
+	template<typename T> bool TTagMalloc(T*&dst,size_t size, int tag) { return 0!=(dst=(T*)TagMalloc(size, tag)); }
+#endif
 
 	// console variable interaction
 	cvar_t	*(*cvar) (char *var_name, char *value, int flags);
@@ -224,6 +228,7 @@ typedef struct
 	void		(*ClientDisconnect) (edict_t *ent);
 	void		(*ClientCommand) (edict_t *ent);
 	void		(*ClientThink) (edict_t *ent, usercmd_t *cmd);
+	void        (*ClientClick) (edict_t* ent, vec3_t start, vec3_t end);
 
 	void		(*RunFrame) (void);
 

@@ -1,8 +1,6 @@
-extern "C" {
 #include "client.h"
 #include "snd_loc.h"
 #include "mpglib/mpglib.h"
-}
 #include <Windows.h>
 char *mp3data = 0;
 int mp3_size = 0;

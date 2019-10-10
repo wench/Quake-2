@@ -73,9 +73,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define	FRAMETIME		0.1
 
 // memory tags to allow dynamic memory to be cleaned up
-#define	TAG_GAME	765		// clear when unloading the dll
-#define	TAG_LEVEL	766		// clear when loading a new level
-
+enum MemoryTag
+{
+	TAG_GAME = 765,		// clear when unloading the dll
+	TAG_LEVEL = 766,		// clear when loading a new level
+	};
 
 #define MELEE_DISTANCE	80
 
@@ -469,6 +471,13 @@ extern	game_import_t	gi;
 extern	game_export_t	globals;
 extern	spawn_temp_t	st;
 
+#ifdef __cplusplus
+void* operator new (size_t bytes);
+void* operator new (size_t bytes, MemoryTag tag) throw();
+void operator delete (void* buf) throw();
+void operator delete (void* buf, MemoryTag tag) throw();
+#endif
+
 extern	int	sm_meat_index;
 extern	int	snd_fry;
 
@@ -764,19 +773,33 @@ edict_t	*PlayerTrail_LastSpot (void);
 //
 // g_client.c
 //
-void respawn (edict_t *ent);
-void BeginIntermission (edict_t *targ);
-void PutClientInServer (edict_t *ent);
-void InitClientPersistant (gclient_t *client);
-void InitClientResp (gclient_t *client);
-void InitBodyQue (void);
-void ClientBeginServerFrame (edict_t *ent);
 
+void respawn(edict_t* ent);
+void BeginIntermission(edict_t* targ);
+void PutClientInServer(edict_t* ent);
+void InitClientPersistant(gclient_t* client);
+void InitClientResp(gclient_t* client);
+void InitBodyQue(void);
+void ClientBeginServerFrame(edict_t* ent);
+void player_die(edict_t* self, edict_t* inflictor, edict_t* attacker, int damage, vec3_t point);
+void SaveClientData(void);
+void FetchClientEntData(edict_t* ent);
+void ClientThink(edict_t* ent, usercmd_t* cmd);
+qboolean ClientConnect(edict_t* ent, char* userinfo);
+void ClientUserinfoChanged(edict_t* ent, char* userinfo);
+void ClientDisconnect(edict_t* ent);
+void ClientBegin(edict_t* ent);
+void ClientClick(edict_t* ent, vec3_t start, vec3_t end);
+void ClientCommand(edict_t* ent);
 //
 // g_player.c
 //
 void player_pain (edict_t *self, edict_t *other, float kick, int damage);
-void player_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int damage, vec3_t point);
+
+void SP_info_player_start(edict_t* ent);
+void SP_info_player_deathmatch(edict_t* ent);
+void SP_info_player_coop(edict_t* ent);
+void SP_info_player_intermission(edict_t* ent);
 
 //
 // g_svcmds.c
@@ -820,8 +843,6 @@ void G_RunEntity (edict_t *ent);
 //
 // g_main.c
 //
-void SaveClientData (void);
-void FetchClientEntData (edict_t *ent);
 
 //
 // g_chase.c
@@ -1065,6 +1086,7 @@ struct edict_s
 	//
 	// only used locally in game, not by server
 	//
+	char		*mapedict;
 	char		*message;
 	char		*classname;
 	int			spawnflags;

@@ -7,9 +7,7 @@
 #include "zlib.h"
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
-extern "C"{
 #include "qcommon.h"
-}
 #if defined(MSDOS) || defined(OS2) || defined(WIN32) || defined(__CYGWIN__)
 #  include <fcntl.h>
 #  include <io.h>
@@ -133,7 +131,7 @@ INT decompthreadproc(ThreadData*data)
 	}
 	return Z_OK;
 }
-extern "C" FILE *DecompressZIP(FILE *source, unzFile unzipfile, int insize, int outsize)
+ FILE *DecompressZIP(FILE *source, unzFile unzipfile, int insize, int outsize)
 {
 	int handles[2];
 	_pipe(handles, outsize, _O_BINARY);
@@ -151,7 +149,7 @@ extern "C" FILE *DecompressZIP(FILE *source, unzFile unzipfile, int insize, int 
 	CloseHandle(thread);
 	return fdopen(handles[0], "rb");
 }
-extern "C" FILE *DecompressANOXDATA(FILE *source, int insize, int outsize)
+ FILE *DecompressANOXDATA(FILE *source, int insize, int outsize)
 {
 	int handles[2];
 	_pipe(handles,outsize, _O_BINARY);

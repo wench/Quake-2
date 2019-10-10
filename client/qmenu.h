@@ -45,23 +45,23 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define QMF_LEFT_JUSTIFY	0x00000001
 #define QMF_GRAYED			0x00000002
 #define QMF_NUMBERSONLY		0x00000004
-
-typedef struct _tag_menuframework
+struct menucommon_s;
+ struct menuframework_s
 {
 	int x, y;
 	int	cursor;
 
 	int	nitems;
 	int nslots;
-	void *items[64];
+	menucommon_s*items[64];
 
 	const char *statusbar;
 
-	void (*cursordraw)( struct _tag_menuframework *m );
+	void (*cursordraw)( struct menuframework_s *m );
 	
-} menuframework_s;
+} ;
 
-typedef struct
+ struct menucommon_s
 {
 	int type;
 	const char *name;
@@ -77,22 +77,23 @@ typedef struct
 	void (*statusbarfunc)( void *self );
 	void (*ownerdraw)( void *self );
 	void (*cursordraw)( void *self );
-} menucommon_s;
 
-typedef struct
+	__declspec(property(get = getgeneric)) menucommon_s& generic;
+	menucommon_s& getgeneric() { return *this; }
+} ;
+
+struct menufield_s : menucommon_s
 {
-	menucommon_s generic;
 
 	char		buffer[80];
 	int			cursor;
 	int			length;
 	int			visible_length;
 	int			visible_offset;
-} menufield_s;
+};
 
-typedef struct 
+typedef struct : menucommon_s
 {
-	menucommon_s generic;
 
 	float minvalue;
 	float maxvalue;
@@ -101,32 +102,30 @@ typedef struct
 	float range;
 } menuslider_s;
 
-typedef struct
+ struct menulist_s: menucommon_s
 {
-	menucommon_s generic;
 
 	int curvalue;
 
 	const char **itemnames;
-} menulist_s;
+} ;
 
-typedef struct
+ struct menuaction_s:menucommon_s
 {
-	menucommon_s generic;
-} menuaction_s;
+	
+} ;
 
-typedef struct
+struct menuseparator_s :menucommon_s
 {
-	menucommon_s generic;
-} menuseparator_s;
+} ;
 
 qboolean Field_Key( menufield_s *field, int key );
 
-void	Menu_AddItem( menuframework_s *menu, void *item );
+void	Menu_AddItem( menuframework_s *menu, menucommon_s*item );
 void	Menu_AdjustCursor( menuframework_s *menu, int dir );
 void	Menu_Center( menuframework_s *menu );
 void	Menu_Draw( menuframework_s *menu );
-void	*Menu_ItemAtCursor( menuframework_s *m );
+menucommon_s* Menu_ItemAtCursor( menuframework_s *m );
 qboolean Menu_SelectItem( menuframework_s *s );
 void	Menu_SetStatusBar( menuframework_s *s, const char *string );
 void	Menu_SlideItem( menuframework_s *s, int dir );

@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define	MAX_DLIGHTS		32
 #define	MAX_ENTITIES	512
-#define	MAX_PARTICLES	4096
+#define	MAX_PARTICLES	8196*16
 #define	MAX_LIGHTSTYLES	256
 
 #define POWERSUIT_SCALE		4.0F
@@ -202,76 +202,6 @@ typedef struct
 			void	(*BeginFrame)(float camera_separation);
 			void	(*EndFrame) (void);
 
-			/*
-					mov	dword ptr [ebp-00000104h],R_Init
-					mov	dword ptr [ebp-00000100h],R_Shutdown
-					mov	dword ptr [ebp-000000FCh],R_BeginRegistration
-					mov	dword ptr [ebp-000000F8h],SUB_L1001119B
-					mov	dword ptr [ebp-000000F4h],L100112DC
-					mov	dword ptr [ebp-000000F0h],L10007277
-					mov	dword ptr [ebp-000000ECh],L100072AE
-					mov	dword ptr [ebp-000000E8h],SUB_L1002EC82
-					mov	dword ptr [ebp-000000E4h],SUB_L1002ED4F
-					mov	dword ptr [ebp-000000E0h],L1002ED62
-					mov	dword ptr [ebp-000000D8h],R_SetSky
-					mov	dword ptr [ebp-000000D4h],L1001147F
-					mov	dword ptr [ebp-000000DCh],L1002F0BC
-					mov	dword ptr [ebp-000000D0h],L1001B24F
-					mov	dword ptr [ebp-000000CCh],L10013C0F
-					mov	dword ptr [ebp-000000C8h],SUB_L1001B4E3
-					mov	dword ptr [ebp-000000C4h],L1001B512
-					mov	dword ptr [ebp-000000C0h],L10007C7E
-					mov	dword ptr [ebp-000000BCh],SUB_L100071EC
-					mov	dword ptr [ebp-000000B8h],L1001814E
-					mov	dword ptr [ebp-000000B4h],L10003AD4
-					mov	dword ptr [ebp-000000B0h],L100038DE
-					mov	dword ptr [ebp-000000ACh],L100039DB
-					mov	dword ptr [ebp-000000A8h],L10003784
-					mov	dword ptr [ebp-000000A4h],L100042A6
-					mov	dword ptr [ebp-000000A0h],SUB_L10003498
-					mov	dword ptr [ebp-0000009Ch],L1000360C
-					mov	dword ptr [ebp-00000098h],L10003E10
-					mov	dword ptr [ebp-00000094h],L10003EA8
-					mov	dword ptr [ebp-00000090h],L10003F74
-					mov	dword ptr [ebp-0000008Ch],L10004038
-					mov	dword ptr [ebp-00000088h],L10004110
-					mov	dword ptr [ebp-00000084h],L1000429C
-					mov	dword ptr [ebp-80h],L100042A1
-					mov	dword ptr [ebp-7Ch],L1001C12E
-					mov	dword ptr [ebp-78h],L1001C31A
-					mov	dword ptr [ebp-74h],L10012FEC
-					mov	dword ptr [ebp-70h],L100132E0
-					mov	dword ptr [ebp-6Ch],R_BeginFrame
-					mov	dword ptr [ebp-68h],GLimp_EndFrame
-					mov	dword ptr [ebp-64h],L1002E78E
-					mov	dword ptr [ebp-5Ch],L1000C19D
-					mov	dword ptr [ebp-60h],L1000C065
-					mov	dword ptr [ebp-58h],SUB_L1000C742
-					mov	dword ptr [ebp-54h],L1000CCA9
-					mov	dword ptr [ebp-50h],L1000C4F8
-					mov	dword ptr [ebp-4Ch],L1000C611
-					mov	dword ptr [ebp-48h],L1000C2D4
-					mov	dword ptr [ebp-44h],L1000C41D
-					mov	dword ptr [ebp-3Ch],L1001AEFD
-					mov	dword ptr [ebp-38h],L1001B15E
-					mov	dword ptr [ebp-34h],L1001B163
-					mov	dword ptr [ebp-30h],SUB_L1003EB10
-					mov	dword ptr [ebp-2Ch],L1003EC77
-					mov	dword ptr [ebp-28h],SUB_L1003ECA5
-					mov	dword ptr [ebp-24h],L1003EC7C
-					mov	dword ptr [ebp-20h],L1003ED55
-					mov	dword ptr [ebp-1Ch],L1001B168
-					mov	dword ptr [ebp-18h],L1001B177
-					mov	dword ptr [ebp-14h],L1003F79A
-					mov	dword ptr [ebp-10h],L1003F837
-					mov	dword ptr [ebp-0Ch],L1001B186
-					mov	dword ptr [ebp-08h],L1000D9AA
-					mov	dword ptr [ebp-04h],SUB_L1000D83F
-
-					call	SUB_L10032E11
-
-			*/
-			
 
 
 			
@@ -295,6 +225,7 @@ typedef struct
 			void	(*CinematicSetPalette)(const unsigned char* palette);	// NULL = game palette
 
 			void	(*AppActivate)(qboolean activate); 
+			qboolean(*unproject)(float x, float y, float z, vec3_t point);
 		};
 	};
 	
@@ -338,6 +269,8 @@ typedef struct
 			qboolean(*Vid_GetModeInfo)(int* width, int* height, int mode);
 			void		(*Vid_MenuInit)(void);
 			void		(*Vid_NewWindow)(int width, int height);
+
+			
 		};
 	};
 } refimport_t;

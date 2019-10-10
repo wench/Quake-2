@@ -102,7 +102,8 @@ void MSG_WriteLong (sizebuf_t *sb, int c);
 void MSG_WriteFloat (sizebuf_t *sb, float f);
 void MSG_WriteString (sizebuf_t *sb, char *s);
 void MSG_WriteCoord (sizebuf_t *sb, float f);
-void MSG_WritePos (sizebuf_t *sb, vec3_t pos);
+void MSG_WritePos(sizebuf_t* sb, vec3_t pos);
+void MSG_WritePosAccurate(sizebuf_t* sb, vec3_t pos);
 void MSG_WriteAngle (sizebuf_t *sb, float f);
 void MSG_WriteAngle16 (sizebuf_t *sb, float f);
 void MSG_WriteDeltaUsercmd (sizebuf_t *sb, struct usercmd_s *from, struct usercmd_s *cmd);
@@ -121,7 +122,8 @@ char	*MSG_ReadString (sizebuf_t *sb);
 char	*MSG_ReadStringLine (sizebuf_t *sb);
 
 float	MSG_ReadCoord (sizebuf_t *sb);
-void	MSG_ReadPos (sizebuf_t *sb, vec3_t pos);
+void	MSG_ReadPos(sizebuf_t* sb, vec3_t pos);
+void	MSG_ReadPosAccurate(sizebuf_t* sb, vec3_t pos);
 float	MSG_ReadAngle (sizebuf_t *sb);
 float	MSG_ReadAngle16 (sizebuf_t *sb);
 void	MSG_ReadDeltaUsercmd (sizebuf_t *sb, struct usercmd_s *from, struct usercmd_s *cmd);
@@ -242,7 +244,8 @@ enum clc_ops_e
 	clc_nop, 		
 	clc_move,				// [[usercmd_t]
 	clc_userinfo,			// [[userinfo string]
-	clc_stringcmd			// [string] message
+	clc_stringcmd,			// [string] message
+	clc_2dmouseclick
 };
 
 //==============================================
@@ -746,7 +749,7 @@ MISC
 #define	PRINT_ALL		0
 #define PRINT_DEVELOPER	1	// only print when "developer 1"
 
-void		Com_BeginRedirect (int target, char *buffer, int buffersize, void (*flush));
+void		Com_BeginRedirect (int target, char *buffer, int buffersize, void (*flush)(int target, char* buffer));
 void		Com_EndRedirect (void);
 void 		Com_Printf (char *fmt, ...);
 void 		Com_DPrintf (char *fmt, ...);
@@ -775,12 +778,24 @@ extern	int		time_after_game;
 extern	int		time_before_ref;
 extern	int		time_after_ref;
 
+// memory tags to allow dynamic memory to be cleaned up
+enum MemoryTag
+{
+	TAG_GAME = 765,		// clear when unloading the dll
+	TAG_LEVEL = 766,		// clear when loading a new level
+};
 void Z_Free (void *ptr);
 void *Z_Malloc (size_t size);			// returns 0 filled memory
 void *Z_TagMalloc (size_t size, int tag);
 void Z_FreeTags (int tag);
 FILE *DecompressANOXDATA(FILE *source, int insize, int outsize);
 
+#ifdef __cplusplus
+void* operator new (size_t bytes) throw();
+void* operator new (size_t bytes, MemoryTag tag) throw();
+void operator delete (void* buf) throw();
+void operator delete (void* buf, MemoryTag tag) throw();
+#endif
 void Qcommon_Init (int argc, char **argv);
 void Qcommon_Frame (int msec);
 void Qcommon_Shutdown (void);

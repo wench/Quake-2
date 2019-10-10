@@ -22,7 +22,7 @@
     <SccProjectName />
     <SccLocalPath />
     <ProjectGuid>{DEE7E5C8-5318-42B2-8ACA-1721AB6FBA08}</ProjectGuid>
-    <WindowsTargetPlatformVersion>10.0.18362.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.14393.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -91,8 +91,8 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeader />
       <PrecompiledHeaderOutputFile>.\debug/quake2.pch</PrecompiledHeaderOutputFile>
       <AssemblerListingLocation>.\debug/</AssemblerListingLocation>
@@ -104,6 +104,19 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <TreatSpecificWarningsAsErrors>4267;4133</TreatSpecificWarningsAsErrors>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <StringPooling>true</StringPooling>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <ControlFlowGuard>Guard</ControlFlowGuard>
+      <FloatingPointExceptions>false</FloatingPointExceptions>
+      <CallingConvention>Cdecl</CallingConvention>
+      <OmitFramePointers>true</OmitFramePointers>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DisableSpecificWarnings>4101;4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <AdditionalDependencies>winmm.lib;wsock32.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -167,10 +180,9 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeader />
       <PrecompiledHeaderOutputFile>.\release/quake2.pch</PrecompiledHeaderOutputFile>
       <AssemblerListingLocation>.\release/</AssemblerListingLocation>
@@ -181,6 +193,18 @@
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <TreatSpecificWarningsAsErrors>4267;4133</TreatSpecificWarningsAsErrors>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <ControlFlowGuard>Guard</ControlFlowGuard>
+      <FloatingPointExceptions>false</FloatingPointExceptions>
+      <CallingConvention>Cdecl</CallingConvention>
+      <OmitFramePointers>true</OmitFramePointers>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DisableSpecificWarnings>4101;4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <AdditionalDependencies>winmm.lib;wsock32.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -239,66 +263,66 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="client\cl_cin.c" />
-    <ClCompile Include="client\cl_ents.c" />
-    <ClCompile Include="client\cl_fx.c" />
-    <ClCompile Include="client\cl_input.c" />
-    <ClCompile Include="client\cl_inv.c" />
-    <ClCompile Include="client\cl_main.c" />
-    <ClCompile Include="client\cl_newfx.c" />
-    <ClCompile Include="client\cl_newparts.c" />
-    <ClCompile Include="client\cl_parse.c" />
-    <ClCompile Include="client\cl_pred.c" />
-    <ClCompile Include="client\cl_scrn.c" />
-    <ClCompile Include="client\cl_tent.c" />
-    <ClCompile Include="client\cl_view.c" />
-    <ClCompile Include="client\console.c" />
-    <ClCompile Include="client\keys.c" />
-    <ClCompile Include="client\menu.c" />
-    <ClCompile Include="client\mpglib\mcommon.c" />
-    <ClCompile Include="client\mpglib\dct64_i386.c" />
-    <ClCompile Include="client\mpglib\decode_i386.c" />
-    <ClCompile Include="client\mpglib\interface.c" />
-    <ClCompile Include="client\mpglib\layer3.c" />
-    <ClCompile Include="client\mpglib\tabinit.c" />
-    <ClCompile Include="client\qmenu.c" />
-    <ClCompile Include="client\snd_dma.c" />
-    <ClCompile Include="client\snd_mem.c" />
-    <ClCompile Include="client\snd_mix.c" />
+    <ClCompile Include="client\cl_cin.cpp" />
+    <ClCompile Include="client\cl_ents.cpp" />
+    <ClCompile Include="client\cl_fx.cpp" />
+    <ClCompile Include="client\cl_input.cpp" />
+    <ClCompile Include="client\cl_inv.cpp" />
+    <ClCompile Include="client\cl_main.cpp" />
+    <ClCompile Include="client\cl_newfx.cpp" />
+    <ClCompile Include="client\cl_newparts.cpp" />
+    <ClCompile Include="client\cl_parse.cpp" />
+    <ClCompile Include="client\cl_pred.cpp" />
+    <ClCompile Include="client\cl_scrn.cpp" />
+    <ClCompile Include="client\cl_tent.cpp" />
+    <ClCompile Include="client\cl_view.cpp" />
+    <ClCompile Include="client\console.cpp" />
+    <ClCompile Include="client\keys.cpp" />
+    <ClCompile Include="client\menu.cpp" />
+    <ClCompile Include="client\mpglib\mcommon.cpp" />
+    <ClCompile Include="client\mpglib\dct64_i386.cpp" />
+    <ClCompile Include="client\mpglib\decode_i386.cpp" />
+    <ClCompile Include="client\mpglib\interface.cpp" />
+    <ClCompile Include="client\mpglib\layer3.cpp" />
+    <ClCompile Include="client\mpglib\tabinit.cpp" />
+    <ClCompile Include="client\qmenu.cpp" />
+    <ClCompile Include="client\snd_dma.cpp" />
+    <ClCompile Include="client\snd_mem.cpp" />
+    <ClCompile Include="client\snd_mix.cpp" />
     <ClCompile Include="client\snd_mp3.cpp" />
-    <ClCompile Include="client\x86.c" />
-    <ClCompile Include="game\m_flash.c" />
-    <ClCompile Include="game\q_shared.c" />
+    <ClCompile Include="client\x86.cpp" />
+    <ClCompile Include="game\m_flash.cpp" />
+    <ClCompile Include="game\q_shared.cpp" />
     <ClCompile Include="qcommon\anoxdecomp.cpp" />
-    <ClCompile Include="qcommon\cmd.c" />
-    <ClCompile Include="qcommon\cmodel.c" />
-    <ClCompile Include="qcommon\common.c" />
-    <ClCompile Include="qcommon\crc.c" />
-    <ClCompile Include="qcommon\cvar.c" />
-    <ClCompile Include="qcommon\files.c" />
-    <ClCompile Include="qcommon\md4.c" />
-    <ClCompile Include="qcommon\net_chan.c" />
-    <ClCompile Include="qcommon\pmove.c" />
+    <ClCompile Include="qcommon\cmd.cpp" />
+    <ClCompile Include="qcommon\cmodel.cpp" />
+    <ClCompile Include="qcommon\common.cpp" />
+    <ClCompile Include="qcommon\crc.cpp" />
+    <ClCompile Include="qcommon\cvar.cpp" />
+    <ClCompile Include="qcommon\files.cpp" />
+    <ClCompile Include="qcommon\md4.cpp" />
+    <ClCompile Include="qcommon\net_chan.cpp" />
+    <ClCompile Include="qcommon\pmove.cpp" />
     <ClCompile Include="qcommon\zip\ioapi.cpp" />
     <ClCompile Include="qcommon\zip\unzip.cpp" />
     <ClCompile Include="qcommon\zip\zip.cpp" />
-    <ClCompile Include="server\sv_ccmds.c" />
-    <ClCompile Include="server\sv_ents.c" />
-    <ClCompile Include="server\sv_game.c" />
-    <ClCompile Include="server\sv_init.c" />
-    <ClCompile Include="server\sv_main.c" />
-    <ClCompile Include="server\sv_send.c" />
-    <ClCompile Include="server\sv_user.c" />
-    <ClCompile Include="server\sv_world.c" />
-    <ClCompile Include="win32\cd_win.c" />
-    <ClCompile Include="win32\conproc.c" />
-    <ClCompile Include="win32\in_win.c" />
-    <ClCompile Include="win32\net_wins.c" />
-    <ClCompile Include="win32\q_shwin.c" />
-    <ClCompile Include="win32\snd_win.c" />
-    <ClCompile Include="win32\sys_win.c" />
-    <ClCompile Include="win32\vid_dll.c" />
-    <ClCompile Include="win32\vid_menu.c" />
+    <ClCompile Include="server\sv_ccmds.cpp" />
+    <ClCompile Include="server\sv_ents.cpp" />
+    <ClCompile Include="server\sv_game.cpp" />
+    <ClCompile Include="server\sv_init.cpp" />
+    <ClCompile Include="server\sv_main.cpp" />
+    <ClCompile Include="server\sv_send.cpp" />
+    <ClCompile Include="server\sv_user.cpp" />
+    <ClCompile Include="server\sv_world.cpp" />
+    <ClCompile Include="win32\cd_win.cpp" />
+    <ClCompile Include="win32\conproc.cpp" />
+    <ClCompile Include="win32\in_win.cpp" />
+    <ClCompile Include="win32\net_wins.cpp" />
+    <ClCompile Include="win32\q_shwin.cpp" />
+    <ClCompile Include="win32\snd_win.cpp" />
+    <ClCompile Include="win32\sys_win.cpp" />
+    <ClCompile Include="win32\vid_dll.cpp" />
+    <ClCompile Include="win32\vid_menu.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="client\anorms.h" />
