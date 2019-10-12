@@ -63,7 +63,11 @@ enum {
 	tank_move_attack_chain,
 	tank_move_death,
 };
-
+AutoSFP(ai_charge)
+AutoSFP(ai_stand)
+AutoSFP(ai_walk)
+AutoSFP(ai_move)
+AutoSFP(ai_run)
 //
 // misc
 //
@@ -93,7 +97,11 @@ void tank_idle (edict_t *self)
 {
 	gi.sound (self, CHAN_VOICE, sound_idle, 1, ATTN_IDLE, 0);
 }
-
+AutoSFP(tank_sight)
+AutoSFP(tank_footstep)
+AutoSFP(tank_thud)
+AutoSFP(tank_windup)
+AutoSFP(tank_idle)
 
 //
 // stand
@@ -101,36 +109,36 @@ void tank_idle (edict_t *self)
 
 mframe_t tank_frames_stand []=
 {
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr
 };
 	
 void tank_stand (edict_t *self)
@@ -144,42 +152,43 @@ void tank_stand (edict_t *self)
 //
 
 void tank_walk (edict_t *self);
-
+AutoSFP(tank_stand)
+AutoSFP(tank_walk)
 mframe_t tank_frames_start_walk [] =
 {
-	ai_walk,  0, NULL,
-	ai_walk,  6, NULL,
-	ai_walk,  6, NULL,
-	ai_walk, 11, tank_footstep
+	SFP::ai_walk,  0, nullptr,
+	SFP::ai_walk,  6, nullptr,
+	SFP::ai_walk,  6, nullptr,
+	SFP::ai_walk, 11, SFP::tank_footstep
 };
 
 mframe_t tank_frames_walk [] =
 {
-	ai_walk, 4,	NULL,
-	ai_walk, 5,	NULL,
-	ai_walk, 3,	NULL,
-	ai_walk, 2,	NULL,
-	ai_walk, 5,	NULL,
-	ai_walk, 5,	NULL,
-	ai_walk, 4,	NULL,
-	ai_walk, 4,	tank_footstep,
-	ai_walk, 3,	NULL,
-	ai_walk, 5,	NULL,
-	ai_walk, 4,	NULL,
-	ai_walk, 5,	NULL,
-	ai_walk, 7,	NULL,
-	ai_walk, 7,	NULL,
-	ai_walk, 6,	NULL,
-	ai_walk, 6,	tank_footstep
+	SFP::ai_walk, 4,	nullptr,
+	SFP::ai_walk, 5,	nullptr,
+	SFP::ai_walk, 3,	nullptr,
+	SFP::ai_walk, 2,	nullptr,
+	SFP::ai_walk, 5,	nullptr,
+	SFP::ai_walk, 5,	nullptr,
+	SFP::ai_walk, 4,	nullptr,
+	SFP::ai_walk, 4,	SFP::tank_footstep,
+	SFP::ai_walk, 3,	nullptr,
+	SFP::ai_walk, 5,	nullptr,
+	SFP::ai_walk, 4,	nullptr,
+	SFP::ai_walk, 5,	nullptr,
+	SFP::ai_walk, 7,	nullptr,
+	SFP::ai_walk, 7,	nullptr,
+	SFP::ai_walk, 6,	nullptr,
+	SFP::ai_walk, 6,	SFP::tank_footstep
 };
 
 mframe_t tank_frames_stop_walk [] =
 {
-	ai_walk,  3, NULL,
-	ai_walk,  3, NULL,
-	ai_walk,  2, NULL,
-	ai_walk,  2, NULL,
-	ai_walk,  4, tank_footstep
+	SFP::ai_walk,  3, nullptr,
+	SFP::ai_walk,  3, nullptr,
+	SFP::ai_walk,  2, nullptr,
+	SFP::ai_walk,  2, nullptr,
+	SFP::ai_walk,  4, SFP::tank_footstep
 };
 
 void tank_walk (edict_t *self)
@@ -196,39 +205,39 @@ void tank_run (edict_t *self);
 
 mframe_t tank_frames_start_run [] =
 {
-	ai_run,  0, NULL,
-	ai_run,  6, NULL,
-	ai_run,  6, NULL,
-	ai_run, 11, tank_footstep
+	SFP::ai_run,  0, nullptr,
+	SFP::ai_run,  6, nullptr,
+	SFP::ai_run,  6, nullptr,
+	SFP::ai_run, 11, SFP::tank_footstep
 };
 
 mframe_t tank_frames_run [] =
 {
-	ai_run, 4,	NULL,
-	ai_run, 5,	NULL,
-	ai_run, 3,	NULL,
-	ai_run, 2,	NULL,
-	ai_run, 5,	NULL,
-	ai_run, 5,	NULL,
-	ai_run, 4,	NULL,
-	ai_run, 4,	tank_footstep,
-	ai_run, 3,	NULL,
-	ai_run, 5,	NULL,
-	ai_run, 4,	NULL,
-	ai_run, 5,	NULL,
-	ai_run, 7,	NULL,
-	ai_run, 7,	NULL,
-	ai_run, 6,	NULL,
-	ai_run, 6,	tank_footstep
+	SFP::ai_run, 4,	nullptr,
+	SFP::ai_run, 5,	nullptr,
+	SFP::ai_run, 3,	nullptr,
+	SFP::ai_run, 2,	nullptr,
+	SFP::ai_run, 5,	nullptr,
+	SFP::ai_run, 5,	nullptr,
+	SFP::ai_run, 4,	nullptr,
+	SFP::ai_run, 4,	SFP::tank_footstep,
+	SFP::ai_run, 3,	nullptr,
+	SFP::ai_run, 5,	nullptr,
+	SFP::ai_run, 4,	nullptr,
+	SFP::ai_run, 5,	nullptr,
+	SFP::ai_run, 7,	nullptr,
+	SFP::ai_run, 7,	nullptr,
+	SFP::ai_run, 6,	nullptr,
+	SFP::ai_run, 6,	SFP::tank_footstep
 };
 
 mframe_t tank_frames_stop_run [] =
 {
-	ai_run,  3, NULL,
-	ai_run,  3, NULL,
-	ai_run,  2, NULL,
-	ai_run,  2, NULL,
-	ai_run,  4, tank_footstep
+	SFP::ai_run,  3, nullptr,
+	SFP::ai_run,  3, nullptr,
+	SFP::ai_run,  2, nullptr,
+	SFP::ai_run,  2, nullptr,
+	SFP::ai_run,  4, SFP::tank_footstep
 };
 
 void tank_run (edict_t *self)
@@ -261,39 +270,39 @@ void tank_run (edict_t *self)
 
 mframe_t tank_frames_pain1 [] =
 {
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr
 };
 
 mframe_t tank_frames_pain2 [] =
 {
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr
 };
 
 mframe_t tank_frames_pain3 [] =
 {
-	ai_move, -7, NULL,
-	ai_move, 0,  NULL,
-	ai_move, 0,  NULL,
-	ai_move, 0,  NULL,
-	ai_move, 2,  NULL,
-	ai_move, 0,  NULL,
-	ai_move, 0,  NULL,
-	ai_move, 3,  NULL,
-	ai_move, 0,  NULL,
-	ai_move, 2,  NULL,
-	ai_move, 0,  NULL,
-	ai_move, 0,  NULL,
-	ai_move, 0,  NULL,
-	ai_move, 0,  NULL,
-	ai_move, 0,  NULL,
-	ai_move, 0,  tank_footstep
+	SFP::ai_move, -7, nullptr,
+	SFP::ai_move, 0,  nullptr,
+	SFP::ai_move, 0,  nullptr,
+	SFP::ai_move, 0,  nullptr,
+	SFP::ai_move, 2,  nullptr,
+	SFP::ai_move, 0,  nullptr,
+	SFP::ai_move, 0,  nullptr,
+	SFP::ai_move, 3,  nullptr,
+	SFP::ai_move, 0,  nullptr,
+	SFP::ai_move, 2,  nullptr,
+	SFP::ai_move, 0,  nullptr,
+	SFP::ai_move, 0,  nullptr,
+	SFP::ai_move, 0,  nullptr,
+	SFP::ai_move, 0,  nullptr,
+	SFP::ai_move, 0,  nullptr,
+	SFP::ai_move, 0,  SFP::tank_footstep
 };
 
 
@@ -355,7 +364,7 @@ void TankBlaster (edict_t *self)
 	else // (self->s.frame == FRAME_attak116)
 		flash_number = MZ2_TANK_BLASTER_3;
 
-	AngleVectors (self->s.angles, forward, right, NULL);
+	AngleVectors (self->s.angles, forward, right, nullptr);
 	G_ProjectSource (self->s.origin, monster_flash_offset[flash_number], forward, right, start);
 
 	VectorCopy (self->enemy->s.origin, end);
@@ -385,7 +394,7 @@ void TankRocket (edict_t *self)
 	else // (self->s.frame == FRAME_attak330)
 		flash_number = MZ2_TANK_ROCKET_3;
 
-	AngleVectors (self->s.angles, forward, right, NULL);
+	AngleVectors (self->s.angles, forward, right, nullptr);
 	G_ProjectSource (self->s.origin, monster_flash_offset[flash_number], forward, right, start);
 
 	VectorCopy (self->enemy->s.origin, vec);
@@ -406,7 +415,7 @@ void TankMachineGun (edict_t *self)
 
 	flash_number = MZ2_TANK_MACHINEGUN_1 + (self->s.frame - FRAME_attak406);
 
-	AngleVectors (self->s.angles, forward, right, NULL);
+	AngleVectors (self->s.angles, forward, right, nullptr);
 	G_ProjectSource (self->s.origin, monster_flash_offset[flash_number], forward, right, start);
 
 	if (self->enemy)
@@ -427,50 +436,50 @@ void TankMachineGun (edict_t *self)
 		dir[1] = self->s.angles[1] + 8 * (self->s.frame - FRAME_attak419);
 	dir[2] = 0;
 
-	AngleVectors (dir, forward, NULL, NULL);
+	AngleVectors (dir, forward, nullptr, nullptr);
 
 	monster_fire_bullet (self, start, forward, 20, 4, DEFAULT_BULLET_HSPREAD, DEFAULT_BULLET_VSPREAD, flash_number);
 }	
 
-
+AutoSFP(TankBlaster)
 mframe_t tank_frames_attack_blast [] =
 {
-	ai_charge, 0,	NULL,
-	ai_charge, 0,	NULL,
-	ai_charge, 0,	NULL,
-	ai_charge, 0,	NULL,
-	ai_charge, -1,	NULL,
-	ai_charge, -2,	NULL,
-	ai_charge, -1,	NULL,
-	ai_charge, -1,	NULL,
-	ai_charge, 0,	NULL,
-	ai_charge, 0,	TankBlaster,		// 10
-	ai_charge, 0,	NULL,
-	ai_charge, 0,	NULL,
-	ai_charge, 0,	TankBlaster,
-	ai_charge, 0,	NULL,
-	ai_charge, 0,	NULL,
-	ai_charge, 0,	TankBlaster			// 16
+	SFP::ai_charge, 0,	nullptr,
+	SFP::ai_charge, 0,	nullptr,
+	SFP::ai_charge, 0,	nullptr,
+	SFP::ai_charge, 0,	nullptr,
+	SFP::ai_charge, -1,	nullptr,
+	SFP::ai_charge, -2,	nullptr,
+	SFP::ai_charge, -1,	nullptr,
+	SFP::ai_charge, -1,	nullptr,
+	SFP::ai_charge, 0,	nullptr,
+	SFP::ai_charge, 0,	SFP::TankBlaster,		// 10
+	SFP::ai_charge, 0,	nullptr,
+	SFP::ai_charge, 0,	nullptr,
+	SFP::ai_charge, 0,	SFP::TankBlaster,
+	SFP::ai_charge, 0,	nullptr,
+	SFP::ai_charge, 0,	nullptr,
+	SFP::ai_charge, 0,	SFP::TankBlaster			// 16
 };
 
 mframe_t tank_frames_reattack_blast [] =
 {
-	ai_charge, 0,	NULL,
-	ai_charge, 0,	NULL,
-	ai_charge, 0,	TankBlaster,
-	ai_charge, 0,	NULL,
-	ai_charge, 0,	NULL,
-	ai_charge, 0,	TankBlaster			// 16
+	SFP::ai_charge, 0,	nullptr,
+	SFP::ai_charge, 0,	nullptr,
+	SFP::ai_charge, 0,	SFP::TankBlaster,
+	SFP::ai_charge, 0,	nullptr,
+	SFP::ai_charge, 0,	nullptr,
+	SFP::ai_charge, 0,	SFP::TankBlaster			// 16
 };
 
 mframe_t tank_frames_attack_post_blast [] =	
 {
-	ai_move, 0,		NULL,				// 17
-	ai_move, 0,		NULL,
-	ai_move, 2,		NULL,
-	ai_move, 3,		NULL,
-	ai_move, 2,		NULL,
-	ai_move, -2,	tank_footstep		// 22
+	SFP::ai_move, 0,		nullptr,				// 17
+	SFP::ai_move, 0,		nullptr,
+	SFP::ai_move, 2,		nullptr,
+	SFP::ai_move, 3,		nullptr,
+	SFP::ai_move, 2,		nullptr,
+	SFP::ai_move, -2,	SFP::tank_footstep		// 22
 };
 
 void tank_reattack_blaster (edict_t *self)
@@ -489,152 +498,152 @@ void tank_reattack_blaster (edict_t *self)
 
 void tank_poststrike (edict_t *self)
 {
-	self->enemy = NULL;
+	self->enemy = nullptr;
 	tank_run (self);
 }
-
+AutoSFP(TankStrike)
 mframe_t tank_frames_attack_strike [] =
 {
-	ai_move, 3,   NULL,
-	ai_move, 2,   NULL,
-	ai_move, 2,   NULL,
-	ai_move, 1,   NULL,
-	ai_move, 6,   NULL,
-	ai_move, 7,   NULL,
-	ai_move, 9,   tank_footstep,
-	ai_move, 2,   NULL,
-	ai_move, 1,   NULL,
-	ai_move, 2,   NULL,
-	ai_move, 2,   tank_footstep,
-	ai_move, 2,   NULL,
-	ai_move, 0,   NULL,
-	ai_move, 0,   NULL,
-	ai_move, 0,   NULL,
-	ai_move, 0,   NULL,
-	ai_move, -2,  NULL,
-	ai_move, -2,  NULL,
-	ai_move, 0,   tank_windup,
-	ai_move, 0,   NULL,
-	ai_move, 0,   NULL,
-	ai_move, 0,   NULL,
-	ai_move, 0,   NULL,
-	ai_move, 0,   NULL,
-	ai_move, 0,   NULL,
-	ai_move, 0,   TankStrike,
-	ai_move, 0,   NULL,
-	ai_move, -1,  NULL,
-	ai_move, -1,  NULL,
-	ai_move, -1,  NULL,
-	ai_move, -1,  NULL,
-	ai_move, -1,  NULL,
-	ai_move, -3,  NULL,
-	ai_move, -10, NULL,
-	ai_move, -10, NULL,
-	ai_move, -2,  NULL,
-	ai_move, -3,  NULL,
-	ai_move, -2,  tank_footstep
+	SFP::ai_move, 3,   nullptr,
+	SFP::ai_move, 2,   nullptr,
+	SFP::ai_move, 2,   nullptr,
+	SFP::ai_move, 1,   nullptr,
+	SFP::ai_move, 6,   nullptr,
+	SFP::ai_move, 7,   nullptr,
+	SFP::ai_move, 9,   SFP::tank_footstep,
+	SFP::ai_move, 2,   nullptr,
+	SFP::ai_move, 1,   nullptr,
+	SFP::ai_move, 2,   nullptr,
+	SFP::ai_move, 2,   SFP::tank_footstep,
+	SFP::ai_move, 2,   nullptr,
+	SFP::ai_move, 0,   nullptr,
+	SFP::ai_move, 0,   nullptr,
+	SFP::ai_move, 0,   nullptr,
+	SFP::ai_move, 0,   nullptr,
+	SFP::ai_move, -2,  nullptr,
+	SFP::ai_move, -2,  nullptr,
+	SFP::ai_move, 0,   SFP::tank_windup,
+	SFP::ai_move, 0,   nullptr,
+	SFP::ai_move, 0,   nullptr,
+	SFP::ai_move, 0,   nullptr,
+	SFP::ai_move, 0,   nullptr,
+	SFP::ai_move, 0,   nullptr,
+	SFP::ai_move, 0,   nullptr,
+	SFP::ai_move, 0,   SFP::TankStrike,
+	SFP::ai_move, 0,   nullptr,
+	SFP::ai_move, -1,  nullptr,
+	SFP::ai_move, -1,  nullptr,
+	SFP::ai_move, -1,  nullptr,
+	SFP::ai_move, -1,  nullptr,
+	SFP::ai_move, -1,  nullptr,
+	SFP::ai_move, -3,  nullptr,
+	SFP::ai_move, -10, nullptr,
+	SFP::ai_move, -10, nullptr,
+	SFP::ai_move, -2,  nullptr,
+	SFP::ai_move, -3,  nullptr,
+	SFP::ai_move, -2,  SFP::tank_footstep
 };
 
 mframe_t tank_frames_attack_pre_rocket [] =
 {
-	ai_charge, 0,  NULL,
-	ai_charge, 0,  NULL,
-	ai_charge, 0,  NULL,
-	ai_charge, 0,  NULL,
-	ai_charge, 0,  NULL,
-	ai_charge, 0,  NULL,
-	ai_charge, 0,  NULL,
-	ai_charge, 0,  NULL,
-	ai_charge, 0,  NULL,
-	ai_charge, 0,  NULL,			// 10
+	SFP::ai_charge, 0,  nullptr,
+	SFP::ai_charge, 0,  nullptr,
+	SFP::ai_charge, 0,  nullptr,
+	SFP::ai_charge, 0,  nullptr,
+	SFP::ai_charge, 0,  nullptr,
+	SFP::ai_charge, 0,  nullptr,
+	SFP::ai_charge, 0,  nullptr,
+	SFP::ai_charge, 0,  nullptr,
+	SFP::ai_charge, 0,  nullptr,
+	SFP::ai_charge, 0,  nullptr,			// 10
 
-	ai_charge, 0,  NULL,
-	ai_charge, 1,  NULL,
-	ai_charge, 2,  NULL,
-	ai_charge, 7,  NULL,
-	ai_charge, 7,  NULL,
-	ai_charge, 7,  tank_footstep,
-	ai_charge, 0,  NULL,
-	ai_charge, 0,  NULL,
-	ai_charge, 0,  NULL,
-	ai_charge, 0,  NULL,			// 20
+	SFP::ai_charge, 0,  nullptr,
+	SFP::ai_charge, 1,  nullptr,
+	SFP::ai_charge, 2,  nullptr,
+	SFP::ai_charge, 7,  nullptr,
+	SFP::ai_charge, 7,  nullptr,
+	SFP::ai_charge, 7,  SFP::tank_footstep,
+	SFP::ai_charge, 0,  nullptr,
+	SFP::ai_charge, 0,  nullptr,
+	SFP::ai_charge, 0,  nullptr,
+	SFP::ai_charge, 0,  nullptr,			// 20
 
-	ai_charge, -3, NULL
+	SFP::ai_charge, -3, nullptr
 };
-
+AutoSFP(TankRocket)
 mframe_t tank_frames_attack_fire_rocket [] =
 {
-	ai_charge, -3, NULL,			// Loop Start	22 
-	ai_charge, 0,  NULL,
-	ai_charge, 0,  TankRocket,		// 24
-	ai_charge, 0,  NULL,
-	ai_charge, 0,  NULL,
-	ai_charge, 0,  TankRocket,
-	ai_charge, 0,  NULL,
-	ai_charge, 0,  NULL,
-	ai_charge, -1, TankRocket		// 30	Loop End
+	SFP::ai_charge, -3, nullptr,			// Loop Start	22 
+	SFP::ai_charge, 0,  nullptr,
+	SFP::ai_charge, 0,  SFP::TankRocket,		// 24
+	SFP::ai_charge, 0,  nullptr,
+	SFP::ai_charge, 0,  nullptr,
+	SFP::ai_charge, 0,  SFP::TankRocket,
+	SFP::ai_charge, 0,  nullptr,
+	SFP::ai_charge, 0,  nullptr,
+	SFP::ai_charge, -1, SFP::TankRocket		// 30	Loop End
 };
 
 mframe_t tank_frames_attack_post_rocket [] =
 {	
-	ai_charge, 0,  NULL,			// 31
-	ai_charge, -1, NULL,
-	ai_charge, -1, NULL,
-	ai_charge, 0,  NULL,
-	ai_charge, 2,  NULL,
-	ai_charge, 3,  NULL,
-	ai_charge, 4,  NULL,
-	ai_charge, 2,  NULL,
-	ai_charge, 0,  NULL,
-	ai_charge, 0,  NULL,			// 40
+	SFP::ai_charge, 0,  nullptr,			// 31
+	SFP::ai_charge, -1, nullptr,
+	SFP::ai_charge, -1, nullptr,
+	SFP::ai_charge, 0,  nullptr,
+	SFP::ai_charge, 2,  nullptr,
+	SFP::ai_charge, 3,  nullptr,
+	SFP::ai_charge, 4,  nullptr,
+	SFP::ai_charge, 2,  nullptr,
+	SFP::ai_charge, 0,  nullptr,
+	SFP::ai_charge, 0,  nullptr,			// 40
 
-	ai_charge, 0,  NULL,
-	ai_charge, -9, NULL,
-	ai_charge, -8, NULL,
-	ai_charge, -7, NULL,
-	ai_charge, -1, NULL,
-	ai_charge, -1, tank_footstep,
-	ai_charge, 0,  NULL,
-	ai_charge, 0,  NULL,
-	ai_charge, 0,  NULL,
-	ai_charge, 0,  NULL,			// 50
+	SFP::ai_charge, 0,  nullptr,
+	SFP::ai_charge, -9, nullptr,
+	SFP::ai_charge, -8, nullptr,
+	SFP::ai_charge, -7, nullptr,
+	SFP::ai_charge, -1, nullptr,
+	SFP::ai_charge, -1, SFP::tank_footstep,
+	SFP::ai_charge, 0,  nullptr,
+	SFP::ai_charge, 0,  nullptr,
+	SFP::ai_charge, 0,  nullptr,
+	SFP::ai_charge, 0,  nullptr,			// 50
 
-	ai_charge, 0,  NULL,
-	ai_charge, 0,  NULL,
-	ai_charge, 0,  NULL
+	SFP::ai_charge, 0,  nullptr,
+	SFP::ai_charge, 0,  nullptr,
+	SFP::ai_charge, 0,  nullptr
 };
-
+AutoSFP(TankMachineGun)
 mframe_t tank_frames_attack_chain [] =
 {
-	ai_charge, 0, NULL,
-	ai_charge, 0, NULL,
-	ai_charge, 0, NULL,
-	ai_charge, 0, NULL,
-	ai_charge, 0, NULL,
-	NULL,      0, TankMachineGun,
-	NULL,      0, TankMachineGun,
-	NULL,      0, TankMachineGun,
-	NULL,      0, TankMachineGun,
-	NULL,      0, TankMachineGun,
-	NULL,      0, TankMachineGun,
-	NULL,      0, TankMachineGun,
-	NULL,      0, TankMachineGun,
-	NULL,      0, TankMachineGun,
-	NULL,      0, TankMachineGun,
-	NULL,      0, TankMachineGun,
-	NULL,      0, TankMachineGun,
-	NULL,      0, TankMachineGun,
-	NULL,      0, TankMachineGun,
-	NULL,      0, TankMachineGun,
-	NULL,      0, TankMachineGun,
-	NULL,      0, TankMachineGun,
-	NULL,      0, TankMachineGun,
-	NULL,      0, TankMachineGun,
-	ai_charge, 0, NULL,
-	ai_charge, 0, NULL,
-	ai_charge, 0, NULL,
-	ai_charge, 0, NULL,
-	ai_charge, 0, NULL
+	SFP::ai_charge, 0, nullptr,
+	SFP::ai_charge, 0, nullptr,
+	SFP::ai_charge, 0, nullptr,
+	SFP::ai_charge, 0, nullptr,
+	SFP::ai_charge, 0, nullptr,
+	nullptr,      0, SFP::TankMachineGun,
+	nullptr,      0, SFP::TankMachineGun,
+	nullptr,      0, SFP::TankMachineGun,
+	nullptr,      0, SFP::TankMachineGun,
+	nullptr,      0, SFP::TankMachineGun,
+	nullptr,      0, SFP::TankMachineGun,
+	nullptr,      0, SFP::TankMachineGun,
+	nullptr,      0, SFP::TankMachineGun,
+	nullptr,      0, SFP::TankMachineGun,
+	nullptr,      0, SFP::TankMachineGun,
+	nullptr,      0, SFP::TankMachineGun,
+	nullptr,      0, SFP::TankMachineGun,
+	nullptr,      0, SFP::TankMachineGun,
+	nullptr,      0, SFP::TankMachineGun,
+	nullptr,      0, SFP::TankMachineGun,
+	nullptr,      0, SFP::TankMachineGun,
+	nullptr,      0, SFP::TankMachineGun,
+	nullptr,      0, SFP::TankMachineGun,
+	nullptr,      0, SFP::TankMachineGun,
+	SFP::ai_charge, 0, nullptr,
+	SFP::ai_charge, 0, nullptr,
+	SFP::ai_charge, 0, nullptr,
+	SFP::ai_charge, 0, nullptr,
+	SFP::ai_charge, 0, nullptr
 };
 
 void tank_refire_rocket (edict_t *self)
@@ -719,65 +728,70 @@ void tank_dead (edict_t *self)
 
 mframe_t tank_frames_death1 [] =
 {
-	ai_move, -7,  NULL,
-	ai_move, -2,  NULL,
-	ai_move, -2,  NULL,
-	ai_move, 1,   NULL,
-	ai_move, 3,   NULL,
-	ai_move, 6,   NULL,
-	ai_move, 1,   NULL,
-	ai_move, 1,   NULL,
-	ai_move, 2,   NULL,
-	ai_move, 0,   NULL,
-	ai_move, 0,   NULL,
-	ai_move, 0,   NULL,
-	ai_move, -2,  NULL,
-	ai_move, 0,   NULL,
-	ai_move, 0,   NULL,
-	ai_move, -3,  NULL,
-	ai_move, 0,   NULL,
-	ai_move, 0,   NULL,
-	ai_move, 0,   NULL,
-	ai_move, 0,   NULL,
-	ai_move, 0,   NULL,
-	ai_move, 0,   NULL,
-	ai_move, -4,  NULL,
-	ai_move, -6,  NULL,
-	ai_move, -4,  NULL,
-	ai_move, -5,  NULL,
-	ai_move, -7,  NULL,
-	ai_move, -15, tank_thud,
-	ai_move, -5,  NULL,
-	ai_move, 0,   NULL,
-	ai_move, 0,   NULL,
-	ai_move, 0,   NULL
+	SFP::ai_move, -7,  nullptr,
+	SFP::ai_move, -2,  nullptr,
+	SFP::ai_move, -2,  nullptr,
+	SFP::ai_move, 1,   nullptr,
+	SFP::ai_move, 3,   nullptr,
+	SFP::ai_move, 6,   nullptr,
+	SFP::ai_move, 1,   nullptr,
+	SFP::ai_move, 1,   nullptr,
+	SFP::ai_move, 2,   nullptr,
+	SFP::ai_move, 0,   nullptr,
+	SFP::ai_move, 0,   nullptr,
+	SFP::ai_move, 0,   nullptr,
+	SFP::ai_move, -2,  nullptr,
+	SFP::ai_move, 0,   nullptr,
+	SFP::ai_move, 0,   nullptr,
+	SFP::ai_move, -3,  nullptr,
+	SFP::ai_move, 0,   nullptr,
+	SFP::ai_move, 0,   nullptr,
+	SFP::ai_move, 0,   nullptr,
+	SFP::ai_move, 0,   nullptr,
+	SFP::ai_move, 0,   nullptr,
+	SFP::ai_move, 0,   nullptr,
+	SFP::ai_move, -4,  nullptr,
+	SFP::ai_move, -6,  nullptr,
+	SFP::ai_move, -4,  nullptr,
+	SFP::ai_move, -5,  nullptr,
+	SFP::ai_move, -7,  nullptr,
+	SFP::ai_move, -15, SFP::tank_thud,
+	SFP::ai_move, -5,  nullptr,
+	SFP::ai_move, 0,   nullptr,
+	SFP::ai_move, 0,   nullptr,
+	SFP::ai_move, 0,   nullptr
 };
-
+AutoSFP(tank_reattack_blaster)
+AutoSFP(tank_poststrike)
+AutoSFP(tank_doattack_rocket)
+AutoSFP(tank_refire_rocket)
+AutoSFP(tank_dead)
+AutoSFP(tank_run)
 mmove_t	tank_moves[] = {
-	{FRAME_stand01, FRAME_stand30, tank_frames_stand, NULL},
-	{FRAME_walk01, FRAME_walk04, tank_frames_start_walk, tank_walk},
-	{FRAME_walk05, FRAME_walk20, tank_frames_walk, NULL},
-	{FRAME_walk21, FRAME_walk25, tank_frames_stop_walk, tank_stand},
-	{FRAME_walk01, FRAME_walk04, tank_frames_start_run, tank_run},
-	{FRAME_walk05, FRAME_walk20, tank_frames_run, NULL},
-	{FRAME_walk21, FRAME_walk25, tank_frames_stop_run, tank_walk},
-	{FRAME_pain101, FRAME_pain104, tank_frames_pain1, tank_run},
-	{FRAME_pain201, FRAME_pain205, tank_frames_pain2, tank_run},
-	{FRAME_pain301, FRAME_pain316, tank_frames_pain3, tank_run},
-	{FRAME_attak101, FRAME_attak116, tank_frames_attack_blast, tank_reattack_blaster},
-	{FRAME_attak111, FRAME_attak116, tank_frames_reattack_blast, tank_reattack_blaster},
-	{FRAME_attak117, FRAME_attak122, tank_frames_attack_post_blast, tank_run},
-	{FRAME_attak201, FRAME_attak238, tank_frames_attack_strike, tank_poststrike},
-	{FRAME_attak301, FRAME_attak321, tank_frames_attack_pre_rocket, tank_doattack_rocket},
-	{FRAME_attak322, FRAME_attak330, tank_frames_attack_fire_rocket, tank_refire_rocket},
-	{FRAME_attak331, FRAME_attak353, tank_frames_attack_post_rocket, tank_run},
-	{FRAME_attak401, FRAME_attak429, tank_frames_attack_chain, tank_run},
-	{FRAME_death101, FRAME_death132, tank_frames_death1, tank_dead}
+	{FRAME_stand01, FRAME_stand30, tank_frames_stand, nullptr},
+	{FRAME_walk01, FRAME_walk04, tank_frames_start_walk, SFP::tank_walk},
+	{FRAME_walk05, FRAME_walk20, tank_frames_walk, nullptr},
+	{FRAME_walk21, FRAME_walk25, tank_frames_stop_walk, SFP::tank_stand},
+	{FRAME_walk01, FRAME_walk04, tank_frames_start_run, SFP::tank_run},
+	{FRAME_walk05, FRAME_walk20, tank_frames_run, nullptr},
+	{FRAME_walk21, FRAME_walk25, tank_frames_stop_run, SFP::tank_walk},
+	{FRAME_pain101, FRAME_pain104, tank_frames_pain1, SFP::tank_run},
+	{FRAME_pain201, FRAME_pain205, tank_frames_pain2, SFP::tank_run},
+	{FRAME_pain301, FRAME_pain316, tank_frames_pain3, SFP::tank_run},
+	{FRAME_attak101, FRAME_attak116, tank_frames_attack_blast, SFP::tank_reattack_blaster},
+	{FRAME_attak111, FRAME_attak116, tank_frames_reattack_blast, SFP::tank_reattack_blaster},
+	{FRAME_attak117, FRAME_attak122, tank_frames_attack_post_blast, SFP::tank_run},
+	{FRAME_attak201, FRAME_attak238, tank_frames_attack_strike, SFP::tank_poststrike},
+	{FRAME_attak301, FRAME_attak321, tank_frames_attack_pre_rocket, SFP::tank_doattack_rocket},
+	{FRAME_attak322, FRAME_attak330, tank_frames_attack_fire_rocket, SFP::tank_refire_rocket},
+	{FRAME_attak331, FRAME_attak353, tank_frames_attack_post_rocket, SFP::tank_run},
+	{FRAME_attak401, FRAME_attak429, tank_frames_attack_chain, SFP::tank_run},
+	{FRAME_death101, FRAME_death132, tank_frames_death1, SFP::tank_dead}
 };
 
 mmove_t * tank_get_currentmove(edict_t *self)
 {
-	if (!self->monsterinfo.currentmove) return NULL;
+	if (!self->monsterinfo.currentmove) return nullptr;
 	return &tank_moves[self->monsterinfo.currentmove-1];
 }
 
@@ -811,7 +825,10 @@ void tank_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int damage,
 	
 }
 
-
+SFPEnt(pain, tank_pain);
+SFPEnt(die, tank_die);
+SFPEnt(monsterinfo.attack, tank_attack);
+SFPEnt(monsterinfo.get_currentmove, tank_get_currentmove);
 //
 // monster_tank
 //
@@ -864,17 +881,17 @@ void SP_monster_tank (edict_t *self)
 
 	self->mass = 500;
 
-	self->pain = tank_pain;
-	self->die = tank_die;
-	self->monsterinfo.stand = tank_stand;
-	self->monsterinfo.walk = tank_walk;
-	self->monsterinfo.run = tank_run;
-	self->monsterinfo.dodge = NULL;
-	self->monsterinfo.attack = tank_attack;
-	self->monsterinfo.melee = NULL;
-	self->monsterinfo.sight = tank_sight;
-	self->monsterinfo.idle = tank_idle;
-	self->monsterinfo.get_currentmove = tank_get_currentmove;
+	self->pain = SFP::tank_pain;
+	self->die = SFP::tank_die;
+	self->monsterinfo.stand = SFP::tank_stand;
+	self->monsterinfo.walk = SFP::tank_walk;
+	self->monsterinfo.run = SFP::tank_run;
+	self->monsterinfo.dodge = nullptr;
+	self->monsterinfo.attack = SFP::tank_attack;
+	self->monsterinfo.melee = nullptr;
+	self->monsterinfo.sight = SFP::tank_sight;
+	self->monsterinfo.idle = SFP::tank_idle;
+	self->monsterinfo.get_currentmove = SFP::tank_get_currentmove;
 
 	gi.linkentity (self);
 	

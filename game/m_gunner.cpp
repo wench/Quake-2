@@ -53,6 +53,11 @@ enum {
 	gunner_move_endfire_chain,
 	gunner_move_attack_grenade
 };
+AutoSFP(ai_charge)
+AutoSFP(ai_stand)
+AutoSFP(ai_walk)
+AutoSFP(ai_move)
+AutoSFP(ai_run)
 
 
 void gunner_idlesound (edict_t *self)
@@ -79,62 +84,63 @@ void gunner_refire_chain(edict_t *self);
 
 
 void gunner_stand (edict_t *self);
+AutoSFP(gunner_idlesound)
 
 mframe_t gunner_frames_fidget [] =
 {
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, gunner_idlesound,
-	ai_stand, 0, NULL,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, SFP::gunner_idlesound,
+	SFP::ai_stand, 0, nullptr,
 
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
 
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
 
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
 
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr
 };
 
 void gunner_fidget (edict_t *self)
@@ -144,41 +150,42 @@ void gunner_fidget (edict_t *self)
 	if (random() <= 0.05)
 		self->monsterinfo.currentmove = gunner_move_fidget;
 }
+AutoSFP(gunner_fidget)
 
 mframe_t gunner_frames_stand [] =
 {
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, gunner_fidget,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, SFP::gunner_fidget,
 
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, gunner_fidget,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, SFP::gunner_fidget,
 
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, gunner_fidget
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, SFP::gunner_fidget
 };
 
 void gunner_stand (edict_t *self)
@@ -189,19 +196,19 @@ void gunner_stand (edict_t *self)
 
 mframe_t gunner_frames_walk [] =
 {
-	ai_walk, 0, NULL,
-	ai_walk, 3, NULL,
-	ai_walk, 4, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 7, NULL,
-	ai_walk, 2, NULL,
-	ai_walk, 6, NULL,
-	ai_walk, 4, NULL,
-	ai_walk, 2, NULL,
-	ai_walk, 7, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 7, NULL,
-	ai_walk, 4, NULL
+	SFP::ai_walk, 0, nullptr,
+	SFP::ai_walk, 3, nullptr,
+	SFP::ai_walk, 4, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 7, nullptr,
+	SFP::ai_walk, 2, nullptr,
+	SFP::ai_walk, 6, nullptr,
+	SFP::ai_walk, 4, nullptr,
+	SFP::ai_walk, 2, nullptr,
+	SFP::ai_walk, 7, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 7, nullptr,
+	SFP::ai_walk, 4, nullptr
 };
 
 void gunner_walk (edict_t *self)
@@ -211,14 +218,14 @@ void gunner_walk (edict_t *self)
 
 mframe_t gunner_frames_run [] =
 {
-	ai_run, 26, NULL,
-	ai_run, 9,  NULL,
-	ai_run, 9,  NULL,
-	ai_run, 9,  NULL,
-	ai_run, 15, NULL,
-	ai_run, 10, NULL,
-	ai_run, 13, NULL,
-	ai_run, 6,  NULL
+	SFP::ai_run, 26, nullptr,
+	SFP::ai_run, 9,  nullptr,
+	SFP::ai_run, 9,  nullptr,
+	SFP::ai_run, 9,  nullptr,
+	SFP::ai_run, 15, nullptr,
+	SFP::ai_run, 10, nullptr,
+	SFP::ai_run, 13, nullptr,
+	SFP::ai_run, 6,  nullptr
 };
 
 
@@ -232,12 +239,12 @@ void gunner_run (edict_t *self)
 
 mframe_t gunner_frames_runandshoot [] =
 {
-	ai_run, 32, NULL,
-	ai_run, 15, NULL,
-	ai_run, 10, NULL,
-	ai_run, 18, NULL,
-	ai_run, 8,  NULL,
-	ai_run, 20, NULL
+	SFP::ai_run, 32, nullptr,
+	SFP::ai_run, 15, nullptr,
+	SFP::ai_run, 10, nullptr,
+	SFP::ai_run, 18, nullptr,
+	SFP::ai_run, 8,  nullptr,
+	SFP::ai_run, 20, nullptr
 };
 
 
@@ -248,45 +255,45 @@ void gunner_runandshoot (edict_t *self)
 
 mframe_t gunner_frames_pain3 [] =
 {
-	ai_move, -3, NULL,
-	ai_move, 1,	 NULL,
-	ai_move, 1,	 NULL,
-	ai_move, 0,	 NULL,
-	ai_move, 1,	 NULL
+	SFP::ai_move, -3, nullptr,
+	SFP::ai_move, 1,	 nullptr,
+	SFP::ai_move, 1,	 nullptr,
+	SFP::ai_move, 0,	 nullptr,
+	SFP::ai_move, 1,	 nullptr
 };
 
 mframe_t gunner_frames_pain2 [] =
 {
-	ai_move, -2, NULL,
-	ai_move, 11, NULL,
-	ai_move, 6,	 NULL,
-	ai_move, 2,	 NULL,
-	ai_move, -1, NULL,
-	ai_move, -7, NULL,
-	ai_move, -2, NULL,
-	ai_move, -7, NULL
+	SFP::ai_move, -2, nullptr,
+	SFP::ai_move, 11, nullptr,
+	SFP::ai_move, 6,	 nullptr,
+	SFP::ai_move, 2,	 nullptr,
+	SFP::ai_move, -1, nullptr,
+	SFP::ai_move, -7, nullptr,
+	SFP::ai_move, -2, nullptr,
+	SFP::ai_move, -7, nullptr
 };
 
 mframe_t gunner_frames_pain1 [] =
 {
-	ai_move, 2,	 NULL,
-	ai_move, 0,	 NULL,
-	ai_move, -5, NULL,
-	ai_move, 3,	 NULL,
-	ai_move, -1, NULL,
-	ai_move, 0,	 NULL,
-	ai_move, 0,	 NULL,
-	ai_move, 0,	 NULL,
-	ai_move, 0,	 NULL,
-	ai_move, 1,	 NULL,
-	ai_move, 1,	 NULL,
-	ai_move, 2,	 NULL,
-	ai_move, 1,	 NULL,
-	ai_move, 0,	 NULL,
-	ai_move, -2, NULL,
-	ai_move, -2, NULL,
-	ai_move, 0,	 NULL,
-	ai_move, 0,	 NULL
+	SFP::ai_move, 2,	 nullptr,
+	SFP::ai_move, 0,	 nullptr,
+	SFP::ai_move, -5, nullptr,
+	SFP::ai_move, 3,	 nullptr,
+	SFP::ai_move, -1, nullptr,
+	SFP::ai_move, 0,	 nullptr,
+	SFP::ai_move, 0,	 nullptr,
+	SFP::ai_move, 0,	 nullptr,
+	SFP::ai_move, 0,	 nullptr,
+	SFP::ai_move, 1,	 nullptr,
+	SFP::ai_move, 1,	 nullptr,
+	SFP::ai_move, 2,	 nullptr,
+	SFP::ai_move, 1,	 nullptr,
+	SFP::ai_move, 0,	 nullptr,
+	SFP::ai_move, -2, nullptr,
+	SFP::ai_move, -2, nullptr,
+	SFP::ai_move, 0,	 nullptr,
+	SFP::ai_move, 0,	 nullptr
 };
 
 void gunner_pain (edict_t *self, edict_t *other, float kick, int damage)
@@ -327,17 +334,17 @@ void gunner_dead (edict_t *self)
 
 mframe_t gunner_frames_death [] =
 {
-	ai_move, 0,	 NULL,
-	ai_move, 0,	 NULL,
-	ai_move, 0,	 NULL,
-	ai_move, -7, NULL,
-	ai_move, -3, NULL,
-	ai_move, -5, NULL,
-	ai_move, 8,	 NULL,
-	ai_move, 6,	 NULL,
-	ai_move, 0,	 NULL,
-	ai_move, 0,	 NULL,
-	ai_move, 0,	 NULL
+	SFP::ai_move, 0,	 nullptr,
+	SFP::ai_move, 0,	 nullptr,
+	SFP::ai_move, 0,	 nullptr,
+	SFP::ai_move, -7, nullptr,
+	SFP::ai_move, -3, nullptr,
+	SFP::ai_move, -5, nullptr,
+	SFP::ai_move, 8,	 nullptr,
+	SFP::ai_move, 6,	 nullptr,
+	SFP::ai_move, 0,	 nullptr,
+	SFP::ai_move, 0,	 nullptr,
+	SFP::ai_move, 0,	 nullptr
 };
 
 void gunner_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int damage, vec3_t point)
@@ -400,17 +407,19 @@ void gunner_duck_up (edict_t *self)
 	self->takedamage = DAMAGE_AIM;
 	gi.linkentity (self);
 }
-
+AutoSFP(gunner_duck_down)
+AutoSFP(gunner_duck_hold)
+AutoSFP(gunner_duck_up)
 mframe_t gunner_frames_duck [] =
 {
-	ai_move, 1,  gunner_duck_down,
-	ai_move, 1,  NULL,
-	ai_move, 1,  gunner_duck_hold,
-	ai_move, 0,  NULL,
-	ai_move, -1, NULL,
-	ai_move, -1, NULL,
-	ai_move, 0,  gunner_duck_up,
-	ai_move, -1, NULL
+	SFP::ai_move, 1,  SFP::gunner_duck_down,
+	SFP::ai_move, 1,  nullptr,
+	SFP::ai_move, 1,  SFP::gunner_duck_hold,
+	SFP::ai_move, 0,  nullptr,
+	SFP::ai_move, -1, nullptr,
+	SFP::ai_move, -1, nullptr,
+	SFP::ai_move, 0,  SFP::gunner_duck_up,
+	SFP::ai_move, -1, nullptr
 };
 
 void gunner_dodge (edict_t *self, edict_t *attacker, float eta)
@@ -440,7 +449,7 @@ void GunnerFire (edict_t *self)
 
 	flash_number = MZ2_GUNNER_MACHINEGUN_1 + (self->s.frame - FRAME_attak216);
 
-	AngleVectors (self->s.angles, forward, right, NULL);
+	AngleVectors (self->s.angles, forward, right, nullptr);
 	G_ProjectSource (self->s.origin, monster_flash_offset[flash_number], forward, right, start);
 
 	// project enemy back a bit and target there
@@ -469,7 +478,7 @@ void GunnerGrenade (edict_t *self)
 	else // (self->s.frame == FRAME_attak114)
 		flash_number = MZ2_GUNNER_GRENADE_4;
 
-	AngleVectors (self->s.angles, forward, right, NULL);
+	AngleVectors (self->s.angles, forward, right, nullptr);
 	G_ProjectSource (self->s.origin, monster_flash_offset[flash_number], forward, right, start);
 
 	//FIXME : do a spread -225 -75 75 225 degrees around forward
@@ -477,74 +486,76 @@ void GunnerGrenade (edict_t *self)
 
 	monster_fire_grenade (self, start, aim, 50, 600, flash_number);
 }
-
+AutoSFP(gunner_opengun)
+AutoSFP(GunnerFire)
+AutoSFP(GunnerGrenade)
 mframe_t gunner_frames_attack_chain [] =
 {
 	/*
-	ai_charge, 0, NULL,
-	ai_charge, 0, NULL,
-	ai_charge, 0, NULL,
-	ai_charge, 0, NULL,
-	ai_charge, 0, NULL,
-	ai_charge, 0, NULL,
-	ai_charge, 0, NULL,
-	ai_charge, 0, NULL,
+	ai_charge, 0, nullptr,
+	ai_charge, 0, nullptr,
+	ai_charge, 0, nullptr,
+	ai_charge, 0, nullptr,
+	ai_charge, 0, nullptr,
+	ai_charge, 0, nullptr,
+	ai_charge, 0, nullptr,
+	SFP::ai_charge, 0, nullptr,
 	*/
-	ai_charge, 0, gunner_opengun,
-	ai_charge, 0, NULL,
-	ai_charge, 0, NULL,
-	ai_charge, 0, NULL,
-	ai_charge, 0, NULL,
-	ai_charge, 0, NULL,
-	ai_charge, 0, NULL
+	SFP::ai_charge, 0, SFP::gunner_opengun,
+	SFP::ai_charge, 0, nullptr,
+	SFP::ai_charge, 0, nullptr,
+	SFP::ai_charge, 0, nullptr,
+	SFP::ai_charge, 0, nullptr,
+	SFP::ai_charge, 0, nullptr,
+	SFP::ai_charge, 0, nullptr
 };
 
 mframe_t gunner_frames_fire_chain [] =
 {
-	ai_charge,   0, GunnerFire,
-	ai_charge,   0, GunnerFire,
-	ai_charge,   0, GunnerFire,
-	ai_charge,   0, GunnerFire,
-	ai_charge,   0, GunnerFire,
-	ai_charge,   0, GunnerFire,
-	ai_charge,   0, GunnerFire,
-	ai_charge,   0, GunnerFire
+	SFP::ai_charge,   0, SFP::GunnerFire,
+	SFP::ai_charge,   0, SFP::GunnerFire,
+	SFP::ai_charge,   0, SFP::GunnerFire,
+	SFP::ai_charge,   0, SFP::GunnerFire,
+	SFP::ai_charge,   0, SFP::GunnerFire,
+	SFP::ai_charge,   0, SFP::GunnerFire,
+	SFP::ai_charge,   0, SFP::GunnerFire,
+	SFP::ai_charge,   0, SFP::GunnerFire
 };
 
 mframe_t gunner_frames_endfire_chain [] =
 {
-	ai_charge, 0, NULL,
-	ai_charge, 0, NULL,
-	ai_charge, 0, NULL,
-	ai_charge, 0, NULL,
-	ai_charge, 0, NULL,
-	ai_charge, 0, NULL,
-	ai_charge, 0, NULL
+	SFP::ai_charge, 0, nullptr,
+	SFP::ai_charge, 0, nullptr,
+	SFP::ai_charge, 0, nullptr,
+	SFP::ai_charge, 0, nullptr,
+	SFP::ai_charge, 0, nullptr,
+	SFP::ai_charge, 0, nullptr,
+	SFP::ai_charge, 0, nullptr
 };
 
 mframe_t gunner_frames_attack_grenade [] =
 {
-	ai_charge, 0, NULL,
-	ai_charge, 0, NULL,
-	ai_charge, 0, NULL,
-	ai_charge, 0, NULL,
-	ai_charge, 0, GunnerGrenade,
-	ai_charge, 0, NULL,
-	ai_charge, 0, NULL,
-	ai_charge, 0, GunnerGrenade,
-	ai_charge, 0, NULL,
-	ai_charge, 0, NULL,
-	ai_charge, 0, GunnerGrenade,
-	ai_charge, 0, NULL,
-	ai_charge, 0, NULL,
-	ai_charge, 0, GunnerGrenade,
-	ai_charge, 0, NULL,
-	ai_charge, 0, NULL,
-	ai_charge, 0, NULL,
-	ai_charge, 0, NULL,
-	ai_charge, 0, NULL,
-	ai_charge, 0, NULL,
-	ai_charge, 0, NULL
+	SFP::ai_charge, 0, nullptr,
+	SFP::ai_charge, 0, nullptr,
+	SFP::ai_charge, 0, nullptr,
+	SFP::ai_charge, 0, nullptr,
+	SFP::ai_charge, 0, SFP::GunnerGrenade,
+	SFP::ai_charge, 0, nullptr,
+	SFP::ai_charge, 0, nullptr,
+	SFP::ai_charge, 0, SFP::GunnerGrenade,
+	SFP::ai_charge, 0, nullptr,
+	SFP::ai_charge, 0, nullptr,
+	SFP::ai_charge, 0, SFP::GunnerGrenade,
+	SFP::ai_charge, 0, nullptr,
+	SFP::ai_charge, 0, nullptr,
+	SFP::ai_charge, 0, SFP::GunnerGrenade,
+	SFP::ai_charge, 0, nullptr,
+	SFP::ai_charge, 0, nullptr,
+	SFP::ai_charge, 0, nullptr,
+	SFP::ai_charge, 0, nullptr,
+	SFP::ai_charge, 0, nullptr,
+	SFP::ai_charge, 0, nullptr,
+	SFP::ai_charge, 0, nullptr
 };
 
 void gunner_attack(edict_t *self)
@@ -578,30 +589,44 @@ void gunner_refire_chain(edict_t *self)
 			}
 	self->monsterinfo.currentmove = gunner_move_endfire_chain;
 }
-
+AutoSFP(gunner_stand)
+AutoSFP(gunner_run)
+AutoSFP(gunner_dead)
+AutoSFP(gunner_fire_chain)
+AutoSFP(gunner_refire_chain)
 mmove_t	gunner_moves[] = {
-	{FRAME_stand31, FRAME_stand70, gunner_frames_fidget, gunner_stand},
-	{FRAME_stand01, FRAME_stand30, gunner_frames_stand, NULL},
-	{FRAME_walk07, FRAME_walk19, gunner_frames_walk, NULL},
-	{FRAME_run01, FRAME_run08, gunner_frames_run, NULL},
-	{FRAME_runs01, FRAME_runs06, gunner_frames_runandshoot, NULL},
-	{FRAME_pain301, FRAME_pain305, gunner_frames_pain3, gunner_run},
-	{FRAME_pain201, FRAME_pain208, gunner_frames_pain2, gunner_run},
-	{FRAME_pain101, FRAME_pain118, gunner_frames_pain1, gunner_run},
-	{FRAME_death01, FRAME_death11, gunner_frames_death, gunner_dead},
-	{FRAME_duck01, FRAME_duck08, gunner_frames_duck, gunner_run},
-	{FRAME_attak209, FRAME_attak215, gunner_frames_attack_chain, gunner_fire_chain},
-	{FRAME_attak216, FRAME_attak223, gunner_frames_fire_chain, gunner_refire_chain},
-	{FRAME_attak224, FRAME_attak230, gunner_frames_endfire_chain, gunner_run},
-	{FRAME_attak101, FRAME_attak121, gunner_frames_attack_grenade, gunner_run},
+	{FRAME_stand31, FRAME_stand70, gunner_frames_fidget, SFP::gunner_stand},
+	{FRAME_stand01, FRAME_stand30, gunner_frames_stand, nullptr},
+	{FRAME_walk07, FRAME_walk19, gunner_frames_walk, nullptr},
+	{FRAME_run01, FRAME_run08, gunner_frames_run, nullptr},
+	{FRAME_runs01, FRAME_runs06, gunner_frames_runandshoot, nullptr},
+	{FRAME_pain301, FRAME_pain305, gunner_frames_pain3, SFP::gunner_run},
+	{FRAME_pain201, FRAME_pain208, gunner_frames_pain2, SFP::gunner_run},
+	{FRAME_pain101, FRAME_pain118, gunner_frames_pain1, SFP::gunner_run},
+	{FRAME_death01, FRAME_death11, gunner_frames_death, SFP::gunner_dead},
+	{FRAME_duck01, FRAME_duck08, gunner_frames_duck, SFP::gunner_run},
+	{FRAME_attak209, FRAME_attak215, gunner_frames_attack_chain, SFP::gunner_fire_chain},
+	{FRAME_attak216, FRAME_attak223, gunner_frames_fire_chain, SFP::gunner_refire_chain},
+	{FRAME_attak224, FRAME_attak230, gunner_frames_endfire_chain, SFP::gunner_run},
+	{FRAME_attak101, FRAME_attak121, gunner_frames_attack_grenade, SFP::gunner_run},
 };
 
 mmove_t * gunner_get_currentmove(edict_t *self)
 {
-	if (!self->monsterinfo.currentmove) return NULL;
+	if (!self->monsterinfo.currentmove) return nullptr;
 	return &gunner_moves[self->monsterinfo.currentmove-1];
 }
 
+SFPEnt(pain, gunner_pain)
+SFPEnt(die, gunner_die)
+
+SFPEnt(monsterinfo.walk, gunner_walk)
+SFPEnt(monsterinfo.dodge, gunner_dodge)
+SFPEnt(monsterinfo.attack, gunner_attack)
+
+SFPEnt(monsterinfo.sight, gunner_sight)
+SFPEnt(monsterinfo.search, gunner_search)
+SFPEnt(monsterinfo.get_currentmove, gunner_get_currentmove)
 /*QUAKED monster_gunner (1 .5 0) (-16 -16 -24) (16 16 32) Ambush Trigger_Spawn Sight
 */
 void SP_monster_gunner (edict_t *self)
@@ -633,18 +658,18 @@ void SP_monster_gunner (edict_t *self)
 	self->gib_health = -70;
 	self->mass = 200;
 
-	self->pain = gunner_pain;
-	self->die = gunner_die;
+	self->pain = SFP::gunner_pain;
+	self->die = SFP::gunner_die;
 
-	self->monsterinfo.stand = gunner_stand;
-	self->monsterinfo.walk = gunner_walk;
-	self->monsterinfo.run = gunner_run;
-	self->monsterinfo.dodge = gunner_dodge;
-	self->monsterinfo.attack = gunner_attack;
-	self->monsterinfo.melee = NULL;
-	self->monsterinfo.sight = gunner_sight;
-	self->monsterinfo.search = gunner_search;
-	self->monsterinfo.get_currentmove = gunner_get_currentmove;
+	self->monsterinfo.stand = SFP::gunner_stand;
+	self->monsterinfo.walk = SFP::gunner_walk;
+	self->monsterinfo.run = SFP::gunner_run;
+	self->monsterinfo.dodge = SFP::gunner_dodge;
+	self->monsterinfo.attack = SFP::gunner_attack;
+	self->monsterinfo.melee = nullptr;
+	self->monsterinfo.sight = SFP::gunner_sight;
+	self->monsterinfo.search = SFP::gunner_search;
+	self->monsterinfo.get_currentmove = SFP::gunner_get_currentmove;
 
 	gi.linkentity (self);
 

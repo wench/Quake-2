@@ -50,7 +50,11 @@ enum {
 	gladiator_move_pain_air,
 	gladiator_move_death
 };
-
+AutoSFP(ai_charge)
+AutoSFP(ai_stand)
+AutoSFP(ai_walk)
+AutoSFP(ai_move)
+AutoSFP(ai_run)
 
 void gladiator_idle (edict_t *self)
 {
@@ -74,13 +78,13 @@ void gladiator_cleaver_swing (edict_t *self)
 
 mframe_t gladiator_frames_stand [] =
 {
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr
 };
 
 void gladiator_stand (edict_t *self)
@@ -91,22 +95,22 @@ void gladiator_stand (edict_t *self)
 
 mframe_t gladiator_frames_walk [] =
 {
-	ai_walk, 15, NULL,
-	ai_walk, 7,  NULL,
-	ai_walk, 6,  NULL,
-	ai_walk, 5,  NULL,
-	ai_walk, 2,  NULL,
-	ai_walk, 0,  NULL,
-	ai_walk, 2,  NULL,
-	ai_walk, 8,  NULL,
-	ai_walk, 12, NULL,
-	ai_walk, 8,  NULL,
-	ai_walk, 5,  NULL,
-	ai_walk, 5,  NULL,
-	ai_walk, 2,  NULL,
-	ai_walk, 2,  NULL,
-	ai_walk, 1,  NULL,
-	ai_walk, 8,  NULL
+	SFP::ai_walk, 15, nullptr,
+	SFP::ai_walk, 7,  nullptr,
+	SFP::ai_walk, 6,  nullptr,
+	SFP::ai_walk, 5,  nullptr,
+	SFP::ai_walk, 2,  nullptr,
+	SFP::ai_walk, 0,  nullptr,
+	SFP::ai_walk, 2,  nullptr,
+	SFP::ai_walk, 8,  nullptr,
+	SFP::ai_walk, 12, nullptr,
+	SFP::ai_walk, 8,  nullptr,
+	SFP::ai_walk, 5,  nullptr,
+	SFP::ai_walk, 5,  nullptr,
+	SFP::ai_walk, 2,  nullptr,
+	SFP::ai_walk, 2,  nullptr,
+	SFP::ai_walk, 1,  nullptr,
+	SFP::ai_walk, 8,  nullptr
 };
 
 void gladiator_walk (edict_t *self)
@@ -117,12 +121,12 @@ void gladiator_walk (edict_t *self)
 
 mframe_t gladiator_frames_run [] =
 {
-	ai_run, 23,	NULL,
-	ai_run, 14,	NULL,
-	ai_run, 14,	NULL,
-	ai_run, 21,	NULL,
-	ai_run, 12,	NULL,
-	ai_run, 13,	NULL
+	SFP::ai_run, 23,	nullptr,
+	SFP::ai_run, 14,	nullptr,
+	SFP::ai_run, 14,	nullptr,
+	SFP::ai_run, 21,	nullptr,
+	SFP::ai_run, 12,	nullptr,
+	SFP::ai_run, 13,	nullptr
 };
 
 void gladiator_run (edict_t *self)
@@ -144,26 +148,27 @@ void GaldiatorMelee (edict_t *self)
 	else
 		gi.sound (self, CHAN_AUTO, sound_cleaver_miss, 1, ATTN_NORM, 0);
 }
-
+AutoSFP(gladiator_cleaver_swing)
+AutoSFP(GaldiatorMelee)
 mframe_t gladiator_frames_attack_melee [] =
 {
-	ai_charge, 0, NULL,
-	ai_charge, 0, NULL,
-	ai_charge, 0, NULL,
-	ai_charge, 0, NULL,
-	ai_charge, 0, gladiator_cleaver_swing,
-	ai_charge, 0, NULL,
-	ai_charge, 0, GaldiatorMelee,
-	ai_charge, 0, NULL,
-	ai_charge, 0, NULL,
-	ai_charge, 0, NULL,
-	ai_charge, 0, gladiator_cleaver_swing,
-	ai_charge, 0, NULL,
-	ai_charge, 0, NULL,
-	ai_charge, 0, GaldiatorMelee,
-	ai_charge, 0, NULL,
-	ai_charge, 0, NULL,
-	ai_charge, 0, NULL
+	SFP::ai_charge, 0, nullptr,
+	SFP::ai_charge, 0, nullptr,
+	SFP::ai_charge, 0, nullptr,
+	SFP::ai_charge, 0, nullptr,
+	SFP::ai_charge, 0, SFP::gladiator_cleaver_swing,
+	SFP::ai_charge, 0, nullptr,
+	SFP::ai_charge, 0, SFP::GaldiatorMelee,
+	SFP::ai_charge, 0, nullptr,
+	SFP::ai_charge, 0, nullptr,
+	SFP::ai_charge, 0, nullptr,
+	SFP::ai_charge, 0, SFP::gladiator_cleaver_swing,
+	SFP::ai_charge, 0, nullptr,
+	SFP::ai_charge, 0, nullptr,
+	SFP::ai_charge, 0, SFP::GaldiatorMelee,
+	SFP::ai_charge, 0, nullptr,
+	SFP::ai_charge, 0, nullptr,
+	SFP::ai_charge, 0, nullptr
 };
 
 void gladiator_melee(edict_t *self)
@@ -178,7 +183,7 @@ void GladiatorGun (edict_t *self)
 	vec3_t	dir;
 	vec3_t	forward, right;
 
-	AngleVectors (self->s.angles, forward, right, NULL);
+	AngleVectors (self->s.angles, forward, right, nullptr);
 	G_ProjectSource (self->s.origin, monster_flash_offset[MZ2_GLADIATOR_RAILGUN_1], forward, right, start);
 
 	// calc direction to where we targted
@@ -187,18 +192,18 @@ void GladiatorGun (edict_t *self)
 
 	monster_fire_railgun (self, start, dir, 50, 100, MZ2_GLADIATOR_RAILGUN_1);
 }
-
+AutoSFP(GladiatorGun)
 mframe_t gladiator_frames_attack_gun [] =
 {
-	ai_charge, 0, NULL,
-	ai_charge, 0, NULL,
-	ai_charge, 0, NULL,
-	ai_charge, 0, GladiatorGun,
-	ai_charge, 0, NULL,
-	ai_charge, 0, NULL,
-	ai_charge, 0, NULL,
-	ai_charge, 0, NULL,
-	ai_charge, 0, NULL
+	SFP::ai_charge, 0, nullptr,
+	SFP::ai_charge, 0, nullptr,
+	SFP::ai_charge, 0, nullptr,
+	SFP::ai_charge, 0, SFP::GladiatorGun,
+	SFP::ai_charge, 0, nullptr,
+	SFP::ai_charge, 0, nullptr,
+	SFP::ai_charge, 0, nullptr,
+	SFP::ai_charge, 0, nullptr,
+	SFP::ai_charge, 0, nullptr
 };
 
 void gladiator_attack(edict_t *self)
@@ -222,23 +227,23 @@ void gladiator_attack(edict_t *self)
 
 mframe_t gladiator_frames_pain [] =
 {
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr
 };
 
 mframe_t gladiator_frames_pain_air [] =
 {
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr
 };
 
 void gladiator_pain (edict_t *self, edict_t *other, float kick, int damage)
@@ -284,28 +289,28 @@ void gladiator_dead (edict_t *self)
 
 mframe_t gladiator_frames_death [] =
 {
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr
 };
 
 void gladiator_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int damage, vec3_t point)
@@ -336,23 +341,36 @@ void gladiator_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int da
 	self->monsterinfo.currentmove = gladiator_move_death;
 }
 
+AutoSFP(gladiator_run)
+AutoSFP(gladiator_dead)
 mmove_t gladiator_moves[] = {
-	{FRAME_stand1, FRAME_stand7, gladiator_frames_stand, NULL},
-	{FRAME_walk1, FRAME_walk16, gladiator_frames_walk, NULL},
-	{FRAME_run1, FRAME_run6, gladiator_frames_run, NULL},
-	{FRAME_melee1, FRAME_melee17, gladiator_frames_attack_melee, gladiator_run},
-	{FRAME_attack1, FRAME_attack9, gladiator_frames_attack_gun, gladiator_run},
-	{FRAME_pain1, FRAME_pain6, gladiator_frames_pain, gladiator_run},
-	{FRAME_painup1, FRAME_painup7, gladiator_frames_pain_air, gladiator_run},
-	{FRAME_death1, FRAME_death22, gladiator_frames_death, gladiator_dead}
+	{FRAME_stand1, FRAME_stand7, gladiator_frames_stand, nullptr},
+	{FRAME_walk1, FRAME_walk16, gladiator_frames_walk, nullptr},
+	{FRAME_run1, FRAME_run6, gladiator_frames_run, nullptr},
+	{FRAME_melee1, FRAME_melee17, gladiator_frames_attack_melee, SFP::gladiator_run},
+	{FRAME_attack1, FRAME_attack9, gladiator_frames_attack_gun, SFP::gladiator_run},
+	{FRAME_pain1, FRAME_pain6, gladiator_frames_pain, SFP::gladiator_run},
+	{FRAME_painup1, FRAME_painup7, gladiator_frames_pain_air, SFP::gladiator_run},
+	{FRAME_death1, FRAME_death22, gladiator_frames_death, SFP::gladiator_dead}
 };
 
 mmove_t * gladiator_get_currentmove(edict_t *self)
 {
-	if (!self->monsterinfo.currentmove) return NULL;
+	if (!self->monsterinfo.currentmove) return nullptr;
 	return &gladiator_moves[self->monsterinfo.currentmove-1];
 }
 
+SFPEnt(pain, gladiator_pain)
+SFPEnt(die, gladiator_die)
+
+SFPEnt(monsterinfo.stand, gladiator_stand)
+SFPEnt(monsterinfo.walk, gladiator_walk)
+SFPEnt(monsterinfo.attack, gladiator_attack)
+SFPEnt(monsterinfo.melee, gladiator_melee)
+SFPEnt(monsterinfo.sight, gladiator_sight)
+SFPEnt(monsterinfo.idle, gladiator_idle)
+SFPEnt(monsterinfo.search, gladiator_search)
+SFPEnt(monsterinfo.get_currentmove, gladiator_get_currentmove)
 
 /*QUAKED monster_gladiator (1 .5 0) (-32 -32 -24) (32 32 64) Ambush Trigger_Spawn Sight
 */
@@ -386,19 +404,19 @@ void SP_monster_gladiator (edict_t *self)
 	self->gib_health = -175;
 	self->mass = 400;
 
-	self->pain = gladiator_pain;
-	self->die = gladiator_die;
+	self->pain = SFP::gladiator_pain;
+	self->die = SFP::gladiator_die;
 
-	self->monsterinfo.stand = gladiator_stand;
-	self->monsterinfo.walk = gladiator_walk;
-	self->monsterinfo.run = gladiator_run;
-	self->monsterinfo.dodge = NULL;
-	self->monsterinfo.attack = gladiator_attack;
-	self->monsterinfo.melee = gladiator_melee;
-	self->monsterinfo.sight = gladiator_sight;
-	self->monsterinfo.idle = gladiator_idle;
-	self->monsterinfo.search = gladiator_search;
-	self->monsterinfo.get_currentmove = gladiator_get_currentmove;
+	self->monsterinfo.stand = SFP::gladiator_stand;
+	self->monsterinfo.walk = SFP::gladiator_walk;
+	self->monsterinfo.run = SFP::gladiator_run;
+	self->monsterinfo.dodge = nullptr;
+	self->monsterinfo.attack = SFP::gladiator_attack;
+	self->monsterinfo.melee = SFP::gladiator_melee;
+	self->monsterinfo.sight = SFP::gladiator_sight;
+	self->monsterinfo.idle = SFP::gladiator_idle;
+	self->monsterinfo.search = SFP::gladiator_search;
+	self->monsterinfo.get_currentmove = SFP::gladiator_get_currentmove;
 
 	gi.linkentity (self);
 	self->monsterinfo.currentmove = gladiator_move_stand;

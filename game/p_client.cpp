@@ -41,7 +41,7 @@ static void SP_FixCoopSpots (edict_t *self)
 	edict_t	*spot;
 	vec3_t	d;
 
-	spot = NULL;
+	spot = nullptr;
 
 	while(1)
 	{
@@ -101,7 +101,7 @@ static void SP_CreateCoopSpots (edict_t *self)
 	}
 }
 
-
+AutoSFP(SP_CreateCoopSpots)
 /*QUAKED info_player_start (1 0 0) (-16 -16 -24) (16 16 32)
 The normal starting point for a level.
 */
@@ -112,7 +112,7 @@ void SP_info_player_start(edict_t *self)
 	if(Q_stricmp(level.mapname, "security") == 0)
 	{
 		// invoke one of our gross, ugly, disgusting hacks
-		self->think = SP_CreateCoopSpots;
+		self->think = SFP::SP_CreateCoopSpots;
 		self->nextthink = level.time + FRAMETIME;
 	}
 }
@@ -133,7 +133,7 @@ void SP_info_player_deathmatch(edict_t *self)
 /*QUAKED info_player_coop (1 0 1) (-16 -16 -24) (16 16 32)
 potential spawning position for coop games
 */
-
+AutoSFP(SP_FixCoopSpots)
 void SP_info_player_coop(edict_t *self)
 {
 	if (!coop->value)
@@ -158,7 +158,7 @@ void SP_info_player_coop(edict_t *self)
 	   (Q_stricmp(level.mapname, "strike") == 0))
 	{
 		// invoke one of our gross, ugly, disgusting hacks
-		self->think = SP_FixCoopSpots;
+		self->think = SFP::SP_FixCoopSpots;
 		self->nextthink = level.time + FRAMETIME;
 	}
 }
@@ -222,7 +222,7 @@ void ClientObituary (edict_t *self, edict_t *inflictor, edict_t *attacker)
 	{
 		ff = meansOfDeath & MOD_FRIENDLY_FIRE;
 		mod = meansOfDeath & ~MOD_FRIENDLY_FIRE;
-		message = NULL;
+		message = nullptr;
 		message2 = "";
 
 		switch (mod)
@@ -306,7 +306,7 @@ void ClientObituary (edict_t *self, edict_t *inflictor, edict_t *attacker)
 			gi.bprintf (PRINT_MEDIUM, "%s %s.\n", self->client->pers.netname, message);
 			if (deathmatch->value)
 				self->client->resp.score--;
-			self->enemy = NULL;
+			self->enemy = nullptr;
 			return;
 		}
 
@@ -406,7 +406,8 @@ void ClientObituary (edict_t *self, edict_t *inflictor, edict_t *attacker)
 
 
 void Touch_Item (edict_t *ent, edict_t *other, cplane_t *plane, csurface_t *surf);
-
+AutoSFP(Touch_Item)
+AutoSFP(G_FreeEdict)
 void TossClientWeapon (edict_t *self)
 {
 	gitem_t		*item;
@@ -419,9 +420,9 @@ void TossClientWeapon (edict_t *self)
 
 	item = self->client->pers.weapon;
 	if (! self->client->pers.inventory[self->client->ammo_index] )
-		item = NULL;
+		item = nullptr;
 	if (item && (strcmp (item->pickup_name, "Blaster") == 0))
-		item = NULL;
+		item = nullptr;
 
 	if (!((int)(dmflags->value) & DF_QUAD_DROP))
 		quad = false;
@@ -448,9 +449,9 @@ void TossClientWeapon (edict_t *self)
 		self->client->v_angle[YAW] -= spread;
 		drop->spawnflags |= DROPPED_PLAYER_ITEM;
 
-		drop->touch = Touch_Item;
+		drop->touch = SFP::Touch_Item;
 		drop->nextthink = level.time + (self->client->quad_framenum - level.framenum) * FRAMETIME;
-		drop->think = G_FreeEdict;
+		drop->think = SFP::G_FreeEdict;
 	}
 }
 
@@ -737,11 +738,11 @@ edict_t *SelectRandomDeathmatchSpawnPoint (void)
 	int		selection;
 	float	range, range1, range2;
 
-	spot = NULL;
+	spot = nullptr;
 	range1 = range2 = 99999;
-	spot1 = spot2 = NULL;
+	spot1 = spot2 = nullptr;
 
-	while ((spot = G_Find (spot, FOFS(classname), "info_player_deathmatch")) != NULL)
+	while ((spot = G_Find (spot, FOFS(classname), "info_player_deathmatch")) != nullptr)
 	{
 		count++;
 		range = PlayersRangeFromSpot(spot);
@@ -758,18 +759,18 @@ edict_t *SelectRandomDeathmatchSpawnPoint (void)
 	}
 
 	if (!count)
-		return NULL;
+		return nullptr;
 
 	if (count <= 2)
 	{
-		spot1 = spot2 = NULL;
+		spot1 = spot2 = nullptr;
 	}
 	else
 		count -= 2;
 
 	selection = rand() % count;
 
-	spot = NULL;
+	spot = nullptr;
 	do
 	{
 		spot = G_Find (spot, FOFS(classname), "info_player_deathmatch");
@@ -793,10 +794,10 @@ edict_t *SelectFarthestDeathmatchSpawnPoint (void)
 	edict_t	*spot;
 
 
-	spot = NULL;
-	bestspot = NULL;
+	spot = nullptr;
+	bestspot = nullptr;
 	bestdistance = 0;
-	while ((spot = G_Find (spot, FOFS(classname), "info_player_deathmatch")) != NULL)
+	while ((spot = G_Find (spot, FOFS(classname), "info_player_deathmatch")) != nullptr)
 	{
 		bestplayerdistance = PlayersRangeFromSpot (spot);
 
@@ -814,7 +815,7 @@ edict_t *SelectFarthestDeathmatchSpawnPoint (void)
 
 	// if there is a player just spawned on each and every start spot
 	// we have no choice to turn one into a telefrag meltdown
-	spot = G_Find (NULL, FOFS(classname), "info_player_deathmatch");
+	spot = G_Find (nullptr, FOFS(classname), "info_player_deathmatch");
 
 	return spot;
 }
@@ -831,23 +832,23 @@ edict_t *SelectDeathmatchSpawnPoint (void)
 edict_t *SelectCoopSpawnPoint (edict_t *ent)
 {
 	int		index;
-	edict_t	*spot = NULL;
+	edict_t	*spot = nullptr;
 	char	*target;
 
 	index = ent->client - game.clients;
 
 	// player 0 starts in normal player spawn point
 	if (!index)
-		return NULL;
+		return nullptr;
 
-	spot = NULL;
+	spot = nullptr;
 
 	// assume there are four coop spots at each spawnpoint
 	while (1)
 	{
 		spot = G_Find (spot, FOFS(classname), "info_player_coop");
 		if (!spot)
-			return NULL;	// we didn't have enough...
+			return nullptr;	// we didn't have enough...
 
 		target = spot->targetname;
 		if (!target)
@@ -874,7 +875,7 @@ Chooses a player start, deathmatch start, coop start, etc
 */
 void	SelectSpawnPoint (edict_t *ent, vec3_t origin, vec3_t angles)
 {
-	edict_t	*spot = NULL;
+	edict_t	*spot = nullptr;
 
 	if (deathmatch->value)
 		spot = SelectDeathmatchSpawnPoint ();
@@ -884,7 +885,7 @@ void	SelectSpawnPoint (edict_t *ent, vec3_t origin, vec3_t angles)
 	// find a single player start spot
 	if (!spot)
 	{
-		while ((spot = G_Find (spot, FOFS(classname), "info_player_start")) != NULL)
+		while ((spot = G_Find (spot, FOFS(classname), "info_player_start")) != nullptr)
 		{
 			if (!game.spawnpoint[0] && !spot->targetname)
 				break;
@@ -942,7 +943,7 @@ void body_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int damage,
 		self->takedamage = DAMAGE_NO;
 	}
 }
-
+SFPEnt(die,body_die)
 void CopyToBodyQue (edict_t *ent)
 {
 	edict_t		*body;
@@ -970,7 +971,7 @@ void CopyToBodyQue (edict_t *ent)
 	body->owner = ent->owner;
 	body->movetype = ent->movetype;
 
-	body->die = body_die;
+	body->die = SFP::body_die;
 	body->takedamage = DAMAGE_YES;
 
 	gi.linkentity (body);
@@ -1301,6 +1302,8 @@ Called when a player connects to a server or respawns in
 a deathmatch.
 ============
 */
+SFPEnt(pain, player_pain)
+SFPEnt(die, player_die)
 void PutClientInServer (edict_t *ent)
 {
 	vec3_t	mins = {-16, -16, -24};
@@ -1370,7 +1373,7 @@ void PutClientInServer (edict_t *ent)
 	FetchClientEntData (ent);
 
 	// clear entity values
-	ent->groundentity = NULL;
+	ent->groundentity = nullptr;
 	ent->client = &game.clients[index];
 	ent->takedamage = DAMAGE_AIM;
 	ent->movetype = MOVETYPE_WALK;
@@ -1383,8 +1386,8 @@ void PutClientInServer (edict_t *ent)
 	ent->air_finished = level.time + 12;
 	ent->clipmask = MASK_PLAYERSOLID;
 	ent->model = "players/male/tris.md2";
-	ent->pain = player_pain;
-	ent->die = player_die;
+	ent->pain = SFP::player_pain;
+	ent->die = SFP::player_die;
 	ent->waterlevel = 0;
 	ent->watertype = 0;
 	ent->flags &= ~FL_NO_KNOCKBACK;
@@ -1446,7 +1449,7 @@ void PutClientInServer (edict_t *ent)
 
 	// spawn a spectator
 	if (client->pers.spectator) {
-		client->chase_target = NULL;
+		client->chase_target = nullptr;
 
 		client->resp.spectator = true;
 
@@ -1974,7 +1977,7 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 				continue;	// duplicated
 			if (!other->touch)
 				continue;
-			other->touch (other, ent, NULL, NULL);
+			other->touch (other, ent, nullptr, nullptr);
 		}
 
 	}
@@ -1995,7 +1998,7 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 			client->latched_buttons = 0;
 
 			if (client->chase_target) {
-				client->chase_target = NULL;
+				client->chase_target = nullptr;
 				client->ps.pmove.pm_flags &= ~PMF_NO_PREDICTION;
 			} else
 				GetChaseTarget(ent);

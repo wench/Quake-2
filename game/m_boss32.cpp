@@ -38,6 +38,18 @@ void makron_step_right (edict_t *self);
 void makronBFG (edict_t *self);
 void makron_dead (edict_t *self);
 
+AutoSFP( MakronRailgun)
+AutoSFP( MakronSaveloc)
+AutoSFP( MakronHyperblaster)
+AutoSFP( makron_step_left)
+AutoSFP( makron_step_right)
+AutoSFP( makronBFG)
+
+AutoSFP(ai_charge)
+AutoSFP(ai_stand)
+AutoSFP(ai_walk)
+AutoSFP(ai_move)
+AutoSFP(ai_run)
 enum {
 	makron_move_stand = 1,
 	makron_move_run,
@@ -87,66 +99,66 @@ void makron_taunt (edict_t *self)
 
 mframe_t makron_frames_stand []=
 {
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,		// 10
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,		// 20
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,		// 30
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,		// 40
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,		// 50
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL		// 60
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,		// 10
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,		// 20
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,		// 30
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,		// 40
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,		// 50
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr		// 60
 };
 	
 void makron_stand (edict_t *self)
@@ -156,16 +168,16 @@ void makron_stand (edict_t *self)
 
 mframe_t makron_frames_run [] =
 {
-	ai_run, 3,	makron_step_left,
-	ai_run, 12,	NULL,
-	ai_run, 8,	NULL,
-	ai_run, 8,	NULL,
-	ai_run, 8,	makron_step_right,
-	ai_run, 6,	NULL,
-	ai_run, 12,	NULL,
-	ai_run, 9,	NULL,
-	ai_run, 6,	NULL,
-	ai_run, 12,	NULL
+	SFP::ai_run, 3,	SFP::makron_step_left,
+	SFP::ai_run, 12,	nullptr,
+	SFP::ai_run, 8,	nullptr,
+	SFP::ai_run, 8,	nullptr,
+	SFP::ai_run, 8,	SFP::makron_step_right,
+	SFP::ai_run, 6,	nullptr,
+	SFP::ai_run, 12,	nullptr,
+	SFP::ai_run, 9,	nullptr,
+	SFP::ai_run, 6,	nullptr,
+	SFP::ai_run, 12,	nullptr
 };
 
 void makron_hit (edict_t *self)
@@ -197,20 +209,24 @@ void makron_prerailgun (edict_t *self)
 {
 	gi.sound (self, CHAN_WEAPON, sound_prerailgun, 1, ATTN_NORM,0);
 }
-
+AutoSFP(makron_brainsplorch)
+AutoSFP(makron_prerailgun)
+AutoSFP(makron_popup)
+AutoSFP(makron_hit)
+AutoSFP(makron_taunt)
 
 mframe_t makron_frames_walk [] =
 {
-	ai_walk, 3,	makron_step_left,
-	ai_walk, 12,	NULL,
-	ai_walk, 8,	NULL,
-	ai_walk, 8,	NULL,
-	ai_walk, 8,	makron_step_right,
-	ai_walk, 6,	NULL,
-	ai_walk, 12,	NULL,
-	ai_walk, 9,	NULL,
-	ai_walk, 6,	NULL,
-	ai_walk, 12,	NULL
+	SFP::ai_walk, 3,	SFP::makron_step_left,
+	SFP::ai_walk, 12,	nullptr,
+	SFP::ai_walk, 8,	nullptr,
+	SFP::ai_walk, 8,	nullptr,
+	SFP::ai_walk, 8,	SFP::makron_step_right,
+	SFP::ai_walk, 6,	nullptr,
+	SFP::ai_walk, 12,	nullptr,
+	SFP::ai_walk, 9,	nullptr,
+	SFP::ai_walk, 6,	nullptr,
+	SFP::ai_walk, 12,	nullptr
 };
 
 void makron_walk (edict_t *self)
@@ -228,189 +244,189 @@ void makron_run (edict_t *self)
 
 mframe_t makron_frames_pain6 [] =
 {
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,		// 10
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	makron_popup,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,		// 20
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	makron_taunt,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,		// 10
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	SFP::makron_popup,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,		// 20
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	SFP::makron_taunt,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr
 };
 
 mframe_t makron_frames_pain5 [] =
 {
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr
 };
 
 mframe_t makron_frames_pain4 [] =
 {
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr
 };
 
 mframe_t makron_frames_death2 [] =
 {
-	ai_move,	-15,	NULL,
-	ai_move,	3,	NULL,
-	ai_move,	-12,	NULL,
-	ai_move,	0,	makron_step_left,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,			// 10
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	11,	NULL,
-	ai_move,	12,	NULL,
-	ai_move,	11,	makron_step_right,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,			// 20
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,			
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,			// 30
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	5,	NULL,
-	ai_move,	7,	NULL,
-	ai_move,	6,	makron_step_left,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	-1,	NULL,
-	ai_move,	2,	NULL,			// 40
-	ai_move,	0,	NULL,			
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,			
-	ai_move,	0,	NULL,			// 50
-	ai_move,	0,	NULL,			
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	-6,	NULL,
-	ai_move,	-4,	NULL,
-	ai_move,	-6,	makron_step_right,
-	ai_move,	-4,	NULL,
-	ai_move,	-4,	makron_step_left,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,			// 60
-	ai_move,	0,	NULL,			
-	ai_move,	0,	NULL,
-	ai_move,	-2,	NULL,
-	ai_move,	-5,	NULL,
-	ai_move,	-3,	makron_step_right,
-	ai_move,	-8,	NULL,
-	ai_move,	-3,	makron_step_left,
-	ai_move,	-7,	NULL,
-	ai_move,	-4,	NULL,
-	ai_move,	-4,	makron_step_right,			// 70
-	ai_move,	-6,	NULL,			
-	ai_move,	-7,	NULL,
-	ai_move,	0,	makron_step_left,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,			// 80
-	ai_move,	0,	NULL,			
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	-2,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	2,	NULL,
-	ai_move,	0,	NULL,			// 90
-	ai_move,	27,	makron_hit,			
-	ai_move,	26,	NULL,
-	ai_move,	0,	makron_brainsplorch,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL			// 95
+	SFP::ai_move,	-15,	nullptr,
+	SFP::ai_move,	3,	nullptr,
+	SFP::ai_move,	-12,	nullptr,
+	SFP::ai_move,	0,	SFP::makron_step_left,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,			// 10
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	11,	nullptr,
+	SFP::ai_move,	12,	nullptr,
+	SFP::ai_move,	11,	SFP::makron_step_right,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,			// 20
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,			
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,			// 30
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	5,	nullptr,
+	SFP::ai_move,	7,	nullptr,
+	SFP::ai_move,	6,	SFP::makron_step_left,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	-1,	nullptr,
+	SFP::ai_move,	2,	nullptr,			// 40
+	SFP::ai_move,	0,	nullptr,			
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,			
+	SFP::ai_move,	0,	nullptr,			// 50
+	SFP::ai_move,	0,	nullptr,			
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	-6,	nullptr,
+	SFP::ai_move,	-4,	nullptr,
+	SFP::ai_move,	-6,	SFP::makron_step_right,
+	SFP::ai_move,	-4,	nullptr,
+	SFP::ai_move,	-4,	SFP::makron_step_left,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,			// 60
+	SFP::ai_move,	0,	nullptr,			
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	-2,	nullptr,
+	SFP::ai_move,	-5,	nullptr,
+	SFP::ai_move,	-3,	SFP::makron_step_right,
+	SFP::ai_move,	-8,	nullptr,
+	SFP::ai_move,	-3,	SFP::makron_step_left,
+	SFP::ai_move,	-7,	nullptr,
+	SFP::ai_move,	-4,	nullptr,
+	SFP::ai_move,	-4,	SFP::makron_step_right,			// 70
+	SFP::ai_move,	-6,	nullptr,			
+	SFP::ai_move,	-7,	nullptr,
+	SFP::ai_move,	0,	SFP::makron_step_left,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,			// 80
+	SFP::ai_move,	0,	nullptr,			
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	-2,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	2,	nullptr,
+	SFP::ai_move,	0,	nullptr,			// 90
+	SFP::ai_move,	27,	SFP::makron_hit,
+	SFP::ai_move,	26,	nullptr,
+	SFP::ai_move,	0,	SFP::makron_brainsplorch,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr			// 95
 };
 
 mframe_t makron_frames_death3 [] =
 {
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr
 };
 
 mframe_t makron_frames_sight [] =
 {
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr
 };
 
 void makronBFG (edict_t *self)
@@ -420,7 +436,7 @@ void makronBFG (edict_t *self)
 	vec3_t	dir;
 	vec3_t	vec;
 
-	AngleVectors (self->s.angles, forward, right, NULL);
+	AngleVectors (self->s.angles, forward, right, nullptr);
 	G_ProjectSource (self->s.origin, monster_flash_offset[MZ2_MAKRON_BFG], forward, right, start);
 
 	VectorCopy (self->enemy->s.origin, vec);
@@ -434,79 +450,81 @@ void makronBFG (edict_t *self)
 
 mframe_t makron_frames_attack3 []=
 {
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	makronBFG,		// FIXME: BFG Attack here
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	SFP::makronBFG,		// FIXME: BFG Attack here
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr
 };
 
 mframe_t makron_frames_attack4[]=
 {
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_move,	0,	MakronHyperblaster,		// fire
-	ai_move,	0,	MakronHyperblaster,		// fire
-	ai_move,	0,	MakronHyperblaster,		// fire
-	ai_move,	0,	MakronHyperblaster,		// fire
-	ai_move,	0,	MakronHyperblaster,		// fire
-	ai_move,	0,	MakronHyperblaster,		// fire
-	ai_move,	0,	MakronHyperblaster,		// fire
-	ai_move,	0,	MakronHyperblaster,		// fire
-	ai_move,	0,	MakronHyperblaster,		// fire
-	ai_move,	0,	MakronHyperblaster,		// fire
-	ai_move,	0,	MakronHyperblaster,		// fire
-	ai_move,	0,	MakronHyperblaster,		// fire
-	ai_move,	0,	MakronHyperblaster,		// fire
-	ai_move,	0,	MakronHyperblaster,		// fire
-	ai_move,	0,	MakronHyperblaster,		// fire
-	ai_move,	0,	MakronHyperblaster,		// fire
-	ai_move,	0,	MakronHyperblaster,		// fire
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_move,	0,	SFP::MakronHyperblaster,		// fire
+	SFP::ai_move,	0,	SFP::MakronHyperblaster,		// fire
+	SFP::ai_move,	0,	SFP::MakronHyperblaster,		// fire
+	SFP::ai_move,	0,	SFP::MakronHyperblaster,		// fire
+	SFP::ai_move,	0,	SFP::MakronHyperblaster,		// fire
+	SFP::ai_move,	0,	SFP::MakronHyperblaster,		// fire
+	SFP::ai_move,	0,	SFP::MakronHyperblaster,		// fire
+	SFP::ai_move,	0,	SFP::MakronHyperblaster,		// fire
+	SFP::ai_move,	0,	SFP::MakronHyperblaster,		// fire
+	SFP::ai_move,	0,	SFP::MakronHyperblaster,		// fire
+	SFP::ai_move,	0,	SFP::MakronHyperblaster,		// fire
+	SFP::ai_move,	0,	SFP::MakronHyperblaster,		// fire
+	SFP::ai_move,	0,	SFP::MakronHyperblaster,		// fire
+	SFP::ai_move,	0,	SFP::MakronHyperblaster,		// fire
+	SFP::ai_move,	0,	SFP::MakronHyperblaster,		// fire
+	SFP::ai_move,	0,	SFP::MakronHyperblaster,		// fire
+	SFP::ai_move,	0,	SFP::MakronHyperblaster,		// fire
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr
 };
 
 mframe_t makron_frames_attack5[]=
 {
-	ai_charge,	0,	makron_prerailgun,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	MakronSaveloc,
-	ai_move,	0,	MakronRailgun,		// Fire railgun
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL
+	SFP::ai_charge,	0,	SFP::makron_prerailgun,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	SFP::MakronSaveloc,
+	SFP::ai_move,	0,	SFP::MakronRailgun,		// Fire railgun
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr
 };
+AutoSFP(makron_run)
+AutoSFP(makron_dead)
 
 mmove_t makron_moves[] = {
-	{FRAME_stand201, FRAME_stand260, makron_frames_stand, NULL},
-	{FRAME_walk204, FRAME_walk213, makron_frames_run, NULL},
-	{FRAME_walk204, FRAME_walk213, makron_frames_run, NULL},
-	{FRAME_pain601, FRAME_pain627, makron_frames_pain6, makron_run},
-	{FRAME_pain501, FRAME_pain504, makron_frames_pain5, makron_run},
-	{FRAME_pain401, FRAME_pain404, makron_frames_pain4, makron_run},
-	{FRAME_death201, FRAME_death295, makron_frames_death2, makron_dead},
-	{FRAME_death301, FRAME_death320, makron_frames_death3, NULL},
-	{FRAME_active01, FRAME_active13, makron_frames_sight, makron_run},
-	{FRAME_attak301, FRAME_attak308, makron_frames_attack3, makron_run},
-	{FRAME_attak401, FRAME_attak426, makron_frames_attack4, makron_run},
-	{FRAME_attak501, FRAME_attak516, makron_frames_attack5, makron_run},
+	{FRAME_stand201, FRAME_stand260, makron_frames_stand, nullptr},
+	{FRAME_walk204, FRAME_walk213, makron_frames_run, nullptr},
+	{FRAME_walk204, FRAME_walk213, makron_frames_run, nullptr},
+	{FRAME_pain601, FRAME_pain627, makron_frames_pain6, SFP::makron_run},
+	{FRAME_pain501, FRAME_pain504, makron_frames_pain5, SFP::makron_run},
+	{FRAME_pain401, FRAME_pain404, makron_frames_pain4, SFP::makron_run},
+	{FRAME_death201, FRAME_death295, makron_frames_death2, SFP::makron_dead},
+	{FRAME_death301, FRAME_death320, makron_frames_death3, nullptr},
+	{FRAME_active01, FRAME_active13, makron_frames_sight, SFP::makron_run},
+	{FRAME_attak301, FRAME_attak308, makron_frames_attack3, SFP::makron_run},
+	{FRAME_attak401, FRAME_attak426, makron_frames_attack4, SFP::makron_run},
+	{FRAME_attak501, FRAME_attak516, makron_frames_attack5, SFP::makron_run},
 };
 
 mmove_t *makron_get_currentmove(edict_t *self)
@@ -528,7 +546,7 @@ void MakronRailgun (edict_t *self)
 	vec3_t	dir;
 	vec3_t	forward, right;
 
-	AngleVectors (self->s.angles, forward, right, NULL);
+	AngleVectors (self->s.angles, forward, right, nullptr);
 	G_ProjectSource (self->s.origin, monster_flash_offset[MZ2_MAKRON_RAILGUN_1], forward, right, start);
 	
 	// calc direction to where we targted
@@ -549,7 +567,7 @@ void MakronHyperblaster (edict_t *self)
 
 	flash_number = MZ2_MAKRON_BLASTER_1 + (self->s.frame - FRAME_attak405);
 
-	AngleVectors (self->s.angles, forward, right, NULL);
+	AngleVectors (self->s.angles, forward, right, nullptr);
 	G_ProjectSource (self->s.origin, monster_flash_offset[flash_number], forward, right, start);
 
 	if (self->enemy)
@@ -570,7 +588,7 @@ void MakronHyperblaster (edict_t *self)
 		dir[1] = self->s.angles[1] + 10 * (self->s.frame - FRAME_attak421);
 	dir[2] = 0;
 
-	AngleVectors (dir, forward, NULL, NULL);
+	AngleVectors (dir, forward, nullptr, nullptr);
 
 	monster_fire_blaster (self, start, forward, 15, 1000, MZ2_MAKRON_BLASTER_1, EF_BLASTER);
 }	
@@ -663,7 +681,7 @@ void makron_torso_think (edict_t *self)
 		self->nextthink = level.time + FRAMETIME;
 	}
 }
-
+AutoSFP(makron_torso_think);
 void makron_torso (edict_t *ent)
 {
 	ent->movetype = MOVETYPE_NONE;
@@ -672,7 +690,7 @@ void makron_torso (edict_t *ent)
 	VectorSet (ent->s.maxs, 8, 8, 8);
 	ent->s.frame = 346;
 	ent->s.modelindex = gi.modelindex ("models/monsters/boss3/rider/tris.md2");
-	ent->think = makron_torso_think;
+	ent->think = SFP::makron_torso_think;
 	ent->nextthink = level.time + 2 * FRAMETIME;
 	ent->s.sound = gi.soundindex ("makron/spine.wav");
 	gi.linkentity (ent);
@@ -750,7 +768,7 @@ qboolean Makron_CheckAttack (edict_t *self)
 		VectorCopy (self->enemy->s.origin, spot2);
 		spot2[2] += self->enemy->viewheight;
 
-		tr = gi.trace (spot1, NULL, NULL, spot2, self, CONTENTS_SOLID|CONTENTS_MONSTER|CONTENTS_SLIME|CONTENTS_LAVA);
+		tr = gi.trace (spot1, nullptr, nullptr, spot2, self, CONTENTS_SOLID|CONTENTS_MONSTER|CONTENTS_SLIME|CONTENTS_LAVA);
 
 		// do we have a clear shot?
 		if (tr.ent != self->enemy)
@@ -848,7 +866,16 @@ void MakronPrecache (void)
 
 	gi.modelindex ("models/monsters/boss3/rider/tris.md2");
 }
+AutoSFP(makron_pain)
+SFPEnt(die, makron_die)
+AutoSFP(makron_stand)
+AutoSFP(makron_walk)
 
+AutoSFP(makron_attack)
+
+AutoSFP(makron_sight)
+AutoSFP(Makron_CheckAttack)
+AutoSFP(makron_get_currentmove)
 /*QUAKED monster_makron (1 .5 0) (-30 -30 0) (30 30 90) Ambush Trigger_Spawn Sight
 */
 void SP_monster_makron (edict_t *self)
@@ -871,17 +898,17 @@ void SP_monster_makron (edict_t *self)
 	self->gib_health = -2000;
 	self->mass = 500;
 
-	self->pain = makron_pain;
-	self->die = makron_die;
-	self->monsterinfo.stand = makron_stand;
-	self->monsterinfo.walk = makron_walk;
-	self->monsterinfo.run = makron_run;
-	self->monsterinfo.dodge = NULL;
-	self->monsterinfo.attack = makron_attack;
-	self->monsterinfo.melee = NULL;
-	self->monsterinfo.sight = makron_sight;
-	self->monsterinfo.checkattack = Makron_CheckAttack;
-	self->monsterinfo.get_currentmove = makron_get_currentmove;
+	self->pain = SFP::makron_pain;
+	self->die = SFP::makron_die;
+	self->monsterinfo.stand = SFP::makron_stand;
+	self->monsterinfo.walk = SFP::makron_walk;
+	self->monsterinfo.run = SFP::makron_run;
+	self->monsterinfo.dodge = nullptr;
+	self->monsterinfo.attack = SFP::makron_attack;
+	self->monsterinfo.melee = nullptr;
+	self->monsterinfo.sight = SFP::makron_sight;
+	self->monsterinfo.checkattack = SFP::Makron_CheckAttack;
+	self->monsterinfo.get_currentmove = SFP::makron_get_currentmove;
 
 	gi.linkentity (self);
 	
@@ -916,9 +943,9 @@ void MakronSpawn (edict_t *self)
 	VectorNormalize (vec);
 	VectorMA (vec3_origin, 400, vec, self->velocity);
 	self->velocity[2] = 200;
-	self->groundentity = NULL;
+	self->groundentity = nullptr;
 }
-
+AutoSFP(MakronSpawn)
 /*
 =================
 MakronToss
@@ -932,7 +959,7 @@ void MakronToss (edict_t *self)
 
 	ent = G_Spawn ();
 	ent->nextthink = level.time + 0.8;
-	ent->think = MakronSpawn;
+	ent->think = SFP::MakronSpawn;
 	ent->target = self->target;
 	VectorCopy (self->s.origin, ent->s.origin);
 }

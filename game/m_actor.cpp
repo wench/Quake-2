@@ -51,52 +51,58 @@ enum {
 
 extern mmove_t actor_moves [];
 
+AutoSFP(ai_charge)
+AutoSFP(ai_stand)
+AutoSFP(ai_walk)
+AutoSFP(ai_move)
+AutoSFP(ai_run)
+AutoSFP(ai_turn)
 
 mframe_t actor_frames_stand [] =
 {
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
 
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
 
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
 
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr
 };
 
 void actor_stand (edict_t *self)
@@ -114,17 +120,17 @@ void actor_stand (edict_t *self)
 
 mframe_t actor_frames_walk [] =
 {
-	ai_walk, 0,  NULL,
-	ai_walk, 6,  NULL,
-	ai_walk, 10, NULL,
-	ai_walk, 3,  NULL,
-	ai_walk, 2,  NULL,
-	ai_walk, 7,  NULL,
-	ai_walk, 10, NULL,
-	ai_walk, 1,  NULL,
-	ai_walk, 4,  NULL,
-	ai_walk, 0,  NULL,
-	ai_walk, 0,  NULL
+	SFP::ai_walk, 0,  nullptr,
+	SFP::ai_walk, 6,  nullptr,
+	SFP::ai_walk, 10, nullptr,
+	SFP::ai_walk, 3,  nullptr,
+	SFP::ai_walk, 2,  nullptr,
+	SFP::ai_walk, 7,  nullptr,
+	SFP::ai_walk, 10, nullptr,
+	SFP::ai_walk, 1,  nullptr,
+	SFP::ai_walk, 4,  nullptr,
+	SFP::ai_walk, 0,  nullptr,
+	SFP::ai_walk, 0,  nullptr
 };
 
 void actor_walk (edict_t *self)
@@ -135,18 +141,18 @@ void actor_walk (edict_t *self)
 
 mframe_t actor_frames_run [] =
 {
-	ai_run, 4,  NULL,
-	ai_run, 15, NULL,
-	ai_run, 15, NULL,
-	ai_run, 8,  NULL,
-	ai_run, 20, NULL,
-	ai_run, 15, NULL,
-	ai_run, 8,  NULL,
-	ai_run, 17, NULL,
-	ai_run, 12, NULL,
-	ai_run, -2, NULL,
-	ai_run, -2, NULL,
-	ai_run, -1, NULL
+	SFP::ai_run, 4,  nullptr,
+	SFP::ai_run, 15, nullptr,
+	SFP::ai_run, 15, nullptr,
+	SFP::ai_run, 8,  nullptr,
+	SFP::ai_run, 20, nullptr,
+	SFP::ai_run, 15, nullptr,
+	SFP::ai_run, 8,  nullptr,
+	SFP::ai_run, 17, nullptr,
+	SFP::ai_run, 12, nullptr,
+	SFP::ai_run, -2, nullptr,
+	SFP::ai_run, -2, nullptr,
+	SFP::ai_run, -1, nullptr
 };
 
 void actor_run (edict_t *self)
@@ -172,62 +178,62 @@ void actor_run (edict_t *self)
 
 mframe_t actor_frames_pain1 [] =
 {
-	ai_move, -5, NULL,
-	ai_move, 4,  NULL,
-	ai_move, 1,  NULL
+	SFP::ai_move, -5, nullptr,
+	SFP::ai_move, 4,  nullptr,
+	SFP::ai_move, 1,  nullptr
 };
 
 mframe_t actor_frames_pain2 [] =
 {
-	ai_move, -4, NULL,
-	ai_move, 4,  NULL,
-	ai_move, 0,  NULL
+	SFP::ai_move, -4, nullptr,
+	SFP::ai_move, 4,  nullptr,
+	SFP::ai_move, 0,  nullptr
 };
 
 mframe_t actor_frames_pain3 [] =
 {
-	ai_move, -1, NULL,
-	ai_move, 1,  NULL,
-	ai_move, 0,  NULL
+	SFP::ai_move, -1, nullptr,
+	SFP::ai_move, 1,  nullptr,
+	SFP::ai_move, 0,  nullptr
 };
 
 mframe_t actor_frames_flipoff [] =
 {
-	ai_turn, 0,  NULL,
-	ai_turn, 0,  NULL,
-	ai_turn, 0,  NULL,
-	ai_turn, 0,  NULL,
-	ai_turn, 0,  NULL,
-	ai_turn, 0,  NULL,
-	ai_turn, 0,  NULL,
-	ai_turn, 0,  NULL,
-	ai_turn, 0,  NULL,
-	ai_turn, 0,  NULL,
-	ai_turn, 0,  NULL,
-	ai_turn, 0,  NULL,
-	ai_turn, 0,  NULL,
-	ai_turn, 0,  NULL
+	SFP::ai_turn, 0,  nullptr,
+	SFP::ai_turn, 0,  nullptr,
+	SFP::ai_turn, 0,  nullptr,
+	SFP::ai_turn, 0,  nullptr,
+	SFP::ai_turn, 0,  nullptr,
+	SFP::ai_turn, 0,  nullptr,
+	SFP::ai_turn, 0,  nullptr,
+	SFP::ai_turn, 0,  nullptr,
+	SFP::ai_turn, 0,  nullptr,
+	SFP::ai_turn, 0,  nullptr,
+	SFP::ai_turn, 0,  nullptr,
+	SFP::ai_turn, 0,  nullptr,
+	SFP::ai_turn, 0,  nullptr,
+	SFP::ai_turn, 0,  nullptr
 };
 
 mframe_t actor_frames_taunt [] =
 {
-	ai_turn, 0,  NULL,
-	ai_turn, 0,  NULL,
-	ai_turn, 0,  NULL,
-	ai_turn, 0,  NULL,
-	ai_turn, 0,  NULL,
-	ai_turn, 0,  NULL,
-	ai_turn, 0,  NULL,
-	ai_turn, 0,  NULL,
-	ai_turn, 0,  NULL,
-	ai_turn, 0,  NULL,
-	ai_turn, 0,  NULL,
-	ai_turn, 0,  NULL,
-	ai_turn, 0,  NULL,
-	ai_turn, 0,  NULL,
-	ai_turn, 0,  NULL,
-	ai_turn, 0,  NULL,
-	ai_turn, 0,  NULL
+	SFP::ai_turn, 0,  nullptr,
+	SFP::ai_turn, 0,  nullptr,
+	SFP::ai_turn, 0,  nullptr,
+	SFP::ai_turn, 0,  nullptr,
+	SFP::ai_turn, 0,  nullptr,
+	SFP::ai_turn, 0,  nullptr,
+	SFP::ai_turn, 0,  nullptr,
+	SFP::ai_turn, 0,  nullptr,
+	SFP::ai_turn, 0,  nullptr,
+	SFP::ai_turn, 0,  nullptr,
+	SFP::ai_turn, 0,  nullptr,
+	SFP::ai_turn, 0,  nullptr,
+	SFP::ai_turn, 0,  nullptr,
+	SFP::ai_turn, 0,  nullptr,
+	SFP::ai_turn, 0,  nullptr,
+	SFP::ai_turn, 0,  nullptr,
+	SFP::ai_turn, 0,  nullptr
 };
 
 char *messages[] =
@@ -282,7 +288,7 @@ void actorMachineGun (edict_t *self)
 	vec3_t	start, target;
 	vec3_t	forward, right;
 
-	AngleVectors (self->s.angles, forward, right, NULL);
+	AngleVectors (self->s.angles, forward, right, nullptr);
 	G_ProjectSource (self->s.origin, monster_flash_offset[MZ2_ACTOR_MACHINEGUN_1], forward, right, start);
 	if (self->enemy)
 	{
@@ -301,7 +307,7 @@ void actorMachineGun (edict_t *self)
 	}
 	else
 	{
-		AngleVectors (self->s.angles, forward, NULL, NULL);
+		AngleVectors (self->s.angles, forward, nullptr, nullptr);
 	}
 	monster_fire_bullet (self, start, forward, 3, 4, DEFAULT_BULLET_HSPREAD, DEFAULT_BULLET_VSPREAD, MZ2_ACTOR_MACHINEGUN_1);
 }
@@ -319,30 +325,30 @@ void actor_dead (edict_t *self)
 
 mframe_t actor_frames_death1 [] =
 {
-	ai_move, 0,   NULL,
-	ai_move, 0,   NULL,
-	ai_move, -13, NULL,
-	ai_move, 14,  NULL,
-	ai_move, 3,   NULL,
-	ai_move, -2,  NULL,
-	ai_move, 1,   NULL
+	SFP::ai_move, 0,   nullptr,
+	SFP::ai_move, 0,   nullptr,
+	SFP::ai_move, -13, nullptr,
+	SFP::ai_move, 14,  nullptr,
+	SFP::ai_move, 3,   nullptr,
+	SFP::ai_move, -2,  nullptr,
+	SFP::ai_move, 1,   nullptr
 };
 
 mframe_t actor_frames_death2 [] =
 {
-	ai_move, 0,   NULL,
-	ai_move, 7,   NULL,
-	ai_move, -6,  NULL,
-	ai_move, -5,  NULL,
-	ai_move, 1,   NULL,
-	ai_move, 0,   NULL,
-	ai_move, -1,  NULL,
-	ai_move, -2,  NULL,
-	ai_move, -1,  NULL,
-	ai_move, -9,  NULL,
-	ai_move, -13, NULL,
-	ai_move, -13, NULL,
-	ai_move, 0,   NULL
+	SFP::ai_move, 0,   nullptr,
+	SFP::ai_move, 7,   nullptr,
+	SFP::ai_move, -6,  nullptr,
+	SFP::ai_move, -5,  nullptr,
+	SFP::ai_move, 1,   nullptr,
+	SFP::ai_move, 0,   nullptr,
+	SFP::ai_move, -1,  nullptr,
+	SFP::ai_move, -2,  nullptr,
+	SFP::ai_move, -1,  nullptr,
+	SFP::ai_move, -9,  nullptr,
+	SFP::ai_move, -13, nullptr,
+	SFP::ai_move, -13, nullptr,
+	SFP::ai_move, 0,   nullptr
 };
 
 void actor_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int damage, vec3_t point)
@@ -387,32 +393,34 @@ void actor_fire (edict_t *self)
 	else
 		self->monsterinfo.aiflags |= AI_HOLD_FRAME;
 }
-
+AutoSFP(actor_fire)
 mframe_t actor_frames_attack [] =
 {
-	ai_charge, -2,  actor_fire,
-	ai_charge, -2,  NULL,
-	ai_charge, 3,   NULL,
-	ai_charge, 2,   NULL
+	SFP::ai_charge, -2,  SFP::actor_fire,
+	SFP::ai_charge, -2,  nullptr,
+	SFP::ai_charge, 3,   nullptr,
+	SFP::ai_charge, 2,   nullptr
 };
+AutoSFP(actor_run)
+AutoSFP(actor_dead)
 
 mmove_t actor_moves [] = {
-	{FRAME_stand101, FRAME_stand140, actor_frames_stand, NULL},
-	{FRAME_walk01, FRAME_walk08, actor_frames_walk, NULL},
-	{FRAME_run02, FRAME_run07, actor_frames_run, NULL},
-	{FRAME_pain101, FRAME_pain103, actor_frames_pain1, actor_run},
-	{FRAME_pain201, FRAME_pain203, actor_frames_pain2, actor_run},
-	{FRAME_pain301, FRAME_pain303, actor_frames_pain3, actor_run},
-	{FRAME_flip01, FRAME_flip14, actor_frames_flipoff, actor_run},
-	{FRAME_taunt01, FRAME_taunt17, actor_frames_taunt, actor_run},
-	{FRAME_death101, FRAME_death107, actor_frames_death1, actor_dead},
-	{FRAME_death201, FRAME_death213, actor_frames_death2, actor_dead},
-	{FRAME_attak01, FRAME_attak04, actor_frames_attack, actor_run}
+	{FRAME_stand101, FRAME_stand140, actor_frames_stand, nullptr},
+	{FRAME_walk01, FRAME_walk08, actor_frames_walk, nullptr},
+	{FRAME_run02, FRAME_run07, actor_frames_run, nullptr},
+	{FRAME_pain101, FRAME_pain103, actor_frames_pain1, SFP::actor_run},
+	{FRAME_pain201, FRAME_pain203, actor_frames_pain2, SFP::actor_run},
+	{FRAME_pain301, FRAME_pain303, actor_frames_pain3, SFP::actor_run},
+	{FRAME_flip01, FRAME_flip14, actor_frames_flipoff, SFP::actor_run},
+	{FRAME_taunt01, FRAME_taunt17, actor_frames_taunt, SFP::actor_run},
+	{FRAME_death101, FRAME_death107, actor_frames_death1, SFP::actor_dead},
+	{FRAME_death201, FRAME_death213, actor_frames_death2, SFP::actor_dead},
+	{FRAME_attak01, FRAME_attak04, actor_frames_attack, SFP::actor_run}
 };
 
 mmove_t *actor_get_currentmove(edict_t *self)
 {
-	if (!self->monsterinfo.currentmove) return NULL;
+	if (!self->monsterinfo.currentmove) return nullptr;
 	return &actor_moves[self->monsterinfo.currentmove-1];
 }
 
@@ -434,7 +442,7 @@ void actor_use (edict_t *self, edict_t *other, edict_t *activator)
 	if ((!self->movetarget) || (strcmp(self->movetarget->classname, "target_actor") != 0))
 	{
 		gi.dprintf ("%s has bad target %s at %s\n", self->classname, self->target, vtos(self->s.origin));
-		self->target = NULL;
+		self->target = nullptr;
 		self->monsterinfo.pausetime = 100000000;
 		self->monsterinfo.stand (self);
 		return;
@@ -443,10 +451,17 @@ void actor_use (edict_t *self, edict_t *other, edict_t *activator)
 	VectorSubtract (self->goalentity->s.origin, self->s.origin, v);
 	self->ideal_yaw = self->s.angles[YAW] = vectoyaw(v);
 	self->monsterinfo.walk (self);
-	self->target = NULL;
+	self->target = nullptr;
 }
 
+SFPEnt(pain, actor_pain)
+SFPEnt(die, actor_die)
 
+SFPEnt(monsterinfo.get_currentmove, actor_get_currentmove)
+SFPEnt(monsterinfo.stand, actor_stand)
+SFPEnt(monsterinfo.walk, actor_walk)
+SFPEnt(monsterinfo.attack, actor_attack)
+AutoSFP(actor_use)
 /*QUAKED misc_actor (1 .5 0) (-16 -16 -24) (16 16 32)
 */
 
@@ -482,16 +497,16 @@ void SP_misc_actor (edict_t *self)
 		self->health = 100;
 	self->mass = 200;
 
-	self->pain = actor_pain;
-	self->die = actor_die;
+	self->pain = SFP::actor_pain;
+	self->die = SFP::actor_die;
 
-	self->monsterinfo.get_currentmove = actor_get_currentmove;
-	self->monsterinfo.stand = actor_stand;
-	self->monsterinfo.walk = actor_walk;
-	self->monsterinfo.run = actor_run;
-	self->monsterinfo.attack = actor_attack;
-	self->monsterinfo.melee = NULL;
-	self->monsterinfo.sight = NULL;
+	self->monsterinfo.get_currentmove = SFP::actor_get_currentmove;
+	self->monsterinfo.stand = SFP::actor_stand;
+	self->monsterinfo.walk = SFP::actor_walk;
+	self->monsterinfo.run = SFP::actor_run;
+	self->monsterinfo.attack = SFP::actor_attack;
+	self->monsterinfo.melee = nullptr;
+	self->monsterinfo.sight = nullptr;
 
 	self->monsterinfo.aiflags |= AI_GOOD_GUY;
 
@@ -503,7 +518,7 @@ void SP_misc_actor (edict_t *self)
 	walkmonster_start (self);
 
 	// actors always start in a dormant state, they *must* be used to get going
-	self->use = actor_use;
+	self->use = SFP::actor_use;
 }
 
 
@@ -532,7 +547,7 @@ void target_actor_touch (edict_t *self, edict_t *other, cplane_t *plane, csurfac
 	if (other->enemy)
 		return;
 
-	other->goalentity = other->movetarget = NULL;
+	other->goalentity = other->movetarget = nullptr;
 
 	if (self->message)
 	{
@@ -555,7 +570,7 @@ void target_actor_touch (edict_t *self, edict_t *other, cplane_t *plane, csurfac
 		
 		if (other->groundentity)
 		{
-			other->groundentity = NULL;
+			other->groundentity = nullptr;
 			other->velocity[2] = self->movedir[2];
 			gi.sound(other, CHAN_VOICE, gi.soundindex("player/male/jump1.wav"), 1, ATTN_NORM, 0);
 		}
@@ -610,14 +625,14 @@ void target_actor_touch (edict_t *self, edict_t *other, cplane_t *plane, csurfac
 		other->ideal_yaw = vectoyaw (v);
 	}
 }
-
+AutoSFP(target_actor_touch);
 void SP_target_actor (edict_t *self)
 {
 	if (!self->targetname)
 		gi.dprintf ("%s with no targetname at %s\n", self->classname, vtos(self->s.origin));
 
 	self->solid = SOLID_TRIGGER;
-	self->touch = target_actor_touch;
+	self->touch = SFP::target_actor_touch;
 	VectorSet (self->s.mins, -8, -8, -8);
 	VectorSet (self->s.maxs, 8, 8, 8);
 	self->svflags = SVF_NOCLIENT;

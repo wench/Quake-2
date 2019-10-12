@@ -78,6 +78,20 @@ void supertankRocket (edict_t *self);
 void supertankMachineGun (edict_t *self);
 void supertank_reattack1(edict_t *self);
 
+AutoSFP(ai_charge)
+AutoSFP(ai_stand)
+AutoSFP(ai_walk)
+AutoSFP(ai_move)
+AutoSFP(ai_run)
+
+
+AutoSFP(BossExplode)
+AutoSFP(TreadSound)
+AutoSFP(supertank_search)
+AutoSFP(supertank_dead)
+AutoSFP(supertankRocket)
+AutoSFP(supertankMachineGun)
+AutoSFP(supertank_reattack1)
 
 //
 // stand
@@ -85,66 +99,66 @@ void supertank_reattack1(edict_t *self);
 
 mframe_t supertank_frames_stand []=
 {
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr
 };
 	
 void supertank_stand (edict_t *self)
@@ -155,24 +169,24 @@ void supertank_stand (edict_t *self)
 
 mframe_t supertank_frames_run [] =
 {
-	ai_run, 12,	TreadSound,
-	ai_run, 12,	NULL,
-	ai_run, 12,	NULL,
-	ai_run, 12,	NULL,
-	ai_run, 12,	NULL,
-	ai_run, 12,	NULL,
-	ai_run, 12,	NULL,
-	ai_run, 12,	NULL,
-	ai_run, 12,	NULL,
-	ai_run, 12,	NULL,
-	ai_run, 12,	NULL,
-	ai_run, 12,	NULL,
-	ai_run, 12,	NULL,
-	ai_run, 12,	NULL,
-	ai_run, 12,	NULL,
-	ai_run, 12,	NULL,
-	ai_run, 12,	NULL,
-	ai_run, 12,	NULL
+	SFP::ai_run, 12,	SFP::TreadSound,
+	SFP::ai_run, 12,	nullptr,
+	SFP::ai_run, 12,	nullptr,
+	SFP::ai_run, 12,	nullptr,
+	SFP::ai_run, 12,	nullptr,
+	SFP::ai_run, 12,	nullptr,
+	SFP::ai_run, 12,	nullptr,
+	SFP::ai_run, 12,	nullptr,
+	SFP::ai_run, 12,	nullptr,
+	SFP::ai_run, 12,	nullptr,
+	SFP::ai_run, 12,	nullptr,
+	SFP::ai_run, 12,	nullptr,
+	SFP::ai_run, 12,	nullptr,
+	SFP::ai_run, 12,	nullptr,
+	SFP::ai_run, 12,	nullptr,
+	SFP::ai_run, 12,	nullptr,
+	SFP::ai_run, 12,	nullptr,
+	SFP::ai_run, 12,	nullptr
 };
 
 //
@@ -182,24 +196,24 @@ mframe_t supertank_frames_run [] =
 
 mframe_t supertank_frames_forward [] =
 {
-	ai_walk, 4,	TreadSound,
-	ai_walk, 4,	NULL,
-	ai_walk, 4,	NULL,
-	ai_walk, 4,	NULL,
-	ai_walk, 4,	NULL,
-	ai_walk, 4,	NULL,
-	ai_walk, 4,	NULL,
-	ai_walk, 4,	NULL,
-	ai_walk, 4,	NULL,
-	ai_walk, 4,	NULL,
-	ai_walk, 4,	NULL,
-	ai_walk, 4,	NULL,
-	ai_walk, 4,	NULL,
-	ai_walk, 4,	NULL,
-	ai_walk, 4,	NULL,
-	ai_walk, 4,	NULL,
-	ai_walk, 4,	NULL,
-	ai_walk, 4,	NULL
+	SFP::ai_walk, 4,	SFP::TreadSound,
+	SFP::ai_walk, 4,	nullptr,
+	SFP::ai_walk, 4,	nullptr,
+	SFP::ai_walk, 4,	nullptr,
+	SFP::ai_walk, 4,	nullptr,
+	SFP::ai_walk, 4,	nullptr,
+	SFP::ai_walk, 4,	nullptr,
+	SFP::ai_walk, 4,	nullptr,
+	SFP::ai_walk, 4,	nullptr,
+	SFP::ai_walk, 4,	nullptr,
+	SFP::ai_walk, 4,	nullptr,
+	SFP::ai_walk, 4,	nullptr,
+	SFP::ai_walk, 4,	nullptr,
+	SFP::ai_walk, 4,	nullptr,
+	SFP::ai_walk, 4,	nullptr,
+	SFP::ai_walk, 4,	nullptr,
+	SFP::ai_walk, 4,	nullptr,
+	SFP::ai_walk, 4,	nullptr
 };
 
 void supertank_forward (edict_t *self)
@@ -222,245 +236,247 @@ void supertank_run (edict_t *self)
 
 mframe_t supertank_frames_turn_right [] =
 {
-	ai_move,	0,	TreadSound,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL
+	SFP::ai_move,	0,	SFP::TreadSound,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr
 };
 
 mframe_t supertank_frames_turn_left [] =
 {
-	ai_move,	0,	TreadSound,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL
+	SFP::ai_move,	0,	SFP::TreadSound,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr
 };
 
 
 mframe_t supertank_frames_pain3 [] =
 {
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr
 };
 
 mframe_t supertank_frames_pain2 [] =
 {
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr
 };
 
 mframe_t supertank_frames_pain1 [] =
 {
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr
 };
 
 mframe_t supertank_frames_death1 [] =
 {
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	BossExplode
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	SFP::BossExplode
 };
 
 mframe_t supertank_frames_backward[] =
 {
-	ai_walk, 0,	TreadSound,
-	ai_walk, 0,	NULL,
-	ai_walk, 0,	NULL,
-	ai_walk, 0,	NULL,
-	ai_walk, 0,	NULL,
-	ai_walk, 0,	NULL,
-	ai_walk, 0,	NULL,
-	ai_walk, 0,	NULL,
-	ai_walk, 0,	NULL,
-	ai_walk, 0,	NULL,
-	ai_walk, 0,	NULL,
-	ai_walk, 0,	NULL,
-	ai_walk, 0,	NULL,
-	ai_walk, 0,	NULL,
-	ai_walk, 0,	NULL,
-	ai_walk, 0,	NULL,
-	ai_walk, 0,	NULL,
-	ai_walk, 0,	NULL
+	SFP::ai_walk, 0,	SFP::TreadSound,
+	SFP::ai_walk, 0,	nullptr,
+	SFP::ai_walk, 0,	nullptr,
+	SFP::ai_walk, 0,	nullptr,
+	SFP::ai_walk, 0,	nullptr,
+	SFP::ai_walk, 0,	nullptr,
+	SFP::ai_walk, 0,	nullptr,
+	SFP::ai_walk, 0,	nullptr,
+	SFP::ai_walk, 0,	nullptr,
+	SFP::ai_walk, 0,	nullptr,
+	SFP::ai_walk, 0,	nullptr,
+	SFP::ai_walk, 0,	nullptr,
+	SFP::ai_walk, 0,	nullptr,
+	SFP::ai_walk, 0,	nullptr,
+	SFP::ai_walk, 0,	nullptr,
+	SFP::ai_walk, 0,	nullptr,
+	SFP::ai_walk, 0,	nullptr,
+	SFP::ai_walk, 0,	nullptr
 };
 
 mframe_t supertank_frames_attack4[]=
 {
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr
 };
 
 mframe_t supertank_frames_attack3[]=
 {
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr
 };
 
 mframe_t supertank_frames_attack2[]=
 {
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	supertankRocket,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	supertankRocket,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	supertankRocket,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	SFP::supertankRocket,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	SFP::supertankRocket,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	SFP::supertankRocket,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr
 };
 
 mframe_t supertank_frames_attack1[]=
 {
-	ai_charge,	0,	supertankMachineGun,
-	ai_charge,	0,	supertankMachineGun,
-	ai_charge,	0,	supertankMachineGun,
-	ai_charge,	0,	supertankMachineGun,
-	ai_charge,	0,	supertankMachineGun,
-	ai_charge,	0,	supertankMachineGun,
+	SFP::ai_charge,	0,	SFP::supertankMachineGun,
+	SFP::ai_charge,	0,	SFP::supertankMachineGun,
+	SFP::ai_charge,	0,	SFP::supertankMachineGun,
+	SFP::ai_charge,	0,	SFP::supertankMachineGun,
+	SFP::ai_charge,	0,	SFP::supertankMachineGun,
+	SFP::ai_charge,	0,	SFP::supertankMachineGun,
 
 };
 
 mframe_t supertank_frames_end_attack1[]=
 {
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr
 };
+AutoSFP(supertank_run)
+
 
 mmove_t	supertank_moves[] = {
-	{FRAME_stand_1, FRAME_stand_60, supertank_frames_stand, NULL},
-	{FRAME_forwrd_1, FRAME_forwrd_18, supertank_frames_run, NULL},
-	{FRAME_forwrd_1, FRAME_forwrd_18, supertank_frames_forward, NULL},
-	{FRAME_right_1, FRAME_right_18, supertank_frames_turn_right, supertank_run},
-	{FRAME_left_1, FRAME_left_18, supertank_frames_turn_left, supertank_run},
-	{FRAME_pain3_9, FRAME_pain3_12, supertank_frames_pain3, supertank_run},
-	{FRAME_pain2_5, FRAME_pain2_8, supertank_frames_pain2, supertank_run},
-	{FRAME_pain1_1, FRAME_pain1_4, supertank_frames_pain1, supertank_run},
-	{FRAME_death_1, FRAME_death_24, supertank_frames_death1, supertank_dead},
-	{FRAME_backwd_1, FRAME_backwd_18, supertank_frames_backward, NULL},
-	{FRAME_attak4_1, FRAME_attak4_6, supertank_frames_attack4, supertank_run},
-	{FRAME_attak3_1, FRAME_attak3_27, supertank_frames_attack3, supertank_run},
-	{FRAME_attak2_1, FRAME_attak2_27, supertank_frames_attack2, supertank_run},
-	{FRAME_attak1_1, FRAME_attak1_6, supertank_frames_attack1, supertank_reattack1},
-	{FRAME_attak1_7, FRAME_attak1_20, supertank_frames_end_attack1, supertank_run}
+	{FRAME_stand_1, FRAME_stand_60, supertank_frames_stand, nullptr},
+	{FRAME_forwrd_1, FRAME_forwrd_18, supertank_frames_run, nullptr},
+	{FRAME_forwrd_1, FRAME_forwrd_18, supertank_frames_forward, nullptr},
+	{FRAME_right_1, FRAME_right_18, supertank_frames_turn_right, SFP::supertank_run},
+	{FRAME_left_1, FRAME_left_18, supertank_frames_turn_left, SFP::supertank_run},
+	{FRAME_pain3_9, FRAME_pain3_12, supertank_frames_pain3, SFP::supertank_run},
+	{FRAME_pain2_5, FRAME_pain2_8, supertank_frames_pain2, SFP::supertank_run},
+	{FRAME_pain1_1, FRAME_pain1_4, supertank_frames_pain1, SFP::supertank_run},
+	{FRAME_death_1, FRAME_death_24, supertank_frames_death1, SFP::supertank_dead},
+	{FRAME_backwd_1, FRAME_backwd_18, supertank_frames_backward, nullptr},
+	{FRAME_attak4_1, FRAME_attak4_6, supertank_frames_attack4, SFP::supertank_run},
+	{FRAME_attak3_1, FRAME_attak3_27, supertank_frames_attack3, SFP::supertank_run},
+	{FRAME_attak2_1, FRAME_attak2_27, supertank_frames_attack2, SFP::supertank_run},
+	{FRAME_attak1_1, FRAME_attak1_6, supertank_frames_attack1, SFP::supertank_reattack1},
+	{FRAME_attak1_7, FRAME_attak1_20, supertank_frames_end_attack1, SFP::supertank_run}
 };
 
 mmove_t * supertank_get_currentmove(edict_t *self)
 {
-	if (!self->monsterinfo.currentmove) return NULL;
+	if (!self->monsterinfo.currentmove) return nullptr;
 	return &supertank_moves[self->monsterinfo.currentmove-1];
 }
 
@@ -532,7 +548,7 @@ void supertankRocket (edict_t *self)
 	else // (self->s.frame == FRAME_attak2_14)
 		flash_number = MZ2_SUPERTANK_ROCKET_3;
 
-	AngleVectors (self->s.angles, forward, right, NULL);
+	AngleVectors (self->s.angles, forward, right, nullptr);
 	G_ProjectSource (self->s.origin, monster_flash_offset[flash_number], forward, right, start);
 
 	VectorCopy (self->enemy->s.origin, vec);
@@ -558,7 +574,7 @@ void supertankMachineGun (edict_t *self)
 	dir[1] = self->s.angles[1];
 	dir[2] = 0;
 
-	AngleVectors (dir, forward, right, NULL);
+	AngleVectors (dir, forward, right, nullptr);
 	G_ProjectSource (self->s.origin, monster_flash_offset[flash_number], forward, right, start);
 
 	if (self->enemy)
@@ -615,14 +631,14 @@ void supertank_dead (edict_t *self)
 	self->nextthink = 0;
 	gi.linkentity (self);
 }
-
+void BossExplode(edict_t* self);
 
 void BossExplode (edict_t *self)
 {
 	vec3_t	org;
 	int		n;
 
-	self->think = BossExplode;
+	self->think = SFP::BossExplode;
 	VectorCopy (self->s.origin, org);
 	org[2] += 24 + (rand()&15);
 	switch (self->count++)
@@ -689,6 +705,12 @@ void supertank_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int da
 	self->monsterinfo.currentmove = supertank_move_death;
 }
 
+SFPEnt(pain, supertank_pain)
+SFPEnt(die, supertank_die)
+SFPEnt(monsterinfo.stand, supertank_stand)
+SFPEnt(monsterinfo.walk, supertank_walk)
+SFPEnt(monsterinfo.attack, supertank_attack)
+SFPEnt(monsterinfo.get_currentmove, supertank_get_currentmove)
 //
 // monster_supertank
 //
@@ -723,17 +745,17 @@ void SP_monster_supertank (edict_t *self)
 	self->gib_health = -500;
 	self->mass = 800;
 
-	self->pain = supertank_pain;
-	self->die = supertank_die;
-	self->monsterinfo.stand = supertank_stand;
-	self->monsterinfo.walk = supertank_walk;
-	self->monsterinfo.run = supertank_run;
-	self->monsterinfo.dodge = NULL;
-	self->monsterinfo.attack = supertank_attack;
-	self->monsterinfo.search = supertank_search;
-	self->monsterinfo.melee = NULL;
-	self->monsterinfo.sight = NULL;
-	self->monsterinfo.get_currentmove = supertank_get_currentmove;
+	self->pain = SFP::supertank_pain;
+	self->die = SFP::supertank_die;
+	self->monsterinfo.stand = SFP::supertank_stand;
+	self->monsterinfo.walk = SFP::supertank_walk;
+	self->monsterinfo.run = SFP::supertank_run;
+	self->monsterinfo.dodge = nullptr;
+	self->monsterinfo.attack = SFP::supertank_attack;
+	self->monsterinfo.search = SFP::supertank_search;
+	self->monsterinfo.melee = nullptr;
+	self->monsterinfo.sight = nullptr;
+	self->monsterinfo.get_currentmove = SFP::supertank_get_currentmove;
 
 	gi.linkentity (self);
 	

@@ -91,64 +91,77 @@ void jorg_idle(edict_t *self);
 void jorg_step_left(edict_t *self);
 void jorg_step_right(edict_t *self);
 void jorg_death_hit(edict_t *self);
-
-//
+AutoSFP(ai_charge)
+AutoSFP(ai_stand)
+AutoSFP(ai_walk)
+AutoSFP(ai_run)
+AutoSFP(ai_move)
+AutoSFP(jorg_dead)
+AutoSFP(jorgBFG)
+//AutoSFP(jorgMachineGun)
+AutoSFP(jorg_firebullet)
+AutoSFP(jorg_reattack1)
+AutoSFP(jorg_attack1)
+AutoSFP(jorg_idle)
+AutoSFP(jorg_step_left)
+AutoSFP(jorg_step_right)
+AutoSFP(jorg_death_hit)//
 // stand
 //
 
 mframe_t jorg_frames_stand []=
 {
-	ai_stand, 0, jorg_idle,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,		// 10
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,		// 20
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,		// 30
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 19, NULL,
-	ai_stand, 11, jorg_step_left,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 6, NULL,
-	ai_stand, 9, jorg_step_right,
-	ai_stand, 0, NULL,		// 40
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, -2, NULL,
-	ai_stand, -17, jorg_step_left,
-	ai_stand, 0, NULL,
-	ai_stand, -12, NULL,		// 50
-	ai_stand, -14, jorg_step_right	// 51
+	SFP::ai_stand, 0, SFP::jorg_idle,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,		// 10
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,		// 20
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,		// 30
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 19, nullptr,
+	SFP::ai_stand, 11, SFP::jorg_step_left,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 6, nullptr,
+	SFP::ai_stand, 9, SFP::jorg_step_right,
+	SFP::ai_stand, 0, nullptr,		// 40
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, -2, nullptr,
+	SFP::ai_stand, -17, SFP::jorg_step_left,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, -12, nullptr,		// 50
+	SFP::ai_stand, -14, SFP::jorg_step_right	// 51
 };
 
 void jorg_idle (edict_t *self)
@@ -193,20 +206,20 @@ void jorg_run (edict_t *self)
 
 mframe_t jorg_frames_run [] =
 {
-	ai_run, 17,	jorg_step_left,
-	ai_run, 0,	NULL,
-	ai_run, 0,	NULL,
-	ai_run, 0,	NULL,
-	ai_run, 12,	NULL,
-	ai_run, 8,	NULL,
-	ai_run, 10,	NULL,
-	ai_run, 33,	jorg_step_right,
-	ai_run, 0,	NULL,
-	ai_run, 0,	NULL,
-	ai_run, 0,	NULL,
-	ai_run, 9,	NULL,
-	ai_run, 9,	NULL,
-	ai_run, 9,	NULL
+	SFP::ai_run, 17,	SFP::jorg_step_left,
+	SFP::ai_run, 0,	nullptr,
+	SFP::ai_run, 0,	nullptr,
+	SFP::ai_run, 0,	nullptr,
+	SFP::ai_run, 12,	nullptr,
+	SFP::ai_run, 8,	nullptr,
+	SFP::ai_run, 10,	nullptr,
+	SFP::ai_run, 33,	SFP::jorg_step_right,
+	SFP::ai_run, 0,	nullptr,
+	SFP::ai_run, 0,	nullptr,
+	SFP::ai_run, 0,	nullptr,
+	SFP::ai_run, 9,	nullptr,
+	SFP::ai_run, 9,	nullptr,
+	SFP::ai_run, 9,	nullptr
 };
 
 //
@@ -215,206 +228,207 @@ mframe_t jorg_frames_run [] =
 
 mframe_t jorg_frames_start_walk [] =
 {
-	ai_walk,	5,	NULL,
-	ai_walk,	6,	NULL,
-	ai_walk,	7,	NULL,
-	ai_walk,	9,	NULL,
-	ai_walk,	15,	NULL
+	SFP::ai_walk,	5,	nullptr,
+	SFP::ai_walk,	6,	nullptr,
+	SFP::ai_walk,	7,	nullptr,
+	SFP::ai_walk,	9,	nullptr,
+	SFP::ai_walk,	15,	nullptr
 };
 
 mframe_t jorg_frames_walk [] =
 {
-	ai_walk, 17,	NULL,
-	ai_walk, 0,	NULL,
-	ai_walk, 0,	NULL,
-	ai_walk, 0,	NULL,
-	ai_walk, 12,	NULL,
-	ai_walk, 8,	NULL,
-	ai_walk, 10,	NULL,
-	ai_walk, 33,	NULL,
-	ai_walk, 0,	NULL,
-	ai_walk, 0,	NULL,
-	ai_walk, 0,	NULL,
-	ai_walk, 9,	NULL,
-	ai_walk, 9,	NULL,
-	ai_walk, 9,	NULL
+	SFP::ai_walk, 17,	nullptr,
+	SFP::ai_walk, 0,	nullptr,
+	SFP::ai_walk, 0,	nullptr,
+	SFP::ai_walk, 0,	nullptr,
+	SFP::ai_walk, 12,	nullptr,
+	SFP::ai_walk, 8,	nullptr,
+	SFP::ai_walk, 10,	nullptr,
+	SFP::ai_walk, 33,	nullptr,
+	SFP::ai_walk, 0,	nullptr,
+	SFP::ai_walk, 0,	nullptr,
+	SFP::ai_walk, 0,	nullptr,
+	SFP::ai_walk, 9,	nullptr,
+	SFP::ai_walk, 9,	nullptr,
+	SFP::ai_walk, 9,	nullptr
 };
 
 mframe_t jorg_frames_end_walk [] =
 {
-	ai_walk,	11,	NULL,
-	ai_walk,	0,	NULL,
-	ai_walk,	0,	NULL,
-	ai_walk,	0,	NULL,
-	ai_walk,	8,	NULL,
-	ai_walk,	-8,	NULL
+	SFP::ai_walk,	11,	nullptr,
+	SFP::ai_walk,	0,	nullptr,
+	SFP::ai_walk,	0,	nullptr,
+	SFP::ai_walk,	0,	nullptr,
+	SFP::ai_walk,	8,	nullptr,
+	SFP::ai_walk,	-8,	nullptr
 };
 
 mframe_t jorg_frames_pain3 [] =
 {
-	ai_move,	-28,	NULL,
-	ai_move,	-6,	NULL,
-	ai_move,	-3,	jorg_step_left,
-	ai_move,	-9,	NULL,
-	ai_move,	0,	jorg_step_right,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	-7,	NULL,
-	ai_move,	1,	NULL,
-	ai_move,	-11,	NULL,
-	ai_move,	-4,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	10,	NULL,
-	ai_move,	11,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	10,	NULL,
-	ai_move,	3,	NULL,
-	ai_move,	10,	NULL,
-	ai_move,	7,	jorg_step_left,
-	ai_move,	17,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	jorg_step_right
+	SFP::ai_move,	-28,	nullptr,
+	SFP::ai_move,	-6,	nullptr,
+	SFP::ai_move,	-3,	SFP::jorg_step_left,
+	SFP::ai_move,	-9,	nullptr,
+	SFP::ai_move,	0,	SFP::jorg_step_right,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	-7,	nullptr,
+	SFP::ai_move,	1,	nullptr,
+	SFP::ai_move,	-11,	nullptr,
+	SFP::ai_move,	-4,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	10,	nullptr,
+	SFP::ai_move,	11,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	10,	nullptr,
+	SFP::ai_move,	3,	nullptr,
+	SFP::ai_move,	10,	nullptr,
+	SFP::ai_move,	7,	SFP::jorg_step_left,
+	SFP::ai_move,	17,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	SFP::jorg_step_right
 };
 
 mframe_t jorg_frames_pain2 [] =
 {
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr
 };
 
 mframe_t jorg_frames_pain1 [] =
 {
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr
 };
-
+AutoSFP(MakronToss)
+AutoSFP(BossExplode)
 mframe_t jorg_frames_death1 [] =
 {
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,		// 10
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,		// 20
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,			
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,			
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,		// 30
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,		// 40
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,			
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,			
-	ai_move,	0,	NULL,
-	ai_move,	0,	MakronToss,
-	ai_move,	0,	BossExplode		// 50
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,		// 10
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,		// 20
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,			
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,			
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,		// 30
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,		// 40
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,			
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,			
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	SFP::MakronToss,
+	SFP::ai_move,	0,	SFP::BossExplode		// 50
 };
 
 mframe_t jorg_frames_attack2 []=
 {
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	jorgBFG,		
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	SFP::jorgBFG,		
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr
 };
 
 mframe_t jorg_frames_start_attack1 [] =
 {
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr
 };
 
 mframe_t jorg_frames_attack1[]=
 {
-	ai_charge,	0,	jorg_firebullet,
-	ai_charge,	0,	jorg_firebullet,
-	ai_charge,	0,	jorg_firebullet,
-	ai_charge,	0,	jorg_firebullet,
-	ai_charge,	0,	jorg_firebullet,
-	ai_charge,	0,	jorg_firebullet
+	SFP::ai_charge,	0,	SFP::jorg_firebullet,
+	SFP::ai_charge,	0,	SFP::jorg_firebullet,
+	SFP::ai_charge,	0,	SFP::jorg_firebullet,
+	SFP::ai_charge,	0,	SFP::jorg_firebullet,
+	SFP::ai_charge,	0,	SFP::jorg_firebullet,
+	SFP::ai_charge,	0,	SFP::jorg_firebullet
 };
 
 mframe_t jorg_frames_end_attack1[]=
 {
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr
 };
-
+AutoSFP(jorg_run)
 mmove_t jorg_moves[] = 
 {
 	{ 0 },
-	{FRAME_stand01, FRAME_stand51, jorg_frames_stand, NULL},
-	{FRAME_walk06, FRAME_walk19, jorg_frames_run, NULL},
-	{FRAME_walk01, FRAME_walk05, jorg_frames_start_walk, NULL},
-	{FRAME_walk06, FRAME_walk19, jorg_frames_walk, NULL},
-	{FRAME_walk20, FRAME_walk25, jorg_frames_end_walk, NULL},
-	{FRAME_pain301, FRAME_pain325, jorg_frames_pain3, jorg_run},
-	{FRAME_pain201, FRAME_pain203, jorg_frames_pain2, jorg_run},
-	{FRAME_pain101, FRAME_pain103, jorg_frames_pain1, jorg_run},
-	{FRAME_death01, FRAME_death50, jorg_frames_death1, jorg_dead},
-	{FRAME_attak201, FRAME_attak213, jorg_frames_attack2, jorg_run},
-	{FRAME_attak101, FRAME_attak108, jorg_frames_start_attack1, jorg_attack1},
-	{FRAME_attak109, FRAME_attak114, jorg_frames_attack1, jorg_reattack1},
-	{FRAME_attak115, FRAME_attak118, jorg_frames_end_attack1, jorg_run}
+	{FRAME_stand01, FRAME_stand51, jorg_frames_stand, nullptr},
+	{FRAME_walk06, FRAME_walk19, jorg_frames_run, nullptr},
+	{FRAME_walk01, FRAME_walk05, jorg_frames_start_walk, nullptr},
+	{FRAME_walk06, FRAME_walk19, jorg_frames_walk, nullptr},
+	{FRAME_walk20, FRAME_walk25, jorg_frames_end_walk, nullptr},
+	{FRAME_pain301, FRAME_pain325, jorg_frames_pain3, SFP::jorg_run},
+	{FRAME_pain201, FRAME_pain203, jorg_frames_pain2, SFP::jorg_run},
+	{FRAME_pain101, FRAME_pain103, jorg_frames_pain1, SFP::jorg_run},
+	{FRAME_death01, FRAME_death50, jorg_frames_death1, SFP::jorg_dead},
+	{FRAME_attak201, FRAME_attak213, jorg_frames_attack2, SFP::jorg_run},
+	{FRAME_attak101, FRAME_attak108, jorg_frames_start_attack1, SFP::jorg_attack1},
+	{FRAME_attak109, FRAME_attak114, jorg_frames_attack1, SFP::jorg_reattack1},
+	{FRAME_attak115, FRAME_attak118, jorg_frames_end_attack1, SFP::jorg_run}
 };
 
 mmove_t *jorg_get_currentmove(edict_t *self)
 {
-	if (!self->monsterinfo.currentmove) return NULL;
+	if (!self->monsterinfo.currentmove) return nullptr;
 	return &jorg_moves[self->monsterinfo.currentmove-1];
 }
 
@@ -506,7 +520,7 @@ void jorgBFG (edict_t *self)
 	vec3_t	dir;
 	vec3_t	vec;
 
-	AngleVectors (self->s.angles, forward, right, NULL);
+	AngleVectors (self->s.angles, forward, right, nullptr);
 	G_ProjectSource (self->s.origin, monster_flash_offset[MZ2_JORG_BFG_1], forward, right, start);
 
 	VectorCopy (self->enemy->s.origin, vec);
@@ -530,7 +544,7 @@ void jorg_firebullet_right (edict_t *self)
 	vec3_t	forward, right, target;
 	vec3_t	start;
 
-	AngleVectors (self->s.angles, forward, right, NULL);
+	AngleVectors (self->s.angles, forward, right, nullptr);
 	G_ProjectSource (self->s.origin, monster_flash_offset[MZ2_JORG_MACHINEGUN_R1], forward, right, start);
 
 	VectorMA (self->enemy->s.origin, -0.2, self->enemy->velocity, target);
@@ -546,7 +560,7 @@ void jorg_firebullet_left (edict_t *self)
 	vec3_t	forward, right, target;
 	vec3_t	start;
 
-	AngleVectors (self->s.angles, forward, right, NULL);
+	AngleVectors (self->s.angles, forward, right, nullptr);
 	G_ProjectSource (self->s.origin, monster_flash_offset[MZ2_JORG_MACHINEGUN_L1], forward, right, start);
 
 	VectorMA (self->enemy->s.origin, -0.2, self->enemy->velocity, target);
@@ -641,7 +655,7 @@ qboolean Jorg_CheckAttack (edict_t *self)
 		VectorCopy (self->enemy->s.origin, spot2);
 		spot2[2] += self->enemy->viewheight;
 
-		tr = gi.trace (spot1, NULL, NULL, spot2, self, CONTENTS_SOLID|CONTENTS_MONSTER|CONTENTS_SLIME|CONTENTS_LAVA);
+		tr = gi.trace (spot1, nullptr, nullptr, spot2, self, CONTENTS_SOLID|CONTENTS_MONSTER|CONTENTS_SLIME|CONTENTS_LAVA);
 
 		// do we have a clear shot?
 		if (tr.ent != self->enemy)
@@ -715,7 +729,15 @@ qboolean Jorg_CheckAttack (edict_t *self)
 	return false;
 }
 
+SFPEnt(pain, jorg_pain);
+SFPEnt(die, jorg_die);
+SFPEnt(monsterinfo.get_currentmove, jorg_get_currentmove);
+SFPEnt(monsterinfo.stand, jorg_stand);
+SFPEnt(monsterinfo.walk, jorg_walk);
 
+SFPEnt(monsterinfo.attack, jorg_attack);
+SFPEnt(monsterinfo.search, jorg_search);
+SFPEnt(monsterinfo.checkattack, Jorg_CheckAttack);
 void MakronPrecache (void);
 
 /*QUAKED monster_jorg (1 .5 0) (-80 -80 0) (90 90 140) Ambush Trigger_Spawn Sight
@@ -756,18 +778,18 @@ void SP_monster_jorg (edict_t *self)
 	self->gib_health = -2000;
 	self->mass = 1000;
 
-	self->pain = jorg_pain;
-	self->die = jorg_die;
-	self->monsterinfo.get_currentmove = jorg_get_currentmove;
-	self->monsterinfo.stand = jorg_stand;
-	self->monsterinfo.walk = jorg_walk;
-	self->monsterinfo.run = jorg_run;
-	self->monsterinfo.dodge = NULL;
-	self->monsterinfo.attack = jorg_attack;
-	self->monsterinfo.search = jorg_search;
-	self->monsterinfo.melee = NULL;
-	self->monsterinfo.sight = NULL;
-	self->monsterinfo.checkattack = Jorg_CheckAttack;
+	self->pain = SFP::jorg_pain;
+	self->die = SFP::jorg_die;
+	self->monsterinfo.get_currentmove = SFP::jorg_get_currentmove;
+	self->monsterinfo.stand = SFP::jorg_stand;
+	self->monsterinfo.walk = SFP::jorg_walk;
+	self->monsterinfo.run = SFP::jorg_run;
+	self->monsterinfo.dodge = nullptr;
+	self->monsterinfo.attack = SFP::jorg_attack;
+	self->monsterinfo.search = SFP::jorg_search;
+	self->monsterinfo.melee = nullptr;
+	self->monsterinfo.sight = nullptr;
+	self->monsterinfo.checkattack = SFP::Jorg_CheckAttack;
 	gi.linkentity (self);
 	
 	self->monsterinfo.currentmove = jorg_move_stand;

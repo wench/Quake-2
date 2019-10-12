@@ -109,16 +109,17 @@ static void M_FliesOff (edict_t *self)
 	self->s.effects &= ~EF_FLIES;
 	self->s.sound = 0;
 }
-
+AutoSFP(M_FliesOff)
 static void M_FliesOn (edict_t *self)
 {
 	if (self->waterlevel)
 		return;
 	self->s.effects |= EF_FLIES;
 	self->s.sound = gi.soundindex ("infantry/inflies1.wav");
-	self->think = M_FliesOff;
+	self->think = SFP::M_FliesOff;
 	self->nextthink = level.time + 60;
 }
+AutoSFP(M_FliesOn)
 
 void M_FlyCheck (edict_t *self)
 {
@@ -128,7 +129,7 @@ void M_FlyCheck (edict_t *self)
 	if (random() > 0.5)
 		return;
 
-	self->think = M_FliesOn;
+	self->think = SFP::M_FliesOn;
 	self->nextthink = level.time + 5 + 10 * random();
 }
 
@@ -148,7 +149,7 @@ void M_CheckGround (edict_t *ent)
 
 	if (ent->velocity[2] > 100)
 	{
-		ent->groundentity = NULL;
+		ent->groundentity = nullptr;
 		return;
 	}
 
@@ -162,7 +163,7 @@ void M_CheckGround (edict_t *ent)
 	// check steepness
 	if ( trace.plane.normal[2] < 0.7 && !trace.startsolid)
 	{
-		ent->groundentity = NULL;
+		ent->groundentity = nullptr;
 		return;
 	}
 
@@ -327,7 +328,7 @@ void M_droptofloor (edict_t *ent)
 	M_CheckGround (ent);
 	M_CatagorizePosition (ent);
 }
-
+AutoSFP(M_droptofloor);
 
 void M_SetEffects (edict_t *ent)
 {
@@ -452,7 +453,7 @@ void monster_use (edict_t *self, edict_t *other, edict_t *activator)
 	self->enemy = activator;
 	FoundTarget (self);
 }
-
+AutoSFP(monster_use);
 
 void monster_start_go (edict_t *self);
 
@@ -476,27 +477,27 @@ void monster_triggered_spawn (edict_t *self)
 	}
 	else
 	{
-		self->enemy = NULL;
+		self->enemy = nullptr;
 	}
 }
-
+AutoSFP(monster_triggered_spawn)
 void monster_triggered_spawn_use (edict_t *self, edict_t *other, edict_t *activator)
 {
 	// we have a one frame delay here so we don't telefrag the guy who activated us
-	self->think = monster_triggered_spawn;
+	self->think = SFP::monster_triggered_spawn;
 	self->nextthink = level.time + FRAMETIME;
 	if (activator->client)
 		self->enemy = activator;
-	self->use = monster_use;
+	self->use = SFP::monster_use;
 }
-
+AutoSFP(monster_triggered_spawn_use)
 void monster_triggered_start (edict_t *self)
 {
 	self->solid = SOLID_NOT;
 	self->movetype = MOVETYPE_NONE;
 	self->svflags |= SVF_NOCLIENT;
 	self->nextthink = 0;
-	self->use = monster_triggered_spawn_use;
+	self->use = SFP::monster_triggered_spawn_use;
 }
 
 
@@ -516,7 +517,7 @@ void monster_death_use (edict_t *self)
 	if (self->item)
 	{
 		Drop_Item (self, self->item);
-		self->item = NULL;
+		self->item = nullptr;
 	}
 
 	if (self->deathtarget)
@@ -530,6 +531,7 @@ void monster_death_use (edict_t *self)
 
 
 //============================================================================
+AutoSFP(M_CheckAttack);
 
 qboolean monster_start (edict_t *self)
 {
@@ -554,7 +556,7 @@ qboolean monster_start (edict_t *self)
 	self->s.renderfx |= RF_FRAMELERP;
 	self->takedamage = DAMAGE_AIM;
 	self->air_finished = level.time + 12;
-	self->use = monster_use;
+	self->use = SFP::monster_use;
 	self->max_health = self->health;
 	self->clipmask |= MASK_MONSTERSOLID;
 
@@ -563,7 +565,7 @@ qboolean monster_start (edict_t *self)
 	self->svflags &= ~SVF_DEADMONSTER;
 
 	if (!self->monsterinfo.checkattack)
-		self->monsterinfo.checkattack = M_CheckAttack;
+		self->monsterinfo.checkattack = SFP::M_CheckAttack;
 	VectorCopy (self->s.origin, self->s.old_origin);
 
 	if (st.item)
@@ -582,7 +584,7 @@ qboolean monster_start (edict_t *self)
 
 	return true;
 }
-
+AutoSFP(monster_think)
 void monster_start_go (edict_t *self)
 {
 	vec3_t	v;
@@ -597,10 +599,10 @@ void monster_start_go (edict_t *self)
 		qboolean	fixup;
 		edict_t		*target;
 
-		target = NULL;
+		target = nullptr;
 		notcombat = false;
 		fixup = false;
-		while ((target = G_Find (target, FOFS(targetname), self->target)) != NULL)
+		while ((target = G_Find (target, FOFS(targetname), self->target)) != nullptr)
 		{
 			if (strcmp(target->classname, "point_combat") == 0)
 			{
@@ -615,7 +617,7 @@ void monster_start_go (edict_t *self)
 		if (notcombat && self->combattarget)
 			gi.dprintf("%s at %s has target with mixed types\n", self->classname, vtos(self->s.origin));
 		if (fixup)
-			self->target = NULL;
+			self->target = nullptr;
 	}
 
 	// validate combattarget
@@ -623,8 +625,8 @@ void monster_start_go (edict_t *self)
 	{
 		edict_t		*target;
 
-		target = NULL;
-		while ((target = G_Find (target, FOFS(targetname), self->combattarget)) != NULL)
+		target = nullptr;
+		while ((target = G_Find (target, FOFS(targetname), self->combattarget)) != nullptr)
 		{
 			if (strcmp(target->classname, "point_combat") != 0)
 			{
@@ -642,7 +644,7 @@ void monster_start_go (edict_t *self)
 		if (!self->movetarget)
 		{
 			gi.dprintf ("%s can't find target %s at %s\n", self->classname, self->target, vtos(self->s.origin));
-			self->target = NULL;
+			self->target = nullptr;
 			self->monsterinfo.pausetime = 100000000;
 			self->monsterinfo.stand (self);
 		}
@@ -651,11 +653,11 @@ void monster_start_go (edict_t *self)
 			VectorSubtract (self->goalentity->s.origin, self->s.origin, v);
 			self->ideal_yaw = self->s.angles[YAW] = vectoyaw(v);
 			self->monsterinfo.walk (self);
-			self->target = NULL;
+			self->target = nullptr;
 		}
 		else
 		{
-			self->goalentity = self->movetarget = NULL;
+			self->goalentity = self->movetarget = nullptr;
 			self->monsterinfo.pausetime = 100000000;
 			self->monsterinfo.stand (self);
 		}
@@ -666,7 +668,7 @@ void monster_start_go (edict_t *self)
 		self->monsterinfo.stand (self);
 	}
 
-	self->think = monster_think;
+	self->think = SFP::monster_think;
 	self->nextthink = level.time + FRAMETIME;
 }
 
@@ -691,10 +693,11 @@ void walkmonster_start_go (edict_t *self)
 	if (self->spawnflags & 2)
 		monster_triggered_start (self);
 }
+AutoSFP(walkmonster_start_go)
 
 void walkmonster_start (edict_t *self)
 {
-	self->think = walkmonster_start_go;
+	self->think = SFP::walkmonster_start_go;
 	monster_start (self);
 }
 
@@ -714,14 +717,15 @@ void flymonster_start_go (edict_t *self)
 		monster_triggered_start (self);
 }
 
+AutoSFP(flymonster_start_go)
+
 
 void flymonster_start (edict_t *self)
 {
 	self->flags |= FL_FLY;
-	self->think = flymonster_start_go;
+	self->think = SFP::flymonster_start_go;
 	monster_start (self);
 }
-
 
 void swimmonster_start_go (edict_t *self)
 {
@@ -734,10 +738,10 @@ void swimmonster_start_go (edict_t *self)
 	if (self->spawnflags & 2)
 		monster_triggered_start (self);
 }
-
+AutoSFP(swimmonster_start_go)
 void swimmonster_start (edict_t *self)
 {
 	self->flags |= FL_SWIM;
-	self->think = swimmonster_start_go;
+	self->think = SFP::swimmonster_start_go;
 	monster_start (self);
 }

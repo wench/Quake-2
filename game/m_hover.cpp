@@ -72,6 +72,12 @@ void hover_search (edict_t *self)
 		gi.sound (self, CHAN_VOICE, sound_search2, 1, ATTN_NORM, 0);
 }
 
+AutoSFP(ai_charge)
+AutoSFP(ai_stand)
+AutoSFP(ai_walk)
+AutoSFP(ai_move)
+AutoSFP(ai_run)
+AutoSFP(ai_turn)
 
 void hover_run (edict_t *self);
 void hover_stand (edict_t *self);
@@ -81,344 +87,353 @@ void hover_reattack (edict_t *self);
 void hover_fire_blaster (edict_t *self);
 void hover_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int damage, vec3_t point);
 
+AutoSFP(hover_sight)
+AutoSFP(hover_search)
+AutoSFP(hover_run)
+AutoSFP(hover_stand)
+AutoSFP(hover_dead)
+AutoSFP(hover_attack)
+AutoSFP(hover_reattack)
+AutoSFP(hover_fire_blaster)
+
 mframe_t hover_frames_stand [] =
 {
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr
 };
 
 mframe_t hover_frames_stop1 [] =
 {
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr
 };
 
 mframe_t hover_frames_stop2 [] =
 {
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr
 };
 
 mframe_t hover_frames_takeoff [] =
 {
-	ai_move,	0,	NULL,
-	ai_move,	-2,	NULL,
-	ai_move,	5,	NULL,
-	ai_move,	-1,	NULL,
-	ai_move,	1,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	-1,	NULL,
-	ai_move,	-1,	NULL,
-	ai_move,	-1,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	2,	NULL,
-	ai_move,	2,	NULL,
-	ai_move,	1,	NULL,
-	ai_move,	1,	NULL,
-	ai_move,	-6,	NULL,
-	ai_move,	-9,	NULL,
-	ai_move,	1,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	2,	NULL,
-	ai_move,	2,	NULL,
-	ai_move,	1,	NULL,
-	ai_move,	1,	NULL,
-	ai_move,	1,	NULL,
-	ai_move,	2,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	2,	NULL,
-	ai_move,	3,	NULL,
-	ai_move,	2,	NULL,
-	ai_move,	0,	NULL
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	-2,	nullptr,
+	SFP::ai_move,	5,	nullptr,
+	SFP::ai_move,	-1,	nullptr,
+	SFP::ai_move,	1,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	-1,	nullptr,
+	SFP::ai_move,	-1,	nullptr,
+	SFP::ai_move,	-1,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	2,	nullptr,
+	SFP::ai_move,	2,	nullptr,
+	SFP::ai_move,	1,	nullptr,
+	SFP::ai_move,	1,	nullptr,
+	SFP::ai_move,	-6,	nullptr,
+	SFP::ai_move,	-9,	nullptr,
+	SFP::ai_move,	1,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	2,	nullptr,
+	SFP::ai_move,	2,	nullptr,
+	SFP::ai_move,	1,	nullptr,
+	SFP::ai_move,	1,	nullptr,
+	SFP::ai_move,	1,	nullptr,
+	SFP::ai_move,	2,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	2,	nullptr,
+	SFP::ai_move,	3,	nullptr,
+	SFP::ai_move,	2,	nullptr,
+	SFP::ai_move,	0,	nullptr
 };
 
 mframe_t hover_frames_pain3 [] =
 {
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr
 };
 
 mframe_t hover_frames_pain2 [] =
 {
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr
 };
 
 mframe_t hover_frames_pain1 [] =
 {
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	2,	NULL,
-	ai_move,	-8,	NULL,
-	ai_move,	-4,	NULL,
-	ai_move,	-6,	NULL,
-	ai_move,	-4,	NULL,
-	ai_move,	-3,	NULL,
-	ai_move,	1,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	3,	NULL,
-	ai_move,	1,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	2,	NULL,
-	ai_move,	3,	NULL,
-	ai_move,	2,	NULL,
-	ai_move,	7,	NULL,
-	ai_move,	1,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	2,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	5,	NULL,
-	ai_move,	3,	NULL,
-	ai_move,	4,	NULL
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	2,	nullptr,
+	SFP::ai_move,	-8,	nullptr,
+	SFP::ai_move,	-4,	nullptr,
+	SFP::ai_move,	-6,	nullptr,
+	SFP::ai_move,	-4,	nullptr,
+	SFP::ai_move,	-3,	nullptr,
+	SFP::ai_move,	1,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	3,	nullptr,
+	SFP::ai_move,	1,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	2,	nullptr,
+	SFP::ai_move,	3,	nullptr,
+	SFP::ai_move,	2,	nullptr,
+	SFP::ai_move,	7,	nullptr,
+	SFP::ai_move,	1,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	2,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	5,	nullptr,
+	SFP::ai_move,	3,	nullptr,
+	SFP::ai_move,	4,	nullptr
 };
 
 mframe_t hover_frames_land [] =
 {
-	ai_move,	0,	NULL
+	SFP::ai_move,	0,	nullptr
 };
 
 mframe_t hover_frames_forward [] =
 {
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr
 };
 
 mframe_t hover_frames_walk [] =
 {
-	ai_walk,	4,	NULL,
-	ai_walk,	4,	NULL,
-	ai_walk,	4,	NULL,
-	ai_walk,	4,	NULL,
-	ai_walk,	4,	NULL,
-	ai_walk,	4,	NULL,
-	ai_walk,	4,	NULL,
-	ai_walk,	4,	NULL,
-	ai_walk,	4,	NULL,
-	ai_walk,	4,	NULL,
-	ai_walk,	4,	NULL,
-	ai_walk,	4,	NULL,
-	ai_walk,	4,	NULL,
-	ai_walk,	4,	NULL,
-	ai_walk,	4,	NULL,
-	ai_walk,	4,	NULL,
-	ai_walk,	4,	NULL,
-	ai_walk,	4,	NULL,
-	ai_walk,	4,	NULL,
-	ai_walk,	4,	NULL,
-	ai_walk,	4,	NULL,
-	ai_walk,	4,	NULL,
-	ai_walk,	4,	NULL,
-	ai_walk,	4,	NULL,
-	ai_walk,	4,	NULL,
-	ai_walk,	4,	NULL,
-	ai_walk,	4,	NULL,
-	ai_walk,	4,	NULL,
-	ai_walk,	4,	NULL,
-	ai_walk,	4,	NULL,
-	ai_walk,	4,	NULL,
-	ai_walk,	4,	NULL,
-	ai_walk,	4,	NULL,
-	ai_walk,	4,	NULL,
-	ai_walk,	4,	NULL
+	SFP::ai_walk,	4,	nullptr,
+	SFP::ai_walk,	4,	nullptr,
+	SFP::ai_walk,	4,	nullptr,
+	SFP::ai_walk,	4,	nullptr,
+	SFP::ai_walk,	4,	nullptr,
+	SFP::ai_walk,	4,	nullptr,
+	SFP::ai_walk,	4,	nullptr,
+	SFP::ai_walk,	4,	nullptr,
+	SFP::ai_walk,	4,	nullptr,
+	SFP::ai_walk,	4,	nullptr,
+	SFP::ai_walk,	4,	nullptr,
+	SFP::ai_walk,	4,	nullptr,
+	SFP::ai_walk,	4,	nullptr,
+	SFP::ai_walk,	4,	nullptr,
+	SFP::ai_walk,	4,	nullptr,
+	SFP::ai_walk,	4,	nullptr,
+	SFP::ai_walk,	4,	nullptr,
+	SFP::ai_walk,	4,	nullptr,
+	SFP::ai_walk,	4,	nullptr,
+	SFP::ai_walk,	4,	nullptr,
+	SFP::ai_walk,	4,	nullptr,
+	SFP::ai_walk,	4,	nullptr,
+	SFP::ai_walk,	4,	nullptr,
+	SFP::ai_walk,	4,	nullptr,
+	SFP::ai_walk,	4,	nullptr,
+	SFP::ai_walk,	4,	nullptr,
+	SFP::ai_walk,	4,	nullptr,
+	SFP::ai_walk,	4,	nullptr,
+	SFP::ai_walk,	4,	nullptr,
+	SFP::ai_walk,	4,	nullptr,
+	SFP::ai_walk,	4,	nullptr,
+	SFP::ai_walk,	4,	nullptr,
+	SFP::ai_walk,	4,	nullptr,
+	SFP::ai_walk,	4,	nullptr,
+	SFP::ai_walk,	4,	nullptr
 };
 
 mframe_t hover_frames_run [] =
 {
-	ai_run,	10,	NULL,
-	ai_run,	10,	NULL,
-	ai_run,	10,	NULL,
-	ai_run,	10,	NULL,
-	ai_run,	10,	NULL,
-	ai_run,	10,	NULL,
-	ai_run,	10,	NULL,
-	ai_run,	10,	NULL,
-	ai_run,	10,	NULL,
-	ai_run,	10,	NULL,
-	ai_run,	10,	NULL,
-	ai_run,	10,	NULL,
-	ai_run,	10,	NULL,
-	ai_run,	10,	NULL,
-	ai_run,	10,	NULL,
-	ai_run,	10,	NULL,
-	ai_run,	10,	NULL,
-	ai_run,	10,	NULL,
-	ai_run,	10,	NULL,
-	ai_run,	10,	NULL,
-	ai_run,	10,	NULL,
-	ai_run,	10,	NULL,
-	ai_run,	10,	NULL,
-	ai_run,	10,	NULL,
-	ai_run,	10,	NULL,
-	ai_run,	10,	NULL,
-	ai_run,	10,	NULL,
-	ai_run,	10,	NULL,
-	ai_run,	10,	NULL,
-	ai_run,	10,	NULL,
-	ai_run,	10,	NULL,
-	ai_run,	10,	NULL,
-	ai_run,	10,	NULL,
-	ai_run,	10,	NULL,
-	ai_run,	10,	NULL
+	SFP::ai_run,	10,	nullptr,
+	SFP::ai_run,	10,	nullptr,
+	SFP::ai_run,	10,	nullptr,
+	SFP::ai_run,	10,	nullptr,
+	SFP::ai_run,	10,	nullptr,
+	SFP::ai_run,	10,	nullptr,
+	SFP::ai_run,	10,	nullptr,
+	SFP::ai_run,	10,	nullptr,
+	SFP::ai_run,	10,	nullptr,
+	SFP::ai_run,	10,	nullptr,
+	SFP::ai_run,	10,	nullptr,
+	SFP::ai_run,	10,	nullptr,
+	SFP::ai_run,	10,	nullptr,
+	SFP::ai_run,	10,	nullptr,
+	SFP::ai_run,	10,	nullptr,
+	SFP::ai_run,	10,	nullptr,
+	SFP::ai_run,	10,	nullptr,
+	SFP::ai_run,	10,	nullptr,
+	SFP::ai_run,	10,	nullptr,
+	SFP::ai_run,	10,	nullptr,
+	SFP::ai_run,	10,	nullptr,
+	SFP::ai_run,	10,	nullptr,
+	SFP::ai_run,	10,	nullptr,
+	SFP::ai_run,	10,	nullptr,
+	SFP::ai_run,	10,	nullptr,
+	SFP::ai_run,	10,	nullptr,
+	SFP::ai_run,	10,	nullptr,
+	SFP::ai_run,	10,	nullptr,
+	SFP::ai_run,	10,	nullptr,
+	SFP::ai_run,	10,	nullptr,
+	SFP::ai_run,	10,	nullptr,
+	SFP::ai_run,	10,	nullptr,
+	SFP::ai_run,	10,	nullptr,
+	SFP::ai_run,	10,	nullptr,
+	SFP::ai_run,	10,	nullptr
 };
 
 mframe_t hover_frames_death1 [] =
 {
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	-10,NULL,
-	ai_move,	3,	NULL,
-	ai_move,	5,	NULL,
-	ai_move,	4,	NULL,
-	ai_move,	7,	NULL
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	-10,nullptr,
+	SFP::ai_move,	3,	nullptr,
+	SFP::ai_move,	5,	nullptr,
+	SFP::ai_move,	4,	nullptr,
+	SFP::ai_move,	7,	nullptr
 };
 
 mframe_t hover_frames_backward [] =
 {
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr
 };
 
 mframe_t hover_frames_start_attack [] =
 {
-	ai_charge,	1,	NULL,
-	ai_charge,	1,	NULL,
-	ai_charge,	1,	NULL
+	SFP::ai_charge,	1,	nullptr,
+	SFP::ai_charge,	1,	nullptr,
+	SFP::ai_charge,	1,	nullptr
 };
 
 mframe_t hover_frames_attack1 [] =
 {
-	ai_charge,	-10,	hover_fire_blaster,
-	ai_charge,	-10,	hover_fire_blaster,
-	ai_charge,	0,		hover_reattack,
+	SFP::ai_charge,	-10,	SFP::hover_fire_blaster,
+	SFP::ai_charge,	-10,	SFP::hover_fire_blaster,
+	SFP::ai_charge,	0,		SFP::hover_reattack,
 };
 
 
 mframe_t hover_frames_end_attack [] =
 {
-	ai_charge,	1,	NULL,
-	ai_charge,	1,	NULL
+	SFP::ai_charge,	1,	nullptr,
+	SFP::ai_charge,	1,	nullptr
 };
 
 void hover_reattack (edict_t *self)
@@ -447,7 +462,7 @@ void hover_fire_blaster (edict_t *self)
 	else
 		effect = 0;
 
-	AngleVectors (self->s.angles, forward, right, NULL);
+	AngleVectors (self->s.angles, forward, right, nullptr);
 	G_ProjectSource (self->s.origin, monster_flash_offset[MZ2_HOVER_BLASTER_1], forward, right, start);
 
 	VectorCopy (self->enemy->s.origin, end);
@@ -529,13 +544,13 @@ void hover_deadthink (edict_t *self)
 	}
 	BecomeExplosion1(self);
 }
-
+AutoSFP(hover_deadthink)
 void hover_dead (edict_t *self)
 {
 	VectorSet (self->s.mins, -16, -16, -24);
 	VectorSet (self->s.maxs, 16, 16, -8);
 	self->movetype = MOVETYPE_TOSS;
-	self->think = hover_deadthink;
+	self->think = SFP::hover_deadthink;
 	self->nextthink = level.time + FRAMETIME;
 	self->timestamp = level.time + 15;
 	gi.linkentity (self);
@@ -570,31 +585,39 @@ void hover_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int damage
 	self->takedamage = DAMAGE_YES;
 	self->monsterinfo.currentmove = hover_move_death1;
 }
-
 mmove_t	hover_moves[] = {
-	{FRAME_stand01, FRAME_stand30, hover_frames_stand, NULL},
-	{FRAME_stop101, FRAME_stop109, hover_frames_stop1, NULL},
-	{FRAME_stop201, FRAME_stop208, hover_frames_stop2, NULL},
-	{FRAME_takeof01, FRAME_takeof30, hover_frames_takeoff, NULL},
-	{FRAME_pain301, FRAME_pain309, hover_frames_pain3, hover_run},
-	{FRAME_pain201, FRAME_pain212, hover_frames_pain2, hover_run},
-	{FRAME_pain101, FRAME_pain128, hover_frames_pain1, hover_run},
-	{FRAME_land01, FRAME_land01, hover_frames_land, NULL},
-	{FRAME_forwrd01, FRAME_forwrd35, hover_frames_forward, NULL},
-	{FRAME_forwrd01, FRAME_forwrd35, hover_frames_walk, NULL},
-	{FRAME_forwrd01, FRAME_forwrd35, hover_frames_run, NULL},
-	{FRAME_death101, FRAME_death111, hover_frames_death1, hover_dead},
-	{FRAME_backwd01, FRAME_backwd24, hover_frames_backward, NULL},
-	{FRAME_attak101, FRAME_attak103, hover_frames_start_attack, hover_attack},
-	{FRAME_attak104, FRAME_attak106, hover_frames_attack1, NULL},
-	{FRAME_attak107, FRAME_attak108, hover_frames_end_attack, hover_run}
+	{FRAME_stand01, FRAME_stand30, hover_frames_stand, nullptr},
+	{FRAME_stop101, FRAME_stop109, hover_frames_stop1, nullptr},
+	{FRAME_stop201, FRAME_stop208, hover_frames_stop2, nullptr},
+	{FRAME_takeof01, FRAME_takeof30, hover_frames_takeoff, nullptr},
+	{FRAME_pain301, FRAME_pain309, hover_frames_pain3, SFP::hover_run},
+	{FRAME_pain201, FRAME_pain212, hover_frames_pain2, SFP::hover_run},
+	{FRAME_pain101, FRAME_pain128, hover_frames_pain1, SFP::hover_run},
+	{FRAME_land01, FRAME_land01, hover_frames_land, nullptr},
+	{FRAME_forwrd01, FRAME_forwrd35, hover_frames_forward, nullptr},
+	{FRAME_forwrd01, FRAME_forwrd35, hover_frames_walk, nullptr},
+	{FRAME_forwrd01, FRAME_forwrd35, hover_frames_run, nullptr},
+	{FRAME_death101, FRAME_death111, hover_frames_death1, SFP::hover_dead},
+	{FRAME_backwd01, FRAME_backwd24, hover_frames_backward, nullptr},
+	{FRAME_attak101, FRAME_attak103, hover_frames_start_attack, SFP::hover_attack},
+	{FRAME_attak104, FRAME_attak106, hover_frames_attack1, nullptr},
+	{FRAME_attak101, FRAME_attak103, hover_frames_start_attack, SFP::hover_attack},
+	{FRAME_attak107, FRAME_attak108, hover_frames_end_attack,SFP::hover_run}
 };
 
 mmove_t * hover_get_currentmove(edict_t *self)
 {
-	if (!self->monsterinfo.currentmove) return NULL;
+	if (!self->monsterinfo.currentmove) return nullptr;
 	return &hover_moves[self->monsterinfo.currentmove-1];
 }
+
+SFPEnt(pain, hover_pain)
+SFPEnt(die, hover_die)
+
+SFPEnt(monsterinfo.walk, hover_walk)
+//	SFPEnt(monsterinfo.dodge, hover_dodge)
+SFPEnt(monsterinfo.attack, hover_start_attack)
+SFPEnt(monsterinfo.get_currentmove, hover_get_currentmove)
 
 /*QUAKED monster_hover (1 .5 0) (-16 -16 -24) (16 16 32) Ambush Trigger_Spawn Sight
 */
@@ -628,17 +651,17 @@ void SP_monster_hover (edict_t *self)
 	self->gib_health = -100;
 	self->mass = 150;
 
-	self->pain = hover_pain;
-	self->die = hover_die;
+	self->pain = SFP::hover_pain;
+	self->die = SFP::hover_die;
 
-	self->monsterinfo.stand = hover_stand;
-	self->monsterinfo.walk = hover_walk;
-	self->monsterinfo.run = hover_run;
-//	self->monsterinfo.dodge = hover_dodge;
-	self->monsterinfo.attack = hover_start_attack;
-	self->monsterinfo.sight = hover_sight;
-	self->monsterinfo.search = hover_search;
-	self->monsterinfo.get_currentmove = hover_get_currentmove;
+	self->monsterinfo.stand = SFP::hover_stand;
+	self->monsterinfo.walk = SFP::hover_walk;
+	self->monsterinfo.run = SFP::hover_run;
+//	self->monsterinfo.dodge = SFP::hover_dodge;
+	self->monsterinfo.attack = SFP::hover_start_attack;
+	self->monsterinfo.sight = SFP::hover_sight;
+	self->monsterinfo.search = SFP::hover_search;
+	self->monsterinfo.get_currentmove = SFP::hover_get_currentmove;
 
 	gi.linkentity (self);
 

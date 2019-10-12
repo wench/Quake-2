@@ -50,6 +50,9 @@ void Think_Boss3Stand (edict_t *ent)
 
 Just stands and cycles in one place until targeted, then teleports away.
 */
+AutoSFP(Use_Boss3)
+AutoSFP(Think_Boss3Stand)
+
 void SP_monster_boss3_stand (edict_t *self)
 {
 	if (deathmatch->value)
@@ -69,8 +72,8 @@ void SP_monster_boss3_stand (edict_t *self)
 	VectorSet (self->s.mins, -32, -32, 0);
 	VectorSet (self->s.maxs, 32, 32, 90);
 
-	self->use = Use_Boss3;
-	self->think = Think_Boss3Stand;
+	self->use = SFP::Use_Boss3;
+	self->think = SFP::Think_Boss3Stand;
 	self->nextthink = level.time + FRAMETIME;
 	gi.linkentity (self);
 }

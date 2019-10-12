@@ -80,7 +80,7 @@ char *ANOX_parse_entity(char *classname, char *entities)
 	ANOX_entity_string(description);
 
 	// Only created when required
-	desc->moves = NULL;	
+	desc->moves = nullptr;	
 
 	// Finally set us as the first in the list
 	desc->next = anox_entities;
@@ -113,8 +113,8 @@ error:
 
 	gi.TagFree(desc);
 
-	// NULL will indicate some sort of error
-	return NULL;
+	// nullptr will indicate some sort of error
+	return nullptr;
 }
 
 // Warning, assumption is models/entity.dat is formatted correctly!!
@@ -169,7 +169,7 @@ void anox_think (edict_t *ent)
 
 mmove_t * anox_get_currentmove(edict_t *self)
 {
-	if (self->monsterinfo.currentmove == 0) return NULL;
+	if (self->monsterinfo.currentmove == 0) return nullptr;
 	
 	return &self->anox->moves[self->monsterinfo.currentmove-1];
 }
@@ -306,6 +306,8 @@ void anox_die_with_anim (edict_t *self, edict_t *inflictor, edict_t *attacker, i
 
 	self->monsterinfo.currentmove = anox_get_move_by_name(self, "die_a");
 }
+SFPEnt(die, anox_die_with_anim)
+SFPEnt(die, anox_die)
 
 void anox_die_with_combat_anim (edict_t *self, edict_t *inflictor, edict_t *attacker, int damage, vec3_t point)
 {
@@ -316,7 +318,7 @@ void anox_die_with_combat_anim (edict_t *self, edict_t *inflictor, edict_t *atta
 	strcpy(new_class, self->classname);
 	strcat(new_class, "_com");
 
-	for (new_desc = anox_entities; new_desc != NULL; new_desc = new_desc->next) 
+	for (new_desc = anox_entities; new_desc != nullptr; new_desc = new_desc->next) 
 	{
 		if (!new_desc->classname) continue;
 		if (!Q_strcasecmp(new_desc->classname, new_class)) 
@@ -345,7 +347,7 @@ void anox_die_with_combat_anim (edict_t *self, edict_t *inflictor, edict_t *atta
 	self->anox = new_desc;
 	gi.TTagMalloc(self->classname,strlen(new_class)+1, TAG_LEVEL);
 	strcpy(self->classname, new_class);
-	self->die = anox_die_with_anim;
+	self->die = SFP::anox_die_with_anim;
 	self->s.modelindex = gi.modelindex(new_desc->model_path);
 	gi.linkentity(self);
 
@@ -374,7 +376,14 @@ void anox_pain_with_anim (edict_t *self, edict_t *other, float kick, int damage)
 void anox_pain (edict_t *self, edict_t *other, float kick, int damage)
 {
 }
-
+SFPEnt(pain, anox_pain)
+SFPEnt(pain, anox_pain_with_anim)
+SFPEnt(die,anox_die_with_combat_anim)
+SFPEnt(monsterinfo.stand, anox_stand)
+SFPEnt(monsterinfo.get_currentmove,anox_get_currentmove)
+SFPEnt(monsterinfo.walk, anox_walk)
+SFPEnt(monsterinfo.run,anox_run)
+SFPEnt(monsterinfo.custom_anim,anox_custom_anim)
 void anox_setup_monster(edict_t *self)
 {
 	monsterinfo_t	*minfo;
@@ -387,11 +396,11 @@ void anox_setup_monster(edict_t *self)
 	// Now we need to setup the monsterinfo structure
 	self->monsterinfo.aiflags |= AI_GOOD_GUY;
 	self->monsterinfo.scale = 1.0;
-	self->die = anox_die;
-	self->pain = anox_pain;
+	self->die = SFP::anox_die;
+	self->pain = SFP::anox_pain;
 
 	if (anox_get_move_by_name(self,"die_a") != 1) 
-		self->die = anox_die_with_anim;
+		self->die = SFP::anox_die_with_anim;
 	else
 	{
 		char	new_class[MAX_QPATH];
@@ -400,7 +409,7 @@ void anox_setup_monster(edict_t *self)
 		strcpy(new_class, self->classname);
 		strcat(new_class, "_com");
 
-		for (new_desc = anox_entities; new_desc != NULL; new_desc = new_desc->next) 
+		for (new_desc = anox_entities; new_desc != nullptr; new_desc = new_desc->next) 
 		{
 			if (!new_desc->classname) continue;
 			if (!Q_strcasecmp(new_desc->classname, new_class)) 
@@ -412,22 +421,22 @@ void anox_setup_monster(edict_t *self)
 		if (new_desc)
 		{
 			anox_setup_moves(new_desc);
-			self->die = anox_die_with_combat_anim;
+			self->die = SFP::anox_die_with_combat_anim;
 		}
 	}
 
 	if (anox_get_move_by_name(self,"hit_a") != 1) 
-		self->pain = anox_pain_with_anim;
+		self->pain = SFP::anox_pain_with_anim;
 
-	self->monsterinfo.get_currentmove = anox_get_currentmove;
-	self->monsterinfo.stand = anox_stand;
-	self->monsterinfo.walk = anox_walk;
-	self->monsterinfo.run = anox_run;
-	self->monsterinfo.attack = NULL;
-	self->monsterinfo.melee = NULL;
-	self->monsterinfo.sight = NULL;
+	self->monsterinfo.get_currentmove = SFP::anox_get_currentmove;
+	self->monsterinfo.stand = SFP::anox_stand;
+	self->monsterinfo.walk = SFP::anox_walk;
+	self->monsterinfo.run = SFP::anox_run;
+	self->monsterinfo.attack = nullptr;
+	self->monsterinfo.melee = nullptr;
+	self->monsterinfo.sight = nullptr;
 
-	self->monsterinfo.custom_anim = anox_custom_anim;
+	self->monsterinfo.custom_anim = SFP::anox_custom_anim;
 
 	self->health = 100;
 	self->gib_health = -50;
@@ -435,7 +444,14 @@ void anox_setup_monster(edict_t *self)
 
 	anox_stand(self);
 }
+AutoSFP(ai_charge)
+AutoSFP(ai_stand)
+AutoSFP(ai_walk)
+AutoSFP(ai_move)
+AutoSFP(ai_run)
+AutoSFP(ai_turn)
 
+AutoSFP(anox_dead)
 void anox_setup_moves(anox_entity_desc_t *desc)
 {
 	qboolean found_walk_a = false;
@@ -460,7 +476,7 @@ void anox_setup_moves(anox_entity_desc_t *desc)
 
 	for (i = 0; i < info->num_framesets; i++)
 	{
-		void	(*func)(edict_t *self, float dist);
+		decltype(desc->moves[i].frame[j].aifunc)func;
 		float	dist;
 
 		desc->moves[i].endfunc = 0;
@@ -470,31 +486,31 @@ void anox_setup_moves(anox_entity_desc_t *desc)
 
 		if (Q_strcasecmp(info->frameset[i].anim, "walk") == 0)
 		{
-			func = ai_walk;
+			func = SFP::ai_walk;
 			dist = desc->walk_speed * FRAMETIME;
 			found_walk_a = true;
 		}
 		else if (Q_strcasecmp(info->frameset[i].anim, "run") == 0)
 		{
-			func = ai_run;
+			func = SFP::ai_run;
 			dist = desc->run_speed * FRAMETIME;
 			found_run_a = true;
 		}
 		else if (Q_strcasecmp(info->frameset[i].anim, "die") == 0)
 		{
-			desc->moves[i].endfunc = anox_dead;
-			func = ai_move;
+			desc->moves[i].endfunc = SFP::anox_dead;
+			func = SFP::ai_move;
 			dist = 0;
 		}
 		else if (Q_strcasecmp(info->frameset[i].anim, "hit") == 0)
 		{
-			desc->moves[i].endfunc = anox_stand;
-			func = ai_move;
+			desc->moves[i].endfunc = SFP::anox_stand;
+			func = SFP::ai_move;
 			dist = 0;
 		}
 		else
 		{
-			func = ai_stand;
+			func = SFP::ai_stand;
 			dist = 0;
 		}
 
@@ -502,13 +518,13 @@ void anox_setup_moves(anox_entity_desc_t *desc)
 		{
 			desc->moves[i].frame[j].aifunc = func;
 			desc->moves[i].frame[j].dist = dist;
-			desc->moves[i].frame[j].thinkfunc = NULL;
+			desc->moves[i].frame[j].thinkfunc = nullptr;
 		}
 	}
 
 	if (!found_walk_a)
 	{
-		void	(*func)(edict_t *self, float dist);
+		decltype(desc->moves[i].frame[j].aifunc) func;
 		float	dist;
 
 		i = info->num_framesets;
@@ -517,20 +533,20 @@ void anox_setup_moves(anox_entity_desc_t *desc)
 		desc->moves[i].lastframe = info->frameset[0].first_frame + info->frameset[0].num_frames-1;
 		gi.TTagMalloc(desc->moves[i].frame,info->frameset[0].num_frames*sizeof(mframe_t), TAG_GAME);
 
-		func = ai_walk;
+		func = SFP::ai_walk;
 		dist = desc->walk_speed * FRAMETIME;
 
 		for (j = 0; j < info->frameset[0].num_frames; j++)
 		{
 			desc->moves[i].frame[j].aifunc = func;
 			desc->moves[i].frame[j].dist = dist;
-			desc->moves[i].frame[j].thinkfunc = NULL;
+			desc->moves[i].frame[j].thinkfunc = nullptr;
 		}
 	}
 
 	if (!found_run_a)
 	{
-		void	(*func)(edict_t *self, float dist);
+		decltype(desc->moves[i].frame[j].aifunc) func;
 		float	dist;
 
 		i = info->num_framesets+1;
@@ -539,14 +555,14 @@ void anox_setup_moves(anox_entity_desc_t *desc)
 		desc->moves[i].lastframe = info->frameset[0].first_frame + info->frameset[0].num_frames-1;
 		 gi.TTagMalloc(desc->moves[i].frame,info->frameset[0].num_frames*sizeof(mframe_t), TAG_GAME);
 
-		func = ai_run;
+		func = SFP::ai_run;
 		dist = desc->run_speed * FRAMETIME;
 
 		for (j = 0; j < info->frameset[0].num_frames; j++)
 		{
 			desc->moves[i].frame[j].aifunc = func;
 			desc->moves[i].frame[j].dist = dist;
-			desc->moves[i].frame[j].thinkfunc = NULL;
+			desc->moves[i].frame[j].thinkfunc = nullptr;
 		}
 	}
 }
@@ -591,7 +607,7 @@ void anox_parse_np_string(edict_t *ent, char *string, int index)
 	ent->s.np_tri[index][0] = -1;
 	ent->s.np_tri[index][1] = -1;
 }
-
+AutoSFP(anox_think)
 qboolean SP_misc_anox_spawn (edict_t *ent)
 {
 	int i ;
@@ -800,7 +816,7 @@ qboolean SP_misc_anox_spawn (edict_t *ent)
 
 	if (is_anim)
 	{
-		ent->think = anox_think;
+		ent->think = SFP::anox_think;
 		ent->nextthink = level.time + FRAMETIME;
 	}
 
@@ -811,7 +827,7 @@ qboolean SP_misc_anox_spawn (edict_t *ent)
 anox_entity_desc_t *anox_find_desc(char *classname)
 {
 	anox_entity_desc_t *desc;
-	for (desc = anox_entities; desc != NULL; desc = desc->next) 
+	for (desc = anox_entities; desc != nullptr; desc = desc->next) 
 	{
 		if (!desc->classname) continue;
 		if (!Q_strcasecmp(desc->classname, classname)) 

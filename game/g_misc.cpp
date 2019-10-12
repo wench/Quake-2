@@ -17,7 +17,7 @@ void Use_Areaportal (edict_t *ent, edict_t *other, edict_t *activator)
 //	gi.dprintf ("portalstate: %i = %i\n", ent->style, ent->count);
 	gi.SetAreaPortalState (ent->style, ent->count);
 }
-
+SFPEnt(use, Use_Areaportal)
 /*QUAKED func_areaportal (0 0.5 0.8) ?
 
 This is a non-visible object that divides the world into
@@ -26,7 +26,7 @@ Usually enclosed in the middle of a door.
 */
 void SP_func_areaportal (edict_t *ent)
 {
-	ent->use = Use_Areaportal;
+	ent->use = SFP::Use_Areaportal;
 	ent->count = 0;		// allways start closed;
 }
 
@@ -72,6 +72,7 @@ void ClipGibVelocity (edict_t *ent)
 gibs
 =================
 */
+SFPEnt(think, G_FreeEdict)
 void gib_think (edict_t *self)
 {
 	self->s.frame++;
@@ -79,11 +80,11 @@ void gib_think (edict_t *self)
 
 	if (self->s.frame == 10)
 	{
-		self->think = G_FreeEdict;
+		self->think = SFP::G_FreeEdict;
 		self->nextthink = level.time + 8 + random()*10;
 	}
 }
-
+SFPEnt(think, gib_think)
 void gib_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
 {
 	vec3_t	normal_angles, right;
@@ -91,29 +92,32 @@ void gib_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf
 	if (!self->groundentity)
 		return;
 
-	self->touch = NULL;
+	self->touch = nullptr;
 
 	if (plane)
 	{
 		gi.sound (self, CHAN_VOICE, gi.soundindex ("misc/fhit3.wav"), 1, ATTN_NORM, 0);
 
 		vectoangles (plane->normal, normal_angles);
-		AngleVectors (normal_angles, NULL, right, NULL);
+		AngleVectors (normal_angles, nullptr, right, nullptr);
 		vectoangles (right, self->s.angles);
 
 		if (self->s.modelindex == sm_meat_index)
 		{
 			self->s.frame++;
-			self->think = gib_think;
+			self->think = SFP::gib_think;
 			self->nextthink = level.time + FRAMETIME;
 		}
 	}
 }
 
+
 void gib_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int damage, vec3_t point)
 {
 	G_FreeEdict (self);
 }
+SFPEnt(die,gib_die);
+AutoSFP(gib_touch);
 
 void ThrowGib (edict_t *self, char *gibname, int damage, int type)
 {
@@ -136,12 +140,12 @@ void ThrowGib (edict_t *self, char *gibname, int damage, int type)
 	gib->s.effects |= EF_GIB;
 	gib->flags |= FL_NO_KNOCKBACK;
 	gib->takedamage = DAMAGE_YES;
-	gib->die = gib_die;
+	gib->die = SFP::gib_die;
 
 	if (type == GIB_ORGANIC)
 	{
 		gib->movetype = MOVETYPE_TOSS;
-		gib->touch = gib_touch;
+		gib->touch = SFP::gib_touch;
 		vscale = 0.5;
 	}
 	else
@@ -157,7 +161,7 @@ void ThrowGib (edict_t *self, char *gibname, int damage, int type)
 	gib->avelocity[1] = random()*600;
 	gib->avelocity[2] = random()*600;
 
-	gib->think = G_FreeEdict;
+	gib->think = SFP::G_FreeEdict;
 	gib->nextthink = level.time + 10 + random()*10;
 
 	gi.linkentity (gib);
@@ -182,12 +186,12 @@ void ThrowHead (edict_t *self, char *gibname, int damage, int type)
 	self->flags |= FL_NO_KNOCKBACK;
 	self->svflags &= ~SVF_MONSTER;
 	self->takedamage = DAMAGE_YES;
-	self->die = gib_die;
+	self->die = SFP::gib_die;
 
 	if (type == GIB_ORGANIC)
 	{
 		self->movetype = MOVETYPE_TOSS;
-		self->touch = gib_touch;
+		self->touch = SFP::gib_touch;
 		vscale = 0.5;
 	}
 	else
@@ -202,7 +206,7 @@ void ThrowHead (edict_t *self, char *gibname, int damage, int type)
 
 	self->avelocity[YAW] = crandom()*600;
 
-	self->think = G_FreeEdict;
+	self->think = SFP::G_FreeEdict;
 	self->nextthink = level.time + 10 + random()*10;
 
 	gi.linkentity (self);
@@ -254,7 +258,7 @@ void debris_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int damag
 {
 	G_FreeEdict (self);
 }
-
+SFPEnt(die,debris_die);
 void ThrowDebris (edict_t *self, char *modelname, float speed, vec3_t origin)
 {
 	edict_t	*chunk;
@@ -272,13 +276,13 @@ void ThrowDebris (edict_t *self, char *modelname, float speed, vec3_t origin)
 	chunk->avelocity[0] = random()*600;
 	chunk->avelocity[1] = random()*600;
 	chunk->avelocity[2] = random()*600;
-	chunk->think = G_FreeEdict;
+	chunk->think = SFP::G_FreeEdict;
 	chunk->nextthink = level.time + 5 + random()*5;
 	chunk->s.frame = 0;
 	chunk->flags = 0;
 	chunk->classname = "debris";
 	chunk->takedamage = DAMAGE_YES;
-	chunk->die = debris_die;
+	chunk->die = SFP::debris_die;
 	gi.linkentity (chunk);
 }
 
@@ -335,7 +339,7 @@ void path_corner_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface
 	if (self->target)
 		next = G_PickTarget(self->target);
 	else
-		next = NULL;
+		next = nullptr;
 
 	if ((next) && (next->spawnflags & 1))
 	{
@@ -373,7 +377,7 @@ void path_corner_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface
 		other->ideal_yaw = vectoyaw (v);
 	}
 }
-
+AutoSFP(path_corner_touch);
 void SP_path_corner (edict_t *self)
 {
 	/* Anox has paths with no 'targetname' since they are used for special purposes don't kill them
@@ -386,7 +390,7 @@ void SP_path_corner (edict_t *self)
 	*/
 
 	self->solid = SOLID_TRIGGER;
-	self->touch = path_corner_touch;
+	self->touch = SFP::path_corner_touch;
 	VectorSet (self->s.mins, -8, -8, -8);
 	VectorSet (self->s.maxs, 8, 8, 8);
 	self->svflags |= SVF_NOCLIENT;
@@ -415,7 +419,7 @@ void point_combat_touch (edict_t *self, edict_t *other, cplane_t *plane, csurfac
 			gi.dprintf("%s at %s target %s does not exist\n", self->classname, vtos(self->s.origin), self->target);
 			other->movetarget = self;
 		}
-		self->target = NULL;
+		self->target = nullptr;
 	}
 	else if ((self->spawnflags & 1) && !(self->flags & (FL_SWIM|FL_FLY)))
 	{
@@ -426,8 +430,8 @@ void point_combat_touch (edict_t *self, edict_t *other, cplane_t *plane, csurfac
 
 	if (other->movetarget == self)
 	{
-		other->target = NULL;
-		other->movetarget = NULL;
+		other->target = nullptr;
+		other->movetarget = nullptr;
 		other->goalentity = other->enemy;
 		other->monsterinfo.aiflags &= ~AI_COMBAT_POINT;
 	}
@@ -450,11 +454,11 @@ void point_combat_touch (edict_t *self, edict_t *other, cplane_t *plane, csurfac
 		self->target = savetarget;
 	}
 }
-
+SFPEnt(touch, point_combat_touch)
 void SP_point_combat (edict_t *self)
 {
 	self->solid = SOLID_TRIGGER;
-	self->touch = point_combat_touch;
+	self->touch = SFP::point_combat_touch;
 	VectorSet (self->s.mins, -8, -8, -16);
 	VectorSet (self->s.maxs, 8, 8, 16);
 	self->svflags = SVF_NOCLIENT;
@@ -483,7 +487,7 @@ void TH_viewthing(edict_t *ent)
 		}
 	}
 }
-
+SFPEnt(think, TH_viewthing);
 void SP_viewthing(edict_t *ent)
 {
 	gi.dprintf ("viewthing spawned\n");
@@ -497,7 +501,7 @@ void SP_viewthing(edict_t *ent)
 	ent->s.modelindex = gi.modelindex ("models/objects/banner/tris.md2");
 	gi.linkentity (ent);
 	ent->nextthink = level.time + 0.5;
-	ent->think = TH_viewthing;
+	ent->think = SFP::TH_viewthing;
 	return;
 }
 
@@ -544,6 +548,7 @@ static void light_use (edict_t *self, edict_t *other, edict_t *activator)
 		self->spawnflags |= START_OFF;
 	}
 }
+SFPEnt(use, light_use);
 
 void SP_light (edict_t *self)
 {
@@ -556,7 +561,7 @@ void SP_light (edict_t *self)
 
 	if (self->style >= 32)
 	{
-		self->use = light_use;
+		self->use = SFP::light_use;
 		if (self->spawnflags & START_OFF)
 			gi.configstring (CS_LIGHTS+self->style, "a");
 		else
@@ -608,9 +613,9 @@ void func_wall_use (edict_t *self, edict_t *other, edict_t *activator)
 	gi.linkentity (self);
 
 	if (!(self->spawnflags & 2))
-		self->use = NULL;
+		self->use = nullptr;
 }
-
+SFPEnt(use, func_wall_use)
 void SP_func_wall (edict_t *self)
 {
 	self->movetype = MOVETYPE_PUSH;
@@ -646,7 +651,7 @@ void SP_func_wall (edict_t *self)
 		}
 	}
 
-	self->use = func_wall_use;
+	self->use = SFP::func_wall_use;
 	if (self->spawnflags & 4)
 	{
 		self->solid = SOLID_BSP;
@@ -675,22 +680,22 @@ void func_object_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface
 		return;
 	T_Damage (other, self, self, vec3_origin, self->s.origin, vec3_origin, self->dmg, 1, 0);
 }
-
+SFPEnt(touch, func_object_touch);
 void func_object_release (edict_t *self)
 {
 	self->movetype = MOVETYPE_TOSS;
-	self->touch = func_object_touch;
+	self->touch = SFP::func_object_touch;
 }
-
+SFPEnt(think, func_object_release);
 void func_object_use (edict_t *self, edict_t *other, edict_t *activator)
 {
 	self->solid = SOLID_BSP;
 	self->svflags &= ~SVF_NOCLIENT;
-	self->use = NULL;
+	self->use = nullptr;
 	KillBox (self);
 	func_object_release (self);
 }
-
+SFPEnt(use, func_object_use);
 void SP_func_object (edict_t *self)
 {
 	gi.setmodel (self, self->model);
@@ -709,14 +714,14 @@ void SP_func_object (edict_t *self)
 	{
 		self->solid = SOLID_BSP;
 		self->movetype = MOVETYPE_PUSH;
-		self->think = func_object_release;
+		self->think = SFP::func_object_release;
 		self->nextthink = level.time + 2 * FRAMETIME;
 	}
 	else
 	{
 		self->solid = SOLID_NOT;
 		self->movetype = MOVETYPE_PUSH;
-		self->use = func_object_use;
+		self->use = SFP::func_object_use;
 		self->svflags |= SVF_NOCLIENT;
 	}
 
@@ -760,7 +765,7 @@ void func_explosive_explode (edict_t *self, edict_t *inflictor, edict_t *attacke
 	self->takedamage = DAMAGE_NO;
 
 	if (self->dmg)
-		T_RadiusDamage (self, attacker, self->dmg, NULL, self->dmg+40);
+		T_RadiusDamage (self, attacker, self->dmg, nullptr, self->dmg+40);
 
 	VectorSubtract (self->s.origin, inflictor->s.origin, self->velocity);
 	VectorNormalize (self->velocity);
@@ -817,11 +822,13 @@ void func_explosive_spawn (edict_t *self, edict_t *other, edict_t *activator)
 {
 	self->solid = SOLID_BSP;
 	self->svflags &= ~SVF_NOCLIENT;
-	self->use = NULL;
+	self->use = nullptr;
 	KillBox (self);
 	gi.linkentity (self);
 }
-
+SFPEnt(use, func_explosive_spawn)
+SFPEnt(use, func_explosive_use)
+SFPEnt(die, func_explosive_explode)
 void SP_func_explosive (edict_t *self)
 {
 	if (deathmatch->value)
@@ -841,13 +848,13 @@ void SP_func_explosive (edict_t *self)
 	{
 		self->svflags |= SVF_NOCLIENT;
 		self->solid = SOLID_NOT;
-		self->use = func_explosive_spawn;
+		self->use = SFP::func_explosive_spawn;
 	}
 	else
 	{
 		self->solid = SOLID_BSP;
 		if (self->targetname)
-			self->use = func_explosive_use;
+			self->use = SFP::func_explosive_use;
 	}
 
 	if (self->spawnflags & 2)
@@ -859,7 +866,7 @@ void SP_func_explosive (edict_t *self)
 	{
 		if (!self->health)
 			self->health = 100;
-		self->die = func_explosive_explode;
+		self->die = SFP::func_explosive_explode;
 		self->takedamage = DAMAGE_YES;
 	}
 
@@ -885,14 +892,14 @@ void barrel_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *s
 	VectorSubtract (self->s.origin, other->s.origin, v);
 	M_walkmove (self, vectoyaw(v), 20 * ratio * FRAMETIME);
 }
-
+AutoSFP(barrel_touch);
 void barrel_explode (edict_t *self)
 {
 	vec3_t	org;
 	float	spd;
 	vec3_t	save;
 
-	T_RadiusDamage (self, self->activator, self->dmg, NULL, self->dmg+40);
+	T_RadiusDamage (self, self->activator, self->dmg, nullptr, self->dmg+40);
 
 	VectorCopy (self->s.origin, save);
 	VectorMA (self->absmin, 0.5, self->size, self->s.origin);
@@ -964,15 +971,16 @@ void barrel_explode (edict_t *self)
 	else
 		BecomeExplosion1 (self);
 }
-
+AutoSFP(barrel_explode);
 void barrel_delay (edict_t *self, edict_t *inflictor, edict_t *attacker, int damage, vec3_t point)
 {
 	self->takedamage = DAMAGE_NO;
 	self->nextthink = level.time + 2 * FRAMETIME;
-	self->think = barrel_explode;
+	self->think = SFP::barrel_explode;
 	self->activator = attacker;
 }
-
+SFPEnt(die, barrel_delay)
+SFPEnt(think, M_droptofloor);
 void SP_misc_explobox (edict_t *self)
 {
 	if (deathmatch->value)
@@ -1000,13 +1008,13 @@ void SP_misc_explobox (edict_t *self)
 	if (!self->dmg)
 		self->dmg = 150;
 
-	self->die = barrel_delay;
+	self->die = SFP::barrel_delay;
 	self->takedamage = DAMAGE_YES;
 	self->monsterinfo.aiflags = AI_NOSTEP;
 
-	self->touch = barrel_touch;
+	self->touch = SFP::barrel_touch;
 
-	self->think = M_droptofloor;
+	self->think = SFP::M_droptofloor;
 	self->nextthink = level.time + 2 * FRAMETIME;
 
 	gi.linkentity (self);
@@ -1030,7 +1038,7 @@ void misc_blackhole_use (edict_t *ent, edict_t *other, edict_t *activator)
 	*/
 	G_FreeEdict (ent);
 }
-
+AutoSFP(misc_blackhole_use)
 void misc_blackhole_think (edict_t *self)
 {
 	if (++self->s.frame < 19)
@@ -1041,6 +1049,7 @@ void misc_blackhole_think (edict_t *self)
 		self->nextthink = level.time + FRAMETIME;
 	}
 }
+AutoSFP(misc_blackhole_think)
 
 void SP_misc_blackhole (edict_t *ent)
 {
@@ -1050,8 +1059,8 @@ void SP_misc_blackhole (edict_t *ent)
 	VectorSet (ent->s.maxs, 64, 64, 8);
 	ent->s.modelindex = gi.modelindex ("models/objects/black/tris.md2");
 	ent->s.renderfx = RF_TRANSLUCENT;
-	ent->use = misc_blackhole_use;
-	ent->think = misc_blackhole_think;
+	ent->use = SFP::misc_blackhole_use;
+	ent->think = SFP::misc_blackhole_think;
 	ent->nextthink = level.time + 2 * FRAMETIME;
 	gi.linkentity (ent);
 }
@@ -1069,7 +1078,7 @@ void misc_eastertank_think (edict_t *self)
 		self->nextthink = level.time + FRAMETIME;
 	}
 }
-
+AutoSFP(misc_eastertank_think)
 void SP_misc_eastertank (edict_t *ent)
 {
 	ent->movetype = MOVETYPE_NONE;
@@ -1078,7 +1087,7 @@ void SP_misc_eastertank (edict_t *ent)
 	VectorSet (ent->s.maxs, 32, 32, 32);
 	ent->s.modelindex = gi.modelindex ("models/monsters/tank/tris.md2");
 	ent->s.frame = 254;
-	ent->think = misc_eastertank_think;
+	ent->think = SFP::misc_eastertank_think;
 	ent->nextthink = level.time + 2 * FRAMETIME;
 	gi.linkentity (ent);
 }
@@ -1097,7 +1106,7 @@ void misc_easterchick_think (edict_t *self)
 		self->nextthink = level.time + FRAMETIME;
 	}
 }
-
+AutoSFP(misc_easterchick_think)
 void SP_misc_easterchick (edict_t *ent)
 {
 	ent->movetype = MOVETYPE_NONE;
@@ -1106,7 +1115,7 @@ void SP_misc_easterchick (edict_t *ent)
 	VectorSet (ent->s.maxs, 32, 32, 32);
 	ent->s.modelindex = gi.modelindex ("models/monsters/bitch/tris.md2");
 	ent->s.frame = 208;
-	ent->think = misc_easterchick_think;
+	ent->think = SFP::misc_easterchick_think;
 	ent->nextthink = level.time + 2 * FRAMETIME;
 	gi.linkentity (ent);
 }
@@ -1125,7 +1134,7 @@ void misc_easterchick2_think (edict_t *self)
 		self->nextthink = level.time + FRAMETIME;
 	}
 }
-
+AutoSFP(misc_easterchick2_think)
 void SP_misc_easterchick2 (edict_t *ent)
 {
 	ent->movetype = MOVETYPE_NONE;
@@ -1134,7 +1143,7 @@ void SP_misc_easterchick2 (edict_t *ent)
 	VectorSet (ent->s.maxs, 32, 32, 32);
 	ent->s.modelindex = gi.modelindex ("models/monsters/bitch/tris.md2");
 	ent->s.frame = 248;
-	ent->think = misc_easterchick2_think;
+	ent->think = SFP::misc_easterchick2_think;
 	ent->nextthink = level.time + 2 * FRAMETIME;
 	gi.linkentity (ent);
 }
@@ -1155,20 +1164,20 @@ void commander_body_think (edict_t *self)
 	if (self->s.frame == 22)
 		gi.sound (self, CHAN_BODY, gi.soundindex ("tank/thud.wav"), 1, ATTN_NORM, 0);
 }
-
+AutoSFP(commander_body_think)
 void commander_body_use (edict_t *self, edict_t *other, edict_t *activator)
 {
-	self->think = commander_body_think;
+	self->think = SFP::commander_body_think;
 	self->nextthink = level.time + FRAMETIME;
 	gi.sound (self, CHAN_BODY, gi.soundindex ("tank/pain.wav"), 1, ATTN_NORM, 0);
 }
-
+AutoSFP(commander_body_use)
 void commander_body_drop (edict_t *self)
 {
 	self->movetype = MOVETYPE_TOSS;
 	self->s.origin[2] += 2;
 }
-
+AutoSFP(commander_body_drop)
 void SP_monster_commander_body (edict_t *self)
 {
 	self->movetype = MOVETYPE_NONE;
@@ -1177,7 +1186,7 @@ void SP_monster_commander_body (edict_t *self)
 	self->s.modelindex = gi.modelindex (self->model);
 	VectorSet (self->s.mins, -32, -32, 0);
 	VectorSet (self->s.maxs, 32, 32, 48);
-	self->use = commander_body_use;
+	self->use = SFP::commander_body_use;
 	self->takedamage = DAMAGE_YES;
 	self->flags = FL_GODMODE;
 	self->s.renderfx |= RF_FRAMELERP;
@@ -1186,7 +1195,7 @@ void SP_monster_commander_body (edict_t *self)
 	gi.soundindex ("tank/thud.wav");
 	gi.soundindex ("tank/pain.wav");
 
-	self->think = commander_body_drop;
+	self->think = SFP::commander_body_drop;
 	self->nextthink = level.time + 5 * FRAMETIME;
 }
 
@@ -1200,7 +1209,7 @@ void misc_banner_think (edict_t *ent)
 	ent->s.frame = (ent->s.frame + 1) % 16;
 	ent->nextthink = level.time + FRAMETIME;
 }
-
+AutoSFP(misc_banner_think);
 void SP_misc_banner (edict_t *ent)
 {
 	ent->movetype = MOVETYPE_NONE;
@@ -1209,7 +1218,7 @@ void SP_misc_banner (edict_t *ent)
 	ent->s.frame = rand() % 16;
 	gi.linkentity (ent);
 
-	ent->think = misc_banner_think;
+	ent->think = SFP::misc_banner_think;
 	ent->nextthink = level.time + FRAMETIME;
 }
 
@@ -1228,7 +1237,7 @@ void misc_deadsoldier_die (edict_t *self, edict_t *inflictor, edict_t *attacker,
 		ThrowGib (self, "models/objects/gibs/sm_meat/tris.md2", damage, GIB_ORGANIC);
 	ThrowHead (self, "models/objects/gibs/head2/tris.md2", damage, GIB_ORGANIC);
 }
-
+SFPEnt(die, misc_deadsoldier_die);
 void SP_misc_deadsoldier (edict_t *ent)
 {
 	if (deathmatch->value)
@@ -1260,7 +1269,7 @@ void SP_misc_deadsoldier (edict_t *ent)
 	ent->deadflag = DEAD_DEAD;
 	ent->takedamage = DAMAGE_YES;
 	ent->svflags |= SVF_MONSTER|SVF_DEADMONSTER;
-	ent->die = misc_deadsoldier_die;
+	ent->die = SFP::misc_deadsoldier_die;
 	ent->monsterinfo.aiflags |= AI_GOOD_GUY;
 
 	gi.linkentity (ent);
@@ -1276,14 +1285,15 @@ There must be a path for it to follow once it is activated.
 
 extern void train_use (edict_t *self, edict_t *other, edict_t *activator);
 extern void func_train_find (edict_t *self);
-
+SFPEnt(use, train_use)
+SFPEnt(think, func_train_find)
 void misc_viper_use  (edict_t *self, edict_t *other, edict_t *activator)
 {
 	self->svflags &= ~SVF_NOCLIENT;
-	self->use = train_use;
+	self->use = SFP::train_use;
 	train_use (self, other, activator);
 }
-
+AutoSFP(misc_viper_use)
 void SP_misc_viper (edict_t *ent)
 {
 	if (!ent->target)
@@ -1302,9 +1312,9 @@ void SP_misc_viper (edict_t *ent)
 	VectorSet (ent->s.mins, -16, -16, 0);
 	VectorSet (ent->s.maxs, 16, 16, 32);
 
-	ent->think = func_train_find;
+	ent->think = SFP::func_train_find;
 	ent->nextthink = level.time + FRAMETIME;
-	ent->use = misc_viper_use;
+	ent->use = SFP::misc_viper_use;
 	ent->svflags |= SVF_NOCLIENT;
 	ent->moveinfo.accel = ent->moveinfo.decel = ent->moveinfo.speed = ent->speed;
 
@@ -1334,7 +1344,7 @@ void misc_viper_bomb_touch (edict_t *self, edict_t *other, cplane_t *plane, csur
 	G_UseTargets (self, self->activator);
 
 	self->s.origin[2] = self->absmin[2] + 1;
-	T_RadiusDamage (self, self, self->dmg, NULL, self->dmg+40);
+	T_RadiusDamage (self, self, self->dmg, nullptr, self->dmg+40);
 	BecomeExplosion2 (self);
 }
 
@@ -1343,7 +1353,7 @@ void misc_viper_bomb_prethink (edict_t *self)
 	vec3_t	v;
 	float	diff;
 
-	self->groundentity = NULL;
+	self->groundentity = nullptr;
 
 	diff = self->timestamp - level.time;
 	if (diff < -1.0)
@@ -1356,7 +1366,8 @@ void misc_viper_bomb_prethink (edict_t *self)
 	vectoangles (v, self->s.angles);
 	self->s.angles[2] = diff + 10;
 }
-
+AutoSFP(misc_viper_bomb_prethink)
+AutoSFP(misc_viper_bomb_touch)
 void misc_viper_bomb_use (edict_t *self, edict_t *other, edict_t *activator)
 {
 	edict_t	*viper;
@@ -1364,19 +1375,19 @@ void misc_viper_bomb_use (edict_t *self, edict_t *other, edict_t *activator)
 	self->solid = SOLID_BBOX;
 	self->svflags &= ~SVF_NOCLIENT;
 	self->s.effects |= EF_ROCKET;
-	self->use = NULL;
+	self->use = nullptr;
 	self->movetype = MOVETYPE_TOSS;
-	self->prethink = misc_viper_bomb_prethink;
-	self->touch = misc_viper_bomb_touch;
+	self->prethink = SFP::misc_viper_bomb_prethink;
+	self->touch = SFP::misc_viper_bomb_touch;
 	self->activator = activator;
 
-	viper = G_Find (NULL, FOFS(classname), "misc_viper");
+	viper = G_Find (nullptr, FOFS(classname), "misc_viper");
 	VectorScale (viper->moveinfo.dir, viper->moveinfo.speed, self->velocity);
 
 	self->timestamp = level.time;
 	VectorCopy (viper->moveinfo.dir, self->moveinfo.dir);
 }
-
+AutoSFP(misc_viper_bomb_use)
 void SP_misc_viper_bomb (edict_t *self)
 {
 	self->movetype = MOVETYPE_NONE;
@@ -1389,7 +1400,7 @@ void SP_misc_viper_bomb (edict_t *self)
 	if (!self->dmg)
 		self->dmg = 1000;
 
-	self->use = misc_viper_bomb_use;
+	self->use = SFP::misc_viper_bomb_use;
 	self->svflags |= SVF_NOCLIENT;
 
 	gi.linkentity (self);
@@ -1407,13 +1418,14 @@ There must be a path for it to follow once it is activated.
 extern void train_use (edict_t *self, edict_t *other, edict_t *activator);
 extern void func_train_find (edict_t *self);
 
+
 void misc_strogg_ship_use  (edict_t *self, edict_t *other, edict_t *activator)
 {
 	self->svflags &= ~SVF_NOCLIENT;
-	self->use = train_use;
+	self->use = SFP::train_use;
 	train_use (self, other, activator);
 }
-
+AutoSFP(misc_strogg_ship_use)
 void SP_misc_strogg_ship (edict_t *ent)
 {
 	if (!ent->target)
@@ -1432,9 +1444,9 @@ void SP_misc_strogg_ship (edict_t *ent)
 	VectorSet (ent->s.mins, -16, -16, 0);
 	VectorSet (ent->s.maxs, 16, 16, 32);
 
-	ent->think = func_train_find;
+	ent->think = SFP::func_train_find;
 	ent->nextthink = level.time + FRAMETIME;
-	ent->use = misc_strogg_ship_use;
+	ent->use = SFP::misc_strogg_ship_use;
 	ent->svflags |= SVF_NOCLIENT;
 	ent->moveinfo.accel = ent->moveinfo.decel = ent->moveinfo.speed = ent->speed;
 
@@ -1450,13 +1462,14 @@ void misc_satellite_dish_think (edict_t *self)
 	if (self->s.frame < 38)
 		self->nextthink = level.time + FRAMETIME;
 }
-
+AutoSFP(misc_satellite_dish_think)
 void misc_satellite_dish_use (edict_t *self, edict_t *other, edict_t *activator)
 {
 	self->s.frame = 0;
-	self->think = misc_satellite_dish_think;
+	self->think = SFP::misc_satellite_dish_think;
 	self->nextthink = level.time + FRAMETIME;
 }
+AutoSFP(misc_satellite_dish_use)
 
 void SP_misc_satellite_dish (edict_t *ent)
 {
@@ -1465,7 +1478,7 @@ void SP_misc_satellite_dish (edict_t *ent)
 	VectorSet (ent->s.mins, -64, -64, 0);
 	VectorSet (ent->s.maxs, 64, 64, 128);
 	ent->s.modelindex = gi.modelindex ("models/objects/satellite/tris.md2");
-	ent->use = misc_satellite_dish_use;
+	ent->use = SFP::misc_satellite_dish_use;
 	gi.linkentity (ent);
 }
 
@@ -1501,14 +1514,14 @@ void SP_misc_gib_arm (edict_t *ent)
 	ent->solid = SOLID_NOT;
 	ent->s.effects |= EF_GIB;
 	ent->takedamage = DAMAGE_YES;
-	ent->die = gib_die;
+	ent->die = SFP::gib_die;
 	ent->movetype = MOVETYPE_TOSS;
 	ent->svflags |= SVF_MONSTER;
 	ent->deadflag = DEAD_DEAD;
 	ent->avelocity[0] = random()*200;
 	ent->avelocity[1] = random()*200;
 	ent->avelocity[2] = random()*200;
-	ent->think = G_FreeEdict;
+	ent->think = SFP::G_FreeEdict;
 	ent->nextthink = level.time + 30;
 	gi.linkentity (ent);
 }
@@ -1522,14 +1535,14 @@ void SP_misc_gib_leg (edict_t *ent)
 	ent->solid = SOLID_NOT;
 	ent->s.effects |= EF_GIB;
 	ent->takedamage = DAMAGE_YES;
-	ent->die = gib_die;
+	ent->die = SFP::gib_die;
 	ent->movetype = MOVETYPE_TOSS;
 	ent->svflags |= SVF_MONSTER;
 	ent->deadflag = DEAD_DEAD;
 	ent->avelocity[0] = random()*200;
 	ent->avelocity[1] = random()*200;
 	ent->avelocity[2] = random()*200;
-	ent->think = G_FreeEdict;
+	ent->think = SFP::G_FreeEdict;
 	ent->nextthink = level.time + 30;
 	gi.linkentity (ent);
 }
@@ -1543,14 +1556,14 @@ void SP_misc_gib_head (edict_t *ent)
 	ent->solid = SOLID_NOT;
 	ent->s.effects |= EF_GIB;
 	ent->takedamage = DAMAGE_YES;
-	ent->die = gib_die;
+	ent->die = SFP::gib_die;
 	ent->movetype = MOVETYPE_TOSS;
 	ent->svflags |= SVF_MONSTER;
 	ent->deadflag = DEAD_DEAD;
 	ent->avelocity[0] = random()*200;
 	ent->avelocity[1] = random()*200;
 	ent->avelocity[2] = random()*200;
-	ent->think = G_FreeEdict;
+	ent->think = SFP::G_FreeEdict;
 	ent->nextthink = level.time + 30;
 	gi.linkentity (ent);
 }
@@ -1605,12 +1618,12 @@ void target_string_use (edict_t *self, edict_t *other, edict_t *activator)
 			e->s.frame = 12;
 	}
 }
-
+AutoSFP(target_string_use)
 void SP_target_string (edict_t *self)
 {
 	if (!self->message)
 		self->message = "";
-	self->use = target_string_use;
+	self->use = SFP::target_string_use;
 }
 
 
@@ -1634,7 +1647,7 @@ If START_OFF, this entity must be used before it starts
 
 static void func_clock_reset (edict_t *self)
 {
-	self->activator = NULL;
+	self->activator = nullptr;
 	if (self->spawnflags & 1)
 	{
 		self->health = 0;
@@ -1678,7 +1691,7 @@ void func_clock_think (edict_t *self)
 {
 	if (!self->enemy)
 	{
-		self->enemy = G_Find (NULL, FOFS(targetname), self->target);
+		self->enemy = G_Find (nullptr, FOFS(targetname), self->target);
 		if (!self->enemy)
 			return;
 	}
@@ -1721,7 +1734,7 @@ void func_clock_think (edict_t *self)
 			savetarget = self->target;
 			savemessage = self->message;
 			self->target = self->pathtarget;
-			self->message = NULL;
+			self->message = nullptr;
 			G_UseTargets (self, self->activator);
 			self->target = savetarget;
 			self->message = savemessage;
@@ -1738,16 +1751,17 @@ void func_clock_think (edict_t *self)
 
 	self->nextthink = level.time + 1;
 }
-
+AutoSFP(func_clock_think)
 void func_clock_use (edict_t *self, edict_t *other, edict_t *activator)
 {
 	if (!(self->spawnflags & 8))
-		self->use = NULL;
+		self->use = nullptr;
 	if (self->activator)
 		return;
 	self->activator = activator;
 	self->think (self);
 }
+AutoSFP(func_clock_use)
 
 void SP_func_clock (edict_t *self)
 {
@@ -1772,10 +1786,10 @@ void SP_func_clock (edict_t *self)
 
 	self->message = new(TAG_LEVEL) char[CLOCK_MESSAGE_SIZE];
 
-	self->think = func_clock_think;
+	self->think = SFP::func_clock_think;
 
 	if (self->spawnflags & 4)
-		self->use = func_clock_use;
+		self->use = SFP::func_clock_use;
 	else
 		self->nextthink = level.time + 1;
 }
@@ -1789,7 +1803,7 @@ void teleporter_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_
 
 	if (!other->client)
 		return;
-	dest = G_Find (NULL, FOFS(targetname), self->target);
+	dest = G_Find (nullptr, FOFS(targetname), self->target);
 	if (!dest)
 	{
 		gi.dprintf ("Couldn't find destination\n");
@@ -1826,7 +1840,7 @@ void teleporter_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_
 
 	gi.linkentity (other);
 }
-
+AutoSFP(teleporter_touch)
 /*QUAKED misc_teleporter (1 0 0) (-32 -32 -24) (32 32 -16)
 Stepping onto this disc will teleport players to the targeted misc_teleporter_dest object.
 */
@@ -1851,7 +1865,7 @@ void SP_misc_teleporter (edict_t *ent)
 	gi.linkentity (ent);
 
 	trig = G_Spawn ();
-	trig->touch = teleporter_touch;
+	trig->touch = SFP::teleporter_touch;
 	trig->solid = SOLID_TRIGGER;
 	trig->target = ent->target;
 	VectorCopy (ent->s.origin, trig->s.origin);

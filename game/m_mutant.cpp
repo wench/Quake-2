@@ -58,6 +58,13 @@ enum {
 	mutant_move_death2
 };
 
+
+AutoSFP(ai_charge)
+AutoSFP(ai_stand)
+AutoSFP(ai_walk)
+AutoSFP(ai_move)
+AutoSFP(ai_run)
+
 //
 // SOUNDS
 //
@@ -89,6 +96,11 @@ void mutant_swing (edict_t *self)
 	gi.sound (self, CHAN_VOICE, sound_swing, 1, ATTN_NORM, 0);
 }
 
+AutoSFP(mutant_step)
+AutoSFP( mutant_swing)
+AutoSFP(mutant_search)
+
+
 
 //
 // STAND
@@ -96,62 +108,62 @@ void mutant_swing (edict_t *self)
 
 mframe_t mutant_frames_stand [] =
 {
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,		// 10
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,		// 10
 
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,		// 20
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,		// 20
 
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,		// 30
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,		// 30
 
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,		// 40
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,		// 40
 
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,		// 50
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,		// 50
 
-	ai_stand, 0, NULL
+	SFP::ai_stand, 0, nullptr
 };
 
 void mutant_stand (edict_t *self)
@@ -169,22 +181,22 @@ void mutant_idle_loop (edict_t *self)
 	if (random() < 0.75)
 		self->monsterinfo.nextframe = FRAME_stand155;
 }
-
+AutoSFP(mutant_idle_loop)
 mframe_t mutant_frames_idle [] =
 {
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,					// scratch loop start
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, mutant_idle_loop,		// scratch loop end
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,					// scratch loop start
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, SFP::mutant_idle_loop,		// scratch loop end
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr
 };
 
 void mutant_idle (edict_t *self)
@@ -202,18 +214,18 @@ void mutant_walk (edict_t *self);
 
 mframe_t mutant_frames_walk [] =
 {
-	ai_walk,	3,		NULL,
-	ai_walk,	1,		NULL,
-	ai_walk,	5,		NULL,
-	ai_walk,	10,		NULL,
-	ai_walk,	13,		NULL,
-	ai_walk,	10,		NULL,
-	ai_walk,	0,		NULL,
-	ai_walk,	5,		NULL,
-	ai_walk,	6,		NULL,
-	ai_walk,	16,		NULL,
-	ai_walk,	15,		NULL,
-	ai_walk,	6,		NULL
+	SFP::ai_walk,	3,		nullptr,
+	SFP::ai_walk,	1,		nullptr,
+	SFP::ai_walk,	5,		nullptr,
+	SFP::ai_walk,	10,		nullptr,
+	SFP::ai_walk,	13,		nullptr,
+	SFP::ai_walk,	10,		nullptr,
+	SFP::ai_walk,	0,		nullptr,
+	SFP::ai_walk,	5,		nullptr,
+	SFP::ai_walk,	6,		nullptr,
+	SFP::ai_walk,	16,		nullptr,
+	SFP::ai_walk,	15,		nullptr,
+	SFP::ai_walk,	6,		nullptr
 };
 
 void mutant_walk_loop (edict_t *self)
@@ -223,10 +235,10 @@ void mutant_walk_loop (edict_t *self)
 
 mframe_t mutant_frames_start_walk [] =
 {
-	ai_walk,	5,		NULL,
-	ai_walk,	5,		NULL,
-	ai_walk,	-2,		NULL,
-	ai_walk,	1,		NULL
+	SFP::ai_walk,	5,		nullptr,
+	SFP::ai_walk,	5,		nullptr,
+	SFP::ai_walk,	-2,		nullptr,
+	SFP::ai_walk,	1,		nullptr
 };
 
 void mutant_walk (edict_t *self)
@@ -241,12 +253,12 @@ void mutant_walk (edict_t *self)
 
 mframe_t mutant_frames_run [] =
 {
-	ai_run,	40,		NULL,
-	ai_run,	40,		mutant_step,
-	ai_run,	24,		NULL,
-	ai_run,	5,		mutant_step,
-	ai_run,	17,		NULL,
-	ai_run,	10,		NULL
+	SFP::ai_run,	40,		nullptr,
+	SFP::ai_run,	40,		SFP::mutant_step,
+	SFP::ai_run,	24,		nullptr,
+	SFP::ai_run,	5,		SFP::mutant_step,
+	SFP::ai_run,	17,		nullptr,
+	SFP::ai_run,	10,		nullptr
 };
 
 void mutant_run (edict_t *self)
@@ -292,16 +304,19 @@ void mutant_check_refire (edict_t *self)
 	if ( ((skill->value == 3) && (random() < 0.5)) || (range(self, self->enemy) == RANGE_MELEE) )
 		self->monsterinfo.nextframe = FRAME_attack09;
 }
+AutoSFP(mutant_hit_left)
+AutoSFP(mutant_hit_right)
+AutoSFP(mutant_check_refire)
 
 mframe_t mutant_frames_attack [] =
 {
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	mutant_hit_left,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	mutant_hit_right,
-	ai_charge,	0,	mutant_check_refire
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	SFP::mutant_hit_left,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	SFP::mutant_hit_right,
+	SFP::ai_charge,	0,	SFP::mutant_check_refire
 };
 
 void mutant_melee (edict_t *self)
@@ -318,7 +333,7 @@ void mutant_jump_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface
 {
 	if (self->health <= 0)
 	{
-		self->touch = NULL;
+		self->touch = nullptr;
 		return;
 	}
 
@@ -343,27 +358,27 @@ void mutant_jump_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface
 		if (self->groundentity)
 		{
 			self->monsterinfo.nextframe = FRAME_attack02;
-			self->touch = NULL;
+			self->touch = nullptr;
 		}
 		return;
 	}
 
-	self->touch = NULL;
+	self->touch = nullptr;
 }
-
+AutoSFP(mutant_jump_touch)
 void mutant_jump_takeoff (edict_t *self)
 {
 	vec3_t	forward;
 
 	gi.sound (self, CHAN_VOICE, sound_sight, 1, ATTN_NORM, 0);
-	AngleVectors (self->s.angles, forward, NULL, NULL);
+	AngleVectors (self->s.angles, forward, nullptr, nullptr);
 	self->s.origin[2] += 1;
 	VectorScale (forward, 600, self->velocity);
 	self->velocity[2] = 250;
-	self->groundentity = NULL;
+	self->groundentity = nullptr;
 	self->monsterinfo.aiflags |= AI_DUCKED;
 	self->monsterinfo.attack_finished = level.time + 3;
-	self->touch = mutant_jump_touch;
+	self->touch = SFP::mutant_jump_touch;
 }
 
 void mutant_check_landing (edict_t *self)
@@ -381,17 +396,19 @@ void mutant_check_landing (edict_t *self)
 	else
 		self->monsterinfo.nextframe = FRAME_attack05;
 }
+AutoSFP(mutant_jump_takeoff)
+AutoSFP(mutant_check_landing)
 
 mframe_t mutant_frames_jump [] =
 {
-	ai_charge,	 0,	NULL,
-	ai_charge,	17,	NULL,
-	ai_charge,	15,	mutant_jump_takeoff,
-	ai_charge,	15,	NULL,
-	ai_charge,	15,	mutant_check_landing,
-	ai_charge,	 0,	NULL,
-	ai_charge,	 3,	NULL,
-	ai_charge,	 0,	NULL
+	SFP::ai_charge,	 0,	nullptr,
+	SFP::ai_charge,	17,	nullptr,
+	SFP::ai_charge,	15,	SFP::mutant_jump_takeoff,
+	SFP::ai_charge,	15,	nullptr,
+	SFP::ai_charge,	15,	SFP::mutant_check_landing,
+	SFP::ai_charge,	 0,	nullptr,
+	SFP::ai_charge,	 3,	nullptr,
+	SFP::ai_charge,	 0,	nullptr
 };
 
 void mutant_jump (edict_t *self)
@@ -466,36 +483,36 @@ qboolean mutant_checkattack (edict_t *self)
 
 mframe_t mutant_frames_pain1 [] =
 {
-	ai_move,	4,	NULL,
-	ai_move,	-3,	NULL,
-	ai_move,	-8,	NULL,
-	ai_move,	2,	NULL,
-	ai_move,	5,	NULL
+	SFP::ai_move,	4,	nullptr,
+	SFP::ai_move,	-3,	nullptr,
+	SFP::ai_move,	-8,	nullptr,
+	SFP::ai_move,	2,	nullptr,
+	SFP::ai_move,	5,	nullptr
 };
 
 mframe_t mutant_frames_pain2 [] =
 {
-	ai_move,	-24,NULL,
-	ai_move,	11,	NULL,
-	ai_move,	5,	NULL,
-	ai_move,	-2,	NULL,
-	ai_move,	6,	NULL,
-	ai_move,	4,	NULL
+	SFP::ai_move,	-24,nullptr,
+	SFP::ai_move,	11,	nullptr,
+	SFP::ai_move,	5,	nullptr,
+	SFP::ai_move,	-2,	nullptr,
+	SFP::ai_move,	6,	nullptr,
+	SFP::ai_move,	4,	nullptr
 };
 
 mframe_t mutant_frames_pain3 [] =
 {
-	ai_move,	-22,NULL,
-	ai_move,	3,	NULL,
-	ai_move,	3,	NULL,
-	ai_move,	2,	NULL,
-	ai_move,	1,	NULL,
-	ai_move,	1,	NULL,
-	ai_move,	6,	NULL,
-	ai_move,	3,	NULL,
-	ai_move,	2,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	1,	NULL
+	SFP::ai_move,	-22,nullptr,
+	SFP::ai_move,	3,	nullptr,
+	SFP::ai_move,	3,	nullptr,
+	SFP::ai_move,	2,	nullptr,
+	SFP::ai_move,	1,	nullptr,
+	SFP::ai_move,	1,	nullptr,
+	SFP::ai_move,	6,	nullptr,
+	SFP::ai_move,	3,	nullptr,
+	SFP::ai_move,	2,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	1,	nullptr
 };
 
 void mutant_pain (edict_t *self, edict_t *other, float kick, int damage)
@@ -549,29 +566,29 @@ void mutant_dead (edict_t *self)
 
 mframe_t mutant_frames_death1 [] =
 {
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr
 };
 
 mframe_t mutant_frames_death2 [] =
 {
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr
 };
 
 void mutant_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int damage, vec3_t point)
@@ -603,29 +620,42 @@ void mutant_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int damag
 	else
 		self->monsterinfo.currentmove = mutant_move_death2;
 }
-
+AutoSFP(mutant_stand)
+AutoSFP(mutant_walk_loop)
+AutoSFP(mutant_run)
+AutoSFP(mutant_dead)
 mmove_t mutant_moves[] = {
-	{FRAME_stand101, FRAME_stand151, mutant_frames_stand, NULL},
-	{FRAME_stand152, FRAME_stand164, mutant_frames_idle, mutant_stand},
-	{FRAME_walk05, FRAME_walk16, mutant_frames_walk, NULL},
-	{FRAME_walk01, FRAME_walk04, mutant_frames_start_walk, mutant_walk_loop},
-	{FRAME_run03, FRAME_run08, mutant_frames_run, NULL},
-	{FRAME_attack09, FRAME_attack15, mutant_frames_attack, mutant_run},
-	{FRAME_attack01, FRAME_attack08, mutant_frames_jump, mutant_run},
-	{FRAME_pain101, FRAME_pain105, mutant_frames_pain1, mutant_run},
-	{FRAME_pain201, FRAME_pain206, mutant_frames_pain2, mutant_run},
-	{FRAME_pain301, FRAME_pain311, mutant_frames_pain3, mutant_run},
-	{FRAME_death101, FRAME_death109, mutant_frames_death1, mutant_dead},
-	{FRAME_death201, FRAME_death210, mutant_frames_death2, mutant_dead}
+	{FRAME_stand101, FRAME_stand151, mutant_frames_stand, nullptr},
+	{FRAME_stand152, FRAME_stand164, mutant_frames_idle, SFP::mutant_stand},
+	{FRAME_walk05, FRAME_walk16, mutant_frames_walk, nullptr},
+	{FRAME_walk01, FRAME_walk04, mutant_frames_start_walk, SFP::mutant_walk_loop},
+	{FRAME_run03, FRAME_run08, mutant_frames_run, nullptr},
+	{FRAME_attack09, FRAME_attack15, mutant_frames_attack, SFP::mutant_run},
+	{FRAME_attack01, FRAME_attack08, mutant_frames_jump, SFP::mutant_run},
+	{FRAME_pain101, FRAME_pain105, mutant_frames_pain1, SFP::mutant_run},
+	{FRAME_pain201, FRAME_pain206, mutant_frames_pain2, SFP::mutant_run},
+	{FRAME_pain301, FRAME_pain311, mutant_frames_pain3,SFP::mutant_run},
+	{FRAME_death101, FRAME_death109, mutant_frames_death1,SFP::mutant_dead},
+	{FRAME_death201, FRAME_death210, mutant_frames_death2,SFP::mutant_dead}
 };
 
 mmove_t * mutant_get_currentmove(edict_t *self)
 {
-	if (!self->monsterinfo.currentmove) return NULL;
+	if (!self->monsterinfo.currentmove) return nullptr;
 	return &mutant_moves[self->monsterinfo.currentmove-1];
 }
 
+SFPEnt(pain, mutant_pain)
+SFPEnt(die, mutant_die)
 
+SFPEnt(monsterinfo.walk, mutant_walk)
+
+SFPEnt(monsterinfo.attack, mutant_jump)
+SFPEnt(monsterinfo.melee, mutant_melee)
+SFPEnt(monsterinfo.sight, mutant_sight)
+SFPEnt(monsterinfo.idle, mutant_idle)
+SFPEnt(monsterinfo.checkattack, mutant_checkattack)
+SFPEnt(monsterinfo.get_currentmove, mutant_get_currentmove)
 //
 // SPAWN
 //
@@ -664,20 +694,20 @@ void SP_monster_mutant (edict_t *self)
 	self->gib_health = -120;
 	self->mass = 300;
 
-	self->pain = mutant_pain;
-	self->die = mutant_die;
+	self->pain = SFP::mutant_pain;
+	self->die = SFP::mutant_die;
 
-	self->monsterinfo.stand = mutant_stand;
-	self->monsterinfo.walk = mutant_walk;
-	self->monsterinfo.run = mutant_run;
-	self->monsterinfo.dodge = NULL;
-	self->monsterinfo.attack = mutant_jump;
-	self->monsterinfo.melee = mutant_melee;
-	self->monsterinfo.sight = mutant_sight;
-	self->monsterinfo.search = mutant_search;
-	self->monsterinfo.idle = mutant_idle;
-	self->monsterinfo.checkattack = mutant_checkattack;
-	self->monsterinfo.get_currentmove = mutant_get_currentmove;
+	self->monsterinfo.stand = SFP::mutant_stand;
+	self->monsterinfo.walk = SFP::mutant_walk;
+	self->monsterinfo.run = SFP::mutant_run;
+	self->monsterinfo.dodge = nullptr;
+	self->monsterinfo.attack = SFP::mutant_jump;
+	self->monsterinfo.melee = SFP::mutant_melee;
+	self->monsterinfo.sight = SFP::mutant_sight;
+	self->monsterinfo.search = SFP::mutant_search;
+	self->monsterinfo.idle = SFP::mutant_idle;
+	self->monsterinfo.checkattack = SFP::mutant_checkattack;
+	self->monsterinfo.get_currentmove = SFP::mutant_get_currentmove;
 
 	gi.linkentity (self);
 	

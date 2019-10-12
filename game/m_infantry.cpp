@@ -58,91 +58,96 @@ enum {
 	infantry_move_attack1,
 	infantry_move_attack2
 };
-
+AutoSFP(ai_charge)
+AutoSFP(ai_stand)
+AutoSFP(ai_walk)
+AutoSFP(ai_move)
+AutoSFP(ai_run)
+AutoSFP(ai_turn)
 
 mframe_t infantry_frames_stand [] =
 {
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr
 };
 
 void infantry_stand (edict_t *self)
 {
 	self->monsterinfo.currentmove = infantry_move_stand;
 }
-
+AutoSFP(infantry_stand);
 
 mframe_t infantry_frames_fidget [] =
 {
-	ai_stand, 1,  NULL,
-	ai_stand, 0,  NULL,
-	ai_stand, 1,  NULL,
-	ai_stand, 3,  NULL,
-	ai_stand, 6,  NULL,
-	ai_stand, 3,  NULL,
-	ai_stand, 0,  NULL,
-	ai_stand, 0,  NULL,
-	ai_stand, 0,  NULL,
-	ai_stand, 0,  NULL,
-	ai_stand, 1,  NULL,
-	ai_stand, 0,  NULL,
-	ai_stand, 0,  NULL,
-	ai_stand, 0,  NULL,
-	ai_stand, 0,  NULL,
-	ai_stand, 1,  NULL,
-	ai_stand, 0,  NULL,
-	ai_stand, -1, NULL,
-	ai_stand, 0,  NULL,
-	ai_stand, 0,  NULL,
-	ai_stand, 1,  NULL,
-	ai_stand, 0,  NULL,
-	ai_stand, -2, NULL,
-	ai_stand, 1,  NULL,
-	ai_stand, 1,  NULL,
-	ai_stand, 1,  NULL,
-	ai_stand, -1, NULL,
-	ai_stand, 0,  NULL,
-	ai_stand, 0,  NULL,
-	ai_stand, -1, NULL,
-	ai_stand, 0,  NULL,
-	ai_stand, 0,  NULL,
-	ai_stand, 0,  NULL,
-	ai_stand, 0,  NULL,
-	ai_stand, 0,  NULL,
-	ai_stand, -1, NULL,
-	ai_stand, 0,  NULL,
-	ai_stand, 0,  NULL,
-	ai_stand, 1,  NULL,
-	ai_stand, 0,  NULL,
-	ai_stand, 0,  NULL,
-	ai_stand, -1, NULL,
-	ai_stand, -1, NULL,
-	ai_stand, 0,  NULL,
-	ai_stand, -3, NULL,
-	ai_stand, -2, NULL,
-	ai_stand, -3, NULL,
-	ai_stand, -3, NULL,
-	ai_stand, -2, NULL
+	SFP::ai_stand, 1,  nullptr,
+	SFP::ai_stand, 0,  nullptr,
+	SFP::ai_stand, 1,  nullptr,
+	SFP::ai_stand, 3,  nullptr,
+	SFP::ai_stand, 6,  nullptr,
+	SFP::ai_stand, 3,  nullptr,
+	SFP::ai_stand, 0,  nullptr,
+	SFP::ai_stand, 0,  nullptr,
+	SFP::ai_stand, 0,  nullptr,
+	SFP::ai_stand, 0,  nullptr,
+	SFP::ai_stand, 1,  nullptr,
+	SFP::ai_stand, 0,  nullptr,
+	SFP::ai_stand, 0,  nullptr,
+	SFP::ai_stand, 0,  nullptr,
+	SFP::ai_stand, 0,  nullptr,
+	SFP::ai_stand, 1,  nullptr,
+	SFP::ai_stand, 0,  nullptr,
+	SFP::ai_stand, -1, nullptr,
+	SFP::ai_stand, 0,  nullptr,
+	SFP::ai_stand, 0,  nullptr,
+	SFP::ai_stand, 1,  nullptr,
+	SFP::ai_stand, 0,  nullptr,
+	SFP::ai_stand, -2, nullptr,
+	SFP::ai_stand, 1,  nullptr,
+	SFP::ai_stand, 1,  nullptr,
+	SFP::ai_stand, 1,  nullptr,
+	SFP::ai_stand, -1, nullptr,
+	SFP::ai_stand, 0,  nullptr,
+	SFP::ai_stand, 0,  nullptr,
+	SFP::ai_stand, -1, nullptr,
+	SFP::ai_stand, 0,  nullptr,
+	SFP::ai_stand, 0,  nullptr,
+	SFP::ai_stand, 0,  nullptr,
+	SFP::ai_stand, 0,  nullptr,
+	SFP::ai_stand, 0,  nullptr,
+	SFP::ai_stand, -1, nullptr,
+	SFP::ai_stand, 0,  nullptr,
+	SFP::ai_stand, 0,  nullptr,
+	SFP::ai_stand, 1,  nullptr,
+	SFP::ai_stand, 0,  nullptr,
+	SFP::ai_stand, 0,  nullptr,
+	SFP::ai_stand, -1, nullptr,
+	SFP::ai_stand, -1, nullptr,
+	SFP::ai_stand, 0,  nullptr,
+	SFP::ai_stand, -3, nullptr,
+	SFP::ai_stand, -2, nullptr,
+	SFP::ai_stand, -3, nullptr,
+	SFP::ai_stand, -3, nullptr,
+	SFP::ai_stand, -2, nullptr
 };
 
 void infantry_fidget (edict_t *self)
@@ -150,38 +155,41 @@ void infantry_fidget (edict_t *self)
 	self->monsterinfo.currentmove = infantry_move_fidget;
 	gi.sound (self, CHAN_VOICE, sound_idle, 1, ATTN_IDLE, 0);
 }
+AutoSFP(infantry_fidget)
 
 mframe_t infantry_frames_walk [] =
 {
-	ai_walk, 5,  NULL,
-	ai_walk, 4,  NULL,
-	ai_walk, 4,  NULL,
-	ai_walk, 5,  NULL,
-	ai_walk, 4,  NULL,
-	ai_walk, 5,  NULL,
-	ai_walk, 6,  NULL,
-	ai_walk, 4,  NULL,
-	ai_walk, 4,  NULL,
-	ai_walk, 4,  NULL,
-	ai_walk, 4,  NULL,
-	ai_walk, 5,  NULL
+	SFP::ai_walk, 5,  nullptr,
+	SFP::ai_walk, 4,  nullptr,
+	SFP::ai_walk, 4,  nullptr,
+	SFP::ai_walk, 5,  nullptr,
+	SFP::ai_walk, 4,  nullptr,
+	SFP::ai_walk, 5,  nullptr,
+	SFP::ai_walk, 6,  nullptr,
+	SFP::ai_walk, 4,  nullptr,
+	SFP::ai_walk, 4,  nullptr,
+	SFP::ai_walk, 4,  nullptr,
+	SFP::ai_walk, 4,  nullptr,
+	SFP::ai_walk, 5,  nullptr
 };
 
 void infantry_walk (edict_t *self)
 {
 	self->monsterinfo.currentmove = infantry_move_walk;
 }
+AutoSFP(infantry_walk)
+
 
 mframe_t infantry_frames_run [] =
 {
-	ai_run, 10, NULL,
-	ai_run, 20, NULL,
-	ai_run, 5,  NULL,
-	ai_run, 7,  NULL,
-	ai_run, 30, NULL,
-	ai_run, 35, NULL,
-	ai_run, 2,  NULL,
-	ai_run, 6,  NULL
+	SFP::ai_run, 10, nullptr,
+	SFP::ai_run, 20, nullptr,
+	SFP::ai_run, 5,  nullptr,
+	SFP::ai_run, 7,  nullptr,
+	SFP::ai_run, 30, nullptr,
+	SFP::ai_run, 35, nullptr,
+	SFP::ai_run, 2,  nullptr,
+	SFP::ai_run, 6,  nullptr
 };
 
 void infantry_run (edict_t *self)
@@ -195,30 +203,30 @@ void infantry_run (edict_t *self)
 
 mframe_t infantry_frames_pain1 [] =
 {
-	ai_move, -3, NULL,
-	ai_move, -2, NULL,
-	ai_move, -1, NULL,
-	ai_move, -2, NULL,
-	ai_move, -1, NULL,
-	ai_move, 1,  NULL,
-	ai_move, -1, NULL,
-	ai_move, 1,  NULL,
-	ai_move, 6,  NULL,
-	ai_move, 2,  NULL
+	SFP::ai_move, -3, nullptr,
+	SFP::ai_move, -2, nullptr,
+	SFP::ai_move, -1, nullptr,
+	SFP::ai_move, -2, nullptr,
+	SFP::ai_move, -1, nullptr,
+	SFP::ai_move, 1,  nullptr,
+	SFP::ai_move, -1, nullptr,
+	SFP::ai_move, 1,  nullptr,
+	SFP::ai_move, 6,  nullptr,
+	SFP::ai_move, 2,  nullptr
 };
 
 mframe_t infantry_frames_pain2 [] =
 {
-	ai_move, -3, NULL,
-	ai_move, -3, NULL,
-	ai_move, 0,  NULL,
-	ai_move, -1, NULL,
-	ai_move, -2, NULL,
-	ai_move, 0,  NULL,
-	ai_move, 0,  NULL,
-	ai_move, 2,  NULL,
-	ai_move, 5,  NULL,
-	ai_move, 2,  NULL
+	SFP::ai_move, -3, nullptr,
+	SFP::ai_move, -3, nullptr,
+	SFP::ai_move, 0,  nullptr,
+	SFP::ai_move, -1, nullptr,
+	SFP::ai_move, -2, nullptr,
+	SFP::ai_move, 0,  nullptr,
+	SFP::ai_move, 0,  nullptr,
+	SFP::ai_move, 2,  nullptr,
+	SFP::ai_move, 5,  nullptr,
+	SFP::ai_move, 2,  nullptr
 };
 
 void infantry_pain (edict_t *self, edict_t *other, float kick, int damage)
@@ -276,7 +284,7 @@ void InfantryMachineGun (edict_t *self)
 	if (self->s.frame == FRAME_attak111)
 	{
 		flash_number = MZ2_INFANTRY_MACHINEGUN_1;
-		AngleVectors (self->s.angles, forward, right, NULL);
+		AngleVectors (self->s.angles, forward, right, nullptr);
 		G_ProjectSource (self->s.origin, monster_flash_offset[flash_number], forward, right, start);
 
 		if (self->enemy)
@@ -288,18 +296,18 @@ void InfantryMachineGun (edict_t *self)
 		}
 		else
 		{
-			AngleVectors (self->s.angles, forward, right, NULL);
+			AngleVectors (self->s.angles, forward, right, nullptr);
 		}
 	}
 	else
 	{
 		flash_number = MZ2_INFANTRY_MACHINEGUN_2 + (self->s.frame - FRAME_death211);
 
-		AngleVectors (self->s.angles, forward, right, NULL);
+		AngleVectors (self->s.angles, forward, right, nullptr);
 		G_ProjectSource (self->s.origin, monster_flash_offset[flash_number], forward, right, start);
 
 		VectorSubtract (self->s.angles, aimangles[flash_number-MZ2_INFANTRY_MACHINEGUN_2], vec);
-		AngleVectors (vec, forward, NULL, NULL);
+		AngleVectors (vec, forward, nullptr, nullptr);
 	}
 
 	monster_fire_bullet (self, start, forward, 3, 4, DEFAULT_BULLET_HSPREAD, DEFAULT_BULLET_VSPREAD, flash_number);
@@ -323,69 +331,69 @@ void infantry_dead (edict_t *self)
 
 mframe_t infantry_frames_death1 [] =
 {
-	ai_move, -4, NULL,
-	ai_move, 0,  NULL,
-	ai_move, 0,  NULL,
-	ai_move, -1, NULL,
-	ai_move, -4, NULL,
-	ai_move, 0,  NULL,
-	ai_move, 0,  NULL,
-	ai_move, 0,  NULL,
-	ai_move, -1, NULL,
-	ai_move, 3,  NULL,
-	ai_move, 1,  NULL,
-	ai_move, 1,  NULL,
-	ai_move, -2, NULL,
-	ai_move, 2,  NULL,
-	ai_move, 2,  NULL,
-	ai_move, 9,  NULL,
-	ai_move, 9,  NULL,
-	ai_move, 5,  NULL,
-	ai_move, -3, NULL,
-	ai_move, -3, NULL
+	SFP::ai_move, -4, nullptr,
+	SFP::ai_move, 0,  nullptr,
+	SFP::ai_move, 0,  nullptr,
+	SFP::ai_move, -1, nullptr,
+	SFP::ai_move, -4, nullptr,
+	SFP::ai_move, 0,  nullptr,
+	SFP::ai_move, 0,  nullptr,
+	SFP::ai_move, 0,  nullptr,
+	SFP::ai_move, -1, nullptr,
+	SFP::ai_move, 3,  nullptr,
+	SFP::ai_move, 1,  nullptr,
+	SFP::ai_move, 1,  nullptr,
+	SFP::ai_move, -2, nullptr,
+	SFP::ai_move, 2,  nullptr,
+	SFP::ai_move, 2,  nullptr,
+	SFP::ai_move, 9,  nullptr,
+	SFP::ai_move, 9,  nullptr,
+	SFP::ai_move, 5,  nullptr,
+	SFP::ai_move, -3, nullptr,
+	SFP::ai_move, -3, nullptr
 };
-
+AutoSFP(InfantryMachineGun)
 // Off with his head
 mframe_t infantry_frames_death2 [] =
 {
-	ai_move, 0,   NULL,
-	ai_move, 1,   NULL,
-	ai_move, 5,   NULL,
-	ai_move, -1,  NULL,
-	ai_move, 0,   NULL,
-	ai_move, 1,   NULL,
-	ai_move, 1,   NULL,
-	ai_move, 4,   NULL,
-	ai_move, 3,   NULL,
-	ai_move, 0,   NULL,
-	ai_move, -2,  InfantryMachineGun,
-	ai_move, -2,  InfantryMachineGun,
-	ai_move, -3,  InfantryMachineGun,
-	ai_move, -1,  InfantryMachineGun,
-	ai_move, -2,  InfantryMachineGun,
-	ai_move, 0,   InfantryMachineGun,
-	ai_move, 2,   InfantryMachineGun,
-	ai_move, 2,   InfantryMachineGun,
-	ai_move, 3,   InfantryMachineGun,
-	ai_move, -10, InfantryMachineGun,
-	ai_move, -7,  InfantryMachineGun,
-	ai_move, -8,  InfantryMachineGun,
-	ai_move, -6,  NULL,
-	ai_move, 4,   NULL,
-	ai_move, 0,   NULL
+	SFP::ai_move, 0,   nullptr,
+	SFP::ai_move, 1,   nullptr,
+	SFP::ai_move, 5,   nullptr,
+	SFP::ai_move, -1,  nullptr,
+	SFP::ai_move, 0,   nullptr,
+	SFP::ai_move, 1,   nullptr,
+	SFP::ai_move, 1,   nullptr,
+	SFP::ai_move, 4,   nullptr,
+	SFP::ai_move, 3,   nullptr,
+	SFP::ai_move, 0,   nullptr,
+	SFP::ai_move, -2,  SFP::InfantryMachineGun,
+	SFP::ai_move, -2,  SFP::InfantryMachineGun,
+	SFP::ai_move, -3,  SFP::InfantryMachineGun,
+	SFP::ai_move, -1, SFP::InfantryMachineGun,
+	SFP::ai_move, -2,  SFP::InfantryMachineGun,
+	SFP::ai_move, 0,   SFP::InfantryMachineGun,
+	SFP::ai_move, 2,  SFP::InfantryMachineGun,
+	SFP::ai_move, 2,   SFP::InfantryMachineGun,
+	SFP::ai_move, 3,   SFP::InfantryMachineGun,
+	SFP::ai_move, -10, SFP::InfantryMachineGun,
+	SFP::ai_move, -7,  SFP::InfantryMachineGun,
+	SFP::ai_move, -8,  SFP::InfantryMachineGun,
+	SFP::ai_move, -6,  nullptr,
+	SFP::ai_move, 4,   nullptr,
+	SFP::ai_move, 0,   nullptr
 };
 
 mframe_t infantry_frames_death3 [] =
 {
-	ai_move, 0,   NULL,
-	ai_move, 0,   NULL,
-	ai_move, 0,   NULL,
-	ai_move, -6,  NULL,
-	ai_move, -11, NULL,
-	ai_move, -3,  NULL,
-	ai_move, -11, NULL,
-	ai_move, 0,   NULL,
-	ai_move, 0,   NULL
+	SFP::ai_move, 0,   nullptr,
+	SFP::ai_move, 0,   nullptr,
+	SFP::ai_move, 0,   nullptr,
+	SFP::ai_move, -6,  nullptr,
+	SFP::ai_move, -11, nullptr,
+	SFP::ai_move, -3,  nullptr,
+	SFP::ai_move, -11, nullptr,
+	SFP::ai_move, 0,   nullptr,
+	SFP::ai_move, 0,   nullptr
 };
 
 
@@ -458,14 +466,16 @@ void infantry_duck_up (edict_t *self)
 	self->takedamage = DAMAGE_AIM;
 	gi.linkentity (self);
 }
-
+AutoSFP(infantry_duck_down)
+AutoSFP(infantry_duck_hold)
+AutoSFP(infantry_duck_up)
 mframe_t infantry_frames_duck [] =
 {
-	ai_move, -2, infantry_duck_down,
-	ai_move, -5, infantry_duck_hold,
-	ai_move, 3,  NULL,
-	ai_move, 4,  infantry_duck_up,
-	ai_move, 0,  NULL
+	SFP::ai_move, -2, SFP::infantry_duck_down,
+	SFP::ai_move, -5, SFP::infantry_duck_hold,
+	SFP::ai_move, 3,  nullptr,
+	SFP::ai_move, 4,  SFP::infantry_duck_up,
+	SFP::ai_move, 0,  nullptr
 };
 
 void infantry_dodge (edict_t *self, edict_t *attacker, float eta)
@@ -498,24 +508,25 @@ void infantry_fire (edict_t *self)
 	else
 		self->monsterinfo.aiflags |= AI_HOLD_FRAME;
 }
-
+AutoSFP(infantry_cock_gun)
+AutoSFP(infantry_fire)
 mframe_t infantry_frames_attack1 [] =
 {
-	ai_charge, 4,  NULL,
-	ai_charge, -1, NULL,
-	ai_charge, -1, NULL,
-	ai_charge, 0,  infantry_cock_gun,
-	ai_charge, -1, NULL,
-	ai_charge, 1,  NULL,
-	ai_charge, 1,  NULL,
-	ai_charge, 2,  NULL,
-	ai_charge, -2, NULL,
-	ai_charge, -3, NULL,
-	ai_charge, 1,  infantry_fire,
-	ai_charge, 5,  NULL,
-	ai_charge, -1, NULL,
-	ai_charge, -2, NULL,
-	ai_charge, -3, NULL
+	SFP::ai_charge, 4,  nullptr,
+	SFP::ai_charge, -1, nullptr,
+	SFP::ai_charge, -1, nullptr,
+	SFP::ai_charge, 0,  SFP::infantry_cock_gun,
+	SFP::ai_charge, -1, nullptr,
+	SFP::ai_charge, 1,  nullptr,
+	SFP::ai_charge, 1,  nullptr,
+	SFP::ai_charge, 2,  nullptr,
+	SFP::ai_charge, -2, nullptr,
+	SFP::ai_charge, -3, nullptr,
+	SFP::ai_charge, 1,  SFP::infantry_fire,
+	SFP::ai_charge, 5,  nullptr,
+	SFP::ai_charge, -1, nullptr,
+	SFP::ai_charge, -2, nullptr,
+	SFP::ai_charge, -3, nullptr
 };
 
 
@@ -532,17 +543,18 @@ void infantry_smack (edict_t *self)
 	if (fire_hit (self, aim, (5 + (rand() % 5)), 50))
 		gi.sound (self, CHAN_WEAPON, sound_punch_hit, 1, ATTN_NORM, 0);
 }
-
+AutoSFP(infantry_swing)
+AutoSFP(infantry_smack)
 mframe_t infantry_frames_attack2 [] =
 {
-	ai_charge, 3, NULL,
-	ai_charge, 6, NULL,
-	ai_charge, 0, infantry_swing,
-	ai_charge, 8, NULL,
-	ai_charge, 5, NULL,
-	ai_charge, 8, infantry_smack,
-	ai_charge, 6, NULL,
-	ai_charge, 3, NULL,
+	SFP::ai_charge, 3, nullptr,
+	SFP::ai_charge, 6, nullptr,
+	SFP::ai_charge, 0, SFP::infantry_swing,
+	SFP::ai_charge, 8, nullptr,
+	SFP::ai_charge, 5, nullptr,
+	SFP::ai_charge, 8, SFP::infantry_smack,
+	SFP::ai_charge, 6, nullptr,
+	SFP::ai_charge, 3, nullptr,
 };
 
 void infantry_attack(edict_t *self)
@@ -553,28 +565,37 @@ void infantry_attack(edict_t *self)
 		self->monsterinfo.currentmove = infantry_move_attack1;
 }
 
+
+AutoSFP(infantry_dead)
+AutoSFP(infantry_run)
 mmove_t infantry_moves[] = {
-	{FRAME_stand50, FRAME_stand71, infantry_frames_stand, NULL},
-	{FRAME_stand01, FRAME_stand49, infantry_frames_fidget, infantry_stand},
-	{FRAME_walk03, FRAME_walk14, infantry_frames_walk, NULL},
-	{FRAME_run01, FRAME_run08, infantry_frames_run, NULL},
-	{FRAME_pain101, FRAME_pain110, infantry_frames_pain1, infantry_run},
-	{FRAME_pain201, FRAME_pain210, infantry_frames_pain2, infantry_run},
-	{FRAME_death101, FRAME_death120, infantry_frames_death1, infantry_dead},
-	{FRAME_death201, FRAME_death225, infantry_frames_death2, infantry_dead},
-	{FRAME_death301, FRAME_death309, infantry_frames_death3, infantry_dead},
-	{FRAME_duck01, FRAME_duck05, infantry_frames_duck, infantry_run},
-	{FRAME_attak101, FRAME_attak115, infantry_frames_attack1, infantry_run},
-	{FRAME_attak201, FRAME_attak208, infantry_frames_attack2, infantry_run}
+	{FRAME_stand50, FRAME_stand71, infantry_frames_stand, nullptr},
+	{FRAME_stand01, FRAME_stand49, infantry_frames_fidget, SFP::infantry_stand},
+	{FRAME_walk03, FRAME_walk14, infantry_frames_walk, nullptr},
+	{FRAME_run01, FRAME_run08, infantry_frames_run, nullptr},
+	{FRAME_pain101, FRAME_pain110, infantry_frames_pain1, SFP::infantry_run},
+	{FRAME_pain201, FRAME_pain210, infantry_frames_pain2, SFP::infantry_run},
+	{FRAME_death101, FRAME_death120, infantry_frames_death1, SFP::infantry_dead},
+	{FRAME_death201, FRAME_death225, infantry_frames_death2, SFP::infantry_dead},
+	{FRAME_death301, FRAME_death309, infantry_frames_death3, SFP::infantry_dead},
+	{FRAME_duck01, FRAME_duck05, infantry_frames_duck, SFP::infantry_run},
+	{FRAME_attak101, FRAME_attak115, infantry_frames_attack1, SFP::infantry_run},
+	{FRAME_attak201, FRAME_attak208, infantry_frames_attack2, SFP::infantry_run}
 };
 
 mmove_t * infantry_get_currentmove(edict_t *self)
 {
-	if (!self->monsterinfo.currentmove) return NULL;
+	if (!self->monsterinfo.currentmove) return nullptr;
 	return &infantry_moves[self->monsterinfo.currentmove-1];
 }
 
+SFPEnt(pain, infantry_pain)
+SFPEnt(die, infantry_die)
+SFPEnt(monsterinfo.dodge, infantry_dodge)
+SFPEnt(monsterinfo.attack, infantry_attack)
 
+SFPEnt(monsterinfo.sight, infantry_sight)
+SFPEnt(monsterinfo.get_currentmove, infantry_get_currentmove)
 /*QUAKED monster_infantry (1 .5 0) (-16 -16 -24) (16 16 32) Ambush Trigger_Spawn Sight
 */
 void SP_monster_infantry (edict_t *self)
@@ -610,18 +631,18 @@ void SP_monster_infantry (edict_t *self)
 	self->gib_health = -40;
 	self->mass = 200;
 
-	self->pain = infantry_pain;
-	self->die = infantry_die;
+	self->pain = SFP::infantry_pain;
+	self->die = SFP::infantry_die;
 
-	self->monsterinfo.stand = infantry_stand;
-	self->monsterinfo.walk = infantry_walk;
-	self->monsterinfo.run = infantry_run;
-	self->monsterinfo.dodge = infantry_dodge;
-	self->monsterinfo.attack = infantry_attack;
-	self->monsterinfo.melee = NULL;
-	self->monsterinfo.sight = infantry_sight;
-	self->monsterinfo.idle = infantry_fidget;
-	self->monsterinfo.get_currentmove = infantry_get_currentmove;
+	self->monsterinfo.stand = SFP::infantry_stand;
+	self->monsterinfo.walk = SFP::infantry_walk;
+	self->monsterinfo.run = SFP::infantry_run;
+	self->monsterinfo.dodge = SFP::infantry_dodge;
+	self->monsterinfo.attack = SFP::infantry_attack;
+	self->monsterinfo.melee = nullptr;
+	self->monsterinfo.sight = SFP::infantry_sight;
+	self->monsterinfo.idle = SFP::infantry_fidget;
+	self->monsterinfo.get_currentmove = SFP::infantry_get_currentmove;
 
 	gi.linkentity (self);
 

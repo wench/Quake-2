@@ -269,7 +269,7 @@ spawn_t	spawns[] = {
 	// "Aquakronox
 	{"trigger_changelevel", SP_trigger_changelevel },
 
-	{NULL, NULL}
+	{nullptr, nullptr}
 };
 
 /*
@@ -288,12 +288,12 @@ void ED_CallSpawn (edict_t *ent)
 
 	if (!ent->classname)
 	{
-		gi.dprintf ("ED_CallSpawn: NULL classname\n");
+		gi.dprintf ("ED_CallSpawn: nullptr classname\n");
 		return;
 	}
 
 	// check anox spawn functions
-	for (anox = anox_entities; anox != NULL; anox = anox->next) 
+	for (anox = anox_entities; anox != nullptr; anox = anox->next) 
 	{
 		if (!anox->classname)
 			continue;
@@ -592,12 +592,16 @@ void SpawnEntities (char *mapname, char *entities, char *spawnpoint)
 
 	strncpy (level.mapname, mapname, sizeof(level.mapname)-1);
 	strncpy (game.spawnpoint, spawnpoint, sizeof(game.spawnpoint)-1);
+	for (int i = 0; i < game.maxentities; i++)
+	{
+		new(g_edicts + i) edict_s();
+	}
 
 	// set client fields on player ents
 	for (i=0 ; i<game.maxclients ; i++)
 		g_edicts[i+1].client = game.clients + i;
 
-	ent = NULL;
+	ent = nullptr;
 	inhibit = 0;
 
 // parse ents

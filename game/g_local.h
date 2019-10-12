@@ -75,6 +75,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // memory tags to allow dynamic memory to be cleaned up
 enum MemoryTag
 {
+	TAG_NONE = 0,
 	TAG_GAME = 765,		// clear when unloading the dll
 	TAG_LEVEL = 766,		// clear when loading a new level
 	};
@@ -232,14 +233,14 @@ typedef struct
 #define WEAP_HYPERBLASTER		9 
 #define WEAP_RAILGUN			10
 #define WEAP_BFG				11
-
+#include "SerializableFunctionPointer.h"
 typedef struct gitem_s
 {
 	char		*classname;	// spawning name
-	qboolean	(*pickup)(struct edict_s *ent, struct edict_s *other);
-	void		(*use)(struct edict_s *ent, struct gitem_s *item);
-	void		(*drop)(struct edict_s *ent, struct gitem_s *item);
-	void		(*weaponthink)(struct edict_s *ent);
+	SerializableFunctionPointer2<qboolean, struct edict_s* , struct edict_s* >	pickup;
+	SerializableFunctionPointer2<void,edict_s *, gitem_s *> use;
+	SerializableFunctionPointer2<void,edict_s *, gitem_s *> drop;
+	SerializableFunctionPointer1<void,edict_s *> weaponthink;
 	char		*pickup_sound;
 	char		*world_model;
 	int			world_model_flags;
@@ -408,15 +409,15 @@ typedef struct
 	float		next_speed;
 	float		remaining_distance;
 	float		decel_distance;
-	void		(*endfunc)(edict_t *);
+	SerializableFunctionPointer1<void, edict_t*> endfunc;
 } moveinfo_t;
 
 
 typedef struct
 {
-	void	(*aifunc)(edict_t *self, float dist);
+	SerializableFunctionPointer2<void, edict_t*, float> aifunc;
 	float	dist;
-	void	(*thinkfunc)(edict_t *self);
+	SerializableFunctionPointer1<void, edict_t*> thinkfunc;
 } mframe_t;
 
 typedef struct
@@ -424,7 +425,7 @@ typedef struct
 	int			firstframe;
 	int			lastframe;
 	mframe_t	*frame;
-	void		(*endfunc)(edict_t *self);
+	SerializableFunctionPointer1<void, edict_t *> endfunc;
 } mmove_t;
 
 typedef struct
@@ -434,18 +435,18 @@ typedef struct
 	int			nextframe;
 	float		scale;
 
-	mmove_t *	(*get_currentmove)(edict_t *self);	// Function that will get the current move struct
-	void		(*stand)(edict_t *self);
-	void		(*idle)(edict_t *self);
-	void		(*search)(edict_t *self);
-	void		(*walk)(edict_t *self);
-	void		(*run)(edict_t *self);
-	void		(*dodge)(edict_t *self, edict_t *other, float eta);
-	void		(*attack)(edict_t *self);
-	void		(*melee)(edict_t *self);
-	void		(*sight)(edict_t *self, edict_t *other);
-	qboolean	(*checkattack)(edict_t *self);
-	void		(*custom_anim)(edict_t *self, char* animname);
+	SerializableFunctionPointer1<mmove_t *,edict_t *> get_currentmove;	// Function that will get the current move struct
+	SerializableFunctionPointer1<void,edict_s*>		stand;
+	SerializableFunctionPointer1<void, edict_s*>idle;
+	SerializableFunctionPointer1<void, edict_s*>search;
+	SerializableFunctionPointer1<void, edict_s*>walk;
+	SerializableFunctionPointer1<void, edict_s*>run;
+	SerializableFunctionPointer3<void, edict_s*, edict_t* , float>dodge;
+	SerializableFunctionPointer1<void, edict_s*>attack;
+	SerializableFunctionPointer1<void, edict_s*>melee;
+	SerializableFunctionPointer2<void, edict_s* , edict_t* >sight;
+	SerializableFunctionPointer1 <qboolean, edict_s* >checkattack;
+	SerializableFunctionPointer2<void, edict_s*, char* >custom_anim;
 
 	float		pausetime;
 	float		attack_finished;
@@ -474,6 +475,7 @@ extern	spawn_temp_t	st;
 #ifdef __cplusplus
 void* operator new (size_t bytes);
 void* operator new (size_t bytes, MemoryTag tag) throw();
+void* operator new (size_t bytes, void* place) throw();
 void operator delete (void* buf) throw();
 void operator delete (void* buf, MemoryTag tag) throw();
 #endif
@@ -606,13 +608,18 @@ typedef enum {
 	F_CLIENT,			// index on disk, pointer in memory
 	F_FUNCTION,
 	F_MMOVE,
-	F_IGNORE
+	F_IGNORE,
+	F_SFP				// string on disk SerializableFunctionPointer in memory
 } fieldtype_t;
 
+
+#include <typeinfo>
 typedef struct
 {
 	char	*name;
 	int		ofs;
+	void* (*construct)(void* where, void* what);
+	const type_info	*tinfo;
 	fieldtype_t	type;
 	int		flags;
 } field_t;
@@ -719,6 +726,7 @@ void M_CatagorizePosition (edict_t *ent);
 qboolean M_CheckAttack (edict_t *self);
 void M_FlyCheck (edict_t *self);
 void M_CheckGround (edict_t *ent);
+
 
 //
 // g_misc.c
@@ -1048,7 +1056,7 @@ struct gclient_s
 struct edict_s
 {
 	entity_state_t	s;
-	struct gclient_s	*client;	// NULL if not a player
+	struct gclient_s	*client;	// nullptr if not a player
 									// the server expects the first part
 									// of gclient_s to be a player_state_t
 									// but the rest of it is opaque
@@ -1120,13 +1128,13 @@ struct edict_s
 	float		ideal_yaw;
 
 	float		nextthink;
-	void		(*prethink) (edict_t *ent);
-	void		(*think)(edict_t *self);
-	void		(*blocked)(edict_t *self, edict_t *other);	//move to moveinfo?
-	void		(*touch)(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf);
-	void		(*use)(edict_t *self, edict_t *other, edict_t *activator);
-	void		(*pain)(edict_t *self, edict_t *other, float kick, int damage);
-	void		(*die)(edict_t *self, edict_t *inflictor, edict_t *attacker, int damage, vec3_t point);
+	SerializableFunctionPointer1<void,edict_t *> prethink;
+	SerializableFunctionPointer1<void,edict_t *> think;
+	SerializableFunctionPointer2<void,edict_t *, edict_t *> blocked;	//move to moveinfo?
+	SerializableFunctionPointer4<void,edict_t *, edict_t *, cplane_t *, csurface_t *> touch;
+	SerializableFunctionPointer3<void,edict_t *, edict_t *, edict_t *> use;
+	SerializableFunctionPointer4<void,edict_t *, edict_t *, float, int > pain;
+	SerializableFunctionPointer5<void,edict_t *, edict_t *, edict_t *, int, vec3_t> die;
 
 	float		touch_debounce_time;		// are all these legit?  do we need more/less of them?
 	float		pain_debounce_time;

@@ -30,10 +30,10 @@ void Use_Target_Tent (edict_t *ent, edict_t *other, edict_t *activator)
 	gi.WritePosition (ent->s.origin);
 	gi.multicast (ent->s.origin, MULTICAST_PVS);
 }
-
+AutoSFP(Use_Target_Tent)
 void SP_target_temp_entity (edict_t *ent)
 {
-	ent->use = Use_Target_Tent;
+	ent->use = SFP::Use_Target_Tent;
 }
 
 
@@ -77,7 +77,7 @@ void Use_Target_Speaker (edict_t *ent, edict_t *other, edict_t *activator)
 		gi.positioned_sound (ent->s.origin, ent, chan, ent->noise_index, ent->volume, ent->attenuation, 0);
 	}
 }
-
+AutoSFP(Use_Target_Speaker)
 void SP_target_speaker (edict_t *ent)
 {
 	char	buffer[MAX_QPATH];
@@ -105,7 +105,7 @@ void SP_target_speaker (edict_t *ent)
 	if (ent->spawnflags & 1)
 		ent->s.sound = ent->noise_index;
 
-	ent->use = Use_Target_Speaker;
+	ent->use = SFP::Use_Target_Speaker;
 
 	// must link the entity so we get areas and clusters so
 	// the server can determine who to send updates to
@@ -128,6 +128,7 @@ void Use_Target_Help (edict_t *ent, edict_t *other, edict_t *activator)
 /*QUAKED target_help (1 0 1) (-16 -16 -24) (16 16 24) help1
 When fired, the "message" key becomes the current personal computer string, and the message light will be set on all clients status bars.
 */
+AutoSFP(Use_Target_Help)
 void SP_target_help(edict_t *ent)
 {
 	if (deathmatch->value)
@@ -142,7 +143,7 @@ void SP_target_help(edict_t *ent)
 		G_FreeEdict (ent);
 		return;
 	}
-	ent->use = Use_Target_Help;
+	ent->use =SFP::Use_Target_Help;
 }
 
 //==========================================================
@@ -160,6 +161,7 @@ void use_target_secret (edict_t *ent, edict_t *other, edict_t *activator)
 	G_UseTargets (ent, activator);
 	G_FreeEdict (ent);
 }
+AutoSFP(use_target_secret)
 
 void SP_target_secret (edict_t *ent)
 {
@@ -169,7 +171,7 @@ void SP_target_secret (edict_t *ent)
 		return;
 	}
 
-	ent->use = use_target_secret;
+	ent->use = SFP::use_target_secret;
 	if (!st.noise)
 		st.noise = "misc/secret.wav";
 	ent->noise_index = gi.soundindex (st.noise);
@@ -198,6 +200,7 @@ void use_target_goal (edict_t *ent, edict_t *other, edict_t *activator)
 	G_UseTargets (ent, activator);
 	G_FreeEdict (ent);
 }
+AutoSFP(use_target_goal)
 
 void SP_target_goal (edict_t *ent)
 {
@@ -207,7 +210,7 @@ void SP_target_goal (edict_t *ent)
 		return;
 	}
 
-	ent->use = use_target_goal;
+	ent->use = SFP::use_target_goal;
 	if (!st.noise)
 		st.noise = "misc/secret.wav";
 	ent->noise_index = gi.soundindex (st.noise);
@@ -233,14 +236,14 @@ void target_explosion_explode (edict_t *self)
 	gi.WritePosition (self->s.origin);
 	gi.multicast (self->s.origin, MULTICAST_PHS);
 
-	T_RadiusDamage (self, self->activator, self->dmg, NULL, self->dmg+40, MOD_EXPLOSIVE);
+	T_RadiusDamage (self, self->activator, self->dmg, nullptr, self->dmg+40, MOD_EXPLOSIVE);
 
 	save = self->delay;
 	self->delay = 0;
 	G_UseTargets (self, self->activator);
 	self->delay = save;
 }
-
+AutoSFP(target_explosion_explode)
 void use_target_explosion (edict_t *self, edict_t *other, edict_t *activator)
 {
 	self->activator = activator;
@@ -251,13 +254,13 @@ void use_target_explosion (edict_t *self, edict_t *other, edict_t *activator)
 		return;
 	}
 
-	self->think = target_explosion_explode;
+	self->think = SFP::target_explosion_explode;
 	self->nextthink = level.time + self->delay;
 }
-
+AutoSFP(use_target_explosion)
 void SP_target_explosion (edict_t *ent)
 {
-	ent->use = use_target_explosion;
+	ent->use = SFP::use_target_explosion;
 	ent->svflags = SVF_NOCLIENT;
 }
 
@@ -298,7 +301,7 @@ void use_target_changelevel (edict_t *self, edict_t *other, edict_t *activator)
 
 	BeginIntermission (self);
 }
-
+AutoSFP(use_target_changelevel)
 void SP_target_changelevel (edict_t *ent)
 {
 	if (!ent->map)
@@ -312,7 +315,7 @@ void SP_target_changelevel (edict_t *ent)
    if((Q_stricmp(level.mapname, "fact1") == 0) && (Q_stricmp(ent->map, "fact3") == 0))
 	   ent->map = "fact3$secret1";
 
-	ent->use = use_target_changelevel;
+	ent->use = SFP::use_target_changelevel;
 	ent->svflags = SVF_NOCLIENT;
 }
 
@@ -346,12 +349,12 @@ void use_target_splash (edict_t *self, edict_t *other, edict_t *activator)
 	gi.multicast (self->s.origin, MULTICAST_PVS);
 
 	if (self->dmg)
-		T_RadiusDamage (self, activator, self->dmg, NULL, self->dmg+40, MOD_SPLASH);
+		T_RadiusDamage (self, activator, self->dmg, nullptr, self->dmg+40, MOD_SPLASH);
 }
-
+AutoSFP(use_target_splash)
 void SP_target_splash (edict_t *self)
 {
-	self->use = use_target_splash;
+	self->use = SFP::use_target_splash;
 	G_SetMovedir (self->s.angles, self->movedir);
 
 	if (!self->count)
@@ -392,10 +395,10 @@ void use_target_spawner (edict_t *self, edict_t *other, edict_t *activator)
 	if (self->speed)
 		VectorCopy (self->movedir, ent->velocity);
 }
-
+AutoSFP(use_target_spawner)
 void SP_target_spawner (edict_t *self)
 {
-	self->use = use_target_spawner;
+	self->use = SFP::use_target_spawner;
 	self->svflags = SVF_NOCLIENT;
 	if (self->speed)
 	{
@@ -427,10 +430,10 @@ void use_target_blaster (edict_t *self, edict_t *other, edict_t *activator)
 	fire_blaster (self, self->s.origin, self->movedir, self->dmg, self->speed, EF_BLASTER, MOD_TARGET_BLASTER);
 	gi.sound (self, CHAN_VOICE, self->noise_index, 1, ATTN_NORM, 0);
 }
-
+AutoSFP(use_target_blaster)
 void SP_target_blaster (edict_t *self)
 {
-	self->use = use_target_blaster;
+	self->use = SFP::use_target_blaster;
 	G_SetMovedir (self->s.angles, self->movedir);
 	self->noise_index = gi.soundindex ("weapons/laser2.wav");
 
@@ -453,11 +456,11 @@ void trigger_crosslevel_trigger_use (edict_t *self, edict_t *other, edict_t *act
 	game.serverflags |= self->spawnflags;
 	G_FreeEdict (self);
 }
-
+AutoSFP(trigger_crosslevel_trigger_use);
 void SP_target_crosslevel_trigger (edict_t *self)
 {
 	self->svflags = SVF_NOCLIENT;
-	self->use = trigger_crosslevel_trigger_use;
+	self->use = SFP::trigger_crosslevel_trigger_use;
 }
 
 /*QUAKED target_crosslevel_target (.5 .5 .5) (-8 -8 -8) (8 8 8) trigger1 trigger2 trigger3 trigger4 trigger5 trigger6 trigger7 trigger8
@@ -474,14 +477,14 @@ void target_crosslevel_target_think (edict_t *self)
 		G_FreeEdict (self);
 	}
 }
-
+AutoSFP(target_crosslevel_target_think)
 void SP_target_crosslevel_target (edict_t *self)
 {
 	if (! self->delay)
 		self->delay = 1;
 	self->svflags = SVF_NOCLIENT;
 
-	self->think = target_crosslevel_target_think;
+	self->think = SFP::target_crosslevel_target_think;
 	self->nextthink = level.time + self->delay;
 }
 
@@ -522,7 +525,7 @@ void target_laser_think (edict_t *self)
 	VectorMA (start, 2048, self->movedir, end);
 	while(1)
 	{
-		tr = gi.trace (start, NULL, NULL, end, ignore, CONTENTS_SOLID|CONTENTS_MONSTER|CONTENTS_DEADMONSTER);
+		tr = gi.trace (start, nullptr, nullptr, end, ignore, CONTENTS_SOLID|CONTENTS_MONSTER|CONTENTS_DEADMONSTER);
 
 		if (!tr.ent)
 			break;
@@ -581,6 +584,8 @@ void target_laser_use (edict_t *self, edict_t *other, edict_t *activator)
 	else
 		target_laser_on (self);
 }
+AutoSFP(target_laser_use)
+AutoSFP(target_laser_think)
 
 void target_laser_start (edict_t *self)
 {
@@ -613,7 +618,7 @@ void target_laser_start (edict_t *self)
 	{
 		if (self->target)
 		{
-			ent = G_Find (NULL, FOFS(targetname), self->target);
+			ent = G_Find (nullptr, FOFS(targetname), self->target);
 			if (!ent)
 				gi.dprintf ("%s at %s: %s is a bad target\n", self->classname, vtos(self->s.origin), self->target);
 			self->enemy = ent;
@@ -623,8 +628,8 @@ void target_laser_start (edict_t *self)
 			G_SetMovedir (self->s.angles, self->movedir);
 		}
 	}
-	self->use = target_laser_use;
-	self->think = target_laser_think;
+	self->use = SFP::target_laser_use;
+	self->think = SFP::target_laser_think;
 
 	if (!self->dmg)
 		self->dmg = 1;
@@ -638,11 +643,11 @@ void target_laser_start (edict_t *self)
 	else
 		target_laser_off (self);
 }
-
+AutoSFP(target_laser_start)
 void SP_target_laser (edict_t *self)
 {
 	// let everything else get spawned before we start firing
-	self->think = target_laser_start;
+	self->think = SFP::target_laser_start;
 	self->nextthink = level.time + 1;
 }
 
@@ -683,7 +688,7 @@ void target_lightramp_use (edict_t *self, edict_t *other, edict_t *activator)
 		edict_t		*e;
 
 		// check all the targets
-		e = NULL;
+		e = nullptr;
 		while (1)
 		{
 			e = G_Find (e, FOFS(targetname), self->target);
@@ -711,6 +716,10 @@ void target_lightramp_use (edict_t *self, edict_t *other, edict_t *activator)
 	self->timestamp = level.time;
 	target_lightramp_think (self);
 }
+AutoSFP(target_lightramp_use)
+
+AutoSFP(target_lightramp_think)
+
 
 void SP_target_lightramp (edict_t *self)
 {
@@ -735,8 +744,8 @@ void SP_target_lightramp (edict_t *self)
 	}
 
 	self->svflags |= SVF_NOCLIENT;
-	self->use = target_lightramp_use;
-	self->think = target_lightramp_think;
+	self->use = SFP::target_lightramp_use;
+	self->think = SFP::target_lightramp_think;
 
 	self->movedir[0] = self->message[0] - 'a';
 	self->movedir[1] = self->message[1] - 'a';
@@ -772,7 +781,7 @@ void target_earthquake_think (edict_t *self)
 		if (!e->groundentity)
 			continue;
 
-		e->groundentity = NULL;
+		e->groundentity = nullptr;
 		e->velocity[0] += crandom()* 150;
 		e->velocity[1] += crandom()* 150;
 		e->velocity[2] = self->speed * (100.0 / e->mass);
@@ -789,7 +798,8 @@ void target_earthquake_use (edict_t *self, edict_t *other, edict_t *activator)
 	self->activator = activator;
 	self->last_move_time = 0;
 }
-
+AutoSFP(target_earthquake_think)
+AutoSFP(target_earthquake_use)
 void SP_target_earthquake (edict_t *self)
 {
 	if (!self->targetname)
@@ -802,8 +812,8 @@ void SP_target_earthquake (edict_t *self)
 		self->speed = 200;
 
 	self->svflags |= SVF_NOCLIENT;
-	self->think = target_earthquake_think;
-	self->use = target_earthquake_use;
+	self->think = SFP::target_earthquake_think;
+	self->use = SFP::target_earthquake_use;
 
 	self->noise_index = gi.soundindex ("world/quake.wav");
 }

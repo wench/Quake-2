@@ -52,6 +52,12 @@ enum {
 	floater_move_run
 };
 
+AutoSFP(ai_charge)
+AutoSFP(ai_stand)
+AutoSFP(ai_walk)
+AutoSFP(ai_move)
+AutoSFP(ai_run)
+AutoSFP(ai_turn)
 
 void floater_sight (edict_t *self, edict_t *other)
 {
@@ -84,7 +90,7 @@ void floater_fire_blaster (edict_t *self)
 		effect = EF_HYPERBLASTER;
 	else
 		effect = 0;
-	AngleVectors (self->s.angles, forward, right, NULL);
+	AngleVectors (self->s.angles, forward, right, nullptr);
 	G_ProjectSource (self->s.origin, monster_flash_offset[MZ2_FLOAT_BLASTER_1], forward, right, start);
 
 	VectorCopy (self->enemy->s.origin, end);
@@ -94,117 +100,125 @@ void floater_fire_blaster (edict_t *self)
 	monster_fire_blaster (self, start, dir, 1, 1000, MZ2_FLOAT_BLASTER_1, effect);
 }
 
+AutoSFP(floater_sight)
+AutoSFP(floater_idle)
+AutoSFP(floater_dead)
+AutoSFP(floater_run)
+AutoSFP(floater_wham)
+AutoSFP(floater_zap)
+AutoSFP(floater_fire_blaster)
+
 
 mframe_t floater_frames_stand1 [] =
 {
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr
 };
 
 mframe_t floater_frames_stand2 [] =
 {
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr
 };
 
 void floater_stand (edict_t *self)
@@ -217,311 +231,311 @@ void floater_stand (edict_t *self)
 
 mframe_t floater_frames_activate [] =
 {
-	ai_move,	0,	NULL,	
-	ai_move,	0,	NULL,	
-	ai_move,	0,	NULL,	
-	ai_move,	0,	NULL,	
-	ai_move,	0,	NULL,	
-	ai_move,	0,	NULL,	
-	ai_move,	0,	NULL,	
-	ai_move,	0,	NULL,	
-	ai_move,	0,	NULL,	
-	ai_move,	0,	NULL,	
-	ai_move,	0,	NULL,	
-	ai_move,	0,	NULL,	
-	ai_move,	0,	NULL,	
-	ai_move,	0,	NULL,	
-	ai_move,	0,	NULL,	
-	ai_move,	0,	NULL,	
-	ai_move,	0,	NULL,	
-	ai_move,	0,	NULL,	
-	ai_move,	0,	NULL,	
-	ai_move,	0,	NULL,	
-	ai_move,	0,	NULL,	
-	ai_move,	0,	NULL,	
-	ai_move,	0,	NULL,	
-	ai_move,	0,	NULL,	
-	ai_move,	0,	NULL,	
-	ai_move,	0,	NULL,	
-	ai_move,	0,	NULL,	
-	ai_move,	0,	NULL,	
-	ai_move,	0,	NULL,	
-	ai_move,	0,	NULL
+	SFP::ai_move,	0,	nullptr,	
+	SFP::ai_move,	0,	nullptr,	
+	SFP::ai_move,	0,	nullptr,	
+	SFP::ai_move,	0,	nullptr,	
+	SFP::ai_move,	0,	nullptr,	
+	SFP::ai_move,	0,	nullptr,	
+	SFP::ai_move,	0,	nullptr,	
+	SFP::ai_move,	0,	nullptr,	
+	SFP::ai_move,	0,	nullptr,	
+	SFP::ai_move,	0,	nullptr,	
+	SFP::ai_move,	0,	nullptr,	
+	SFP::ai_move,	0,	nullptr,	
+	SFP::ai_move,	0,	nullptr,	
+	SFP::ai_move,	0,	nullptr,	
+	SFP::ai_move,	0,	nullptr,	
+	SFP::ai_move,	0,	nullptr,	
+	SFP::ai_move,	0,	nullptr,	
+	SFP::ai_move,	0,	nullptr,	
+	SFP::ai_move,	0,	nullptr,	
+	SFP::ai_move,	0,	nullptr,	
+	SFP::ai_move,	0,	nullptr,	
+	SFP::ai_move,	0,	nullptr,	
+	SFP::ai_move,	0,	nullptr,	
+	SFP::ai_move,	0,	nullptr,	
+	SFP::ai_move,	0,	nullptr,	
+	SFP::ai_move,	0,	nullptr,	
+	SFP::ai_move,	0,	nullptr,	
+	SFP::ai_move,	0,	nullptr,	
+	SFP::ai_move,	0,	nullptr,	
+	SFP::ai_move,	0,	nullptr
 };
 
 mframe_t floater_frames_attack1 [] =
 {
-	ai_charge,	0,	NULL,			// Blaster attack
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	floater_fire_blaster,			// BOOM (0, -25.8, 32.5)	-- LOOP Starts
-	ai_charge,	0,	floater_fire_blaster,
-	ai_charge,	0,	floater_fire_blaster,
-	ai_charge,	0,	floater_fire_blaster,
-	ai_charge,	0,	floater_fire_blaster,
-	ai_charge,	0,	floater_fire_blaster,
-	ai_charge,	0,	floater_fire_blaster,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL			//							-- LOOP Ends
+	SFP::ai_charge,	0,	nullptr,			// Blaster attack
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	SFP::floater_fire_blaster,			// BOOM (0, -25.8, 32.5)	-- LOOP Starts
+	SFP::ai_charge,	0,	SFP::floater_fire_blaster,
+	SFP::ai_charge,	0,	SFP::floater_fire_blaster,
+	SFP::ai_charge,	0,	SFP::floater_fire_blaster,
+	SFP::ai_charge,	0,	SFP::floater_fire_blaster,
+	SFP::ai_charge,	0,	SFP::floater_fire_blaster,
+	SFP::ai_charge,	0,	SFP::floater_fire_blaster,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr			//							-- LOOP Ends
 };
-
 mframe_t floater_frames_attack2 [] =
 {
-	ai_charge,	0,	NULL,			// Claws
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	floater_wham,			// WHAM (0, -45, 29.6)		-- LOOP Starts
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,			//							-- LOOP Ends
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL
+	SFP::ai_charge,	0,	nullptr,			// Claws
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	SFP::floater_wham,			// WHAM (0, -45, 29.6)		-- LOOP Starts
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,			//							-- LOOP Ends
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr
 };
 
 mframe_t floater_frames_attack3 [] =
 {
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	floater_zap,		//								-- LOOP Starts
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,		//								-- LOOP Ends
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	0,	NULL
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	SFP::floater_zap,		//								-- LOOP Starts
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,		//								-- LOOP Ends
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	0,	nullptr
 };
 
 mframe_t floater_frames_death [] =
 {
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr
 };
 
 mframe_t floater_frames_pain1 [] =
 {
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr
 };
 
 mframe_t floater_frames_pain2 [] =
 {
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr
 };
 
 mframe_t floater_frames_pain3 [] =
 {
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr
 };
 
 mframe_t floater_frames_walk [] =
 {
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr
 };
 
 mframe_t floater_frames_run [] =
 {
-	ai_run, 13, NULL,
-	ai_run, 13, NULL,
-	ai_run, 13, NULL,
-	ai_run, 13, NULL,
-	ai_run, 13, NULL,
-	ai_run, 13, NULL,
-	ai_run, 13, NULL,
-	ai_run, 13, NULL,
-	ai_run, 13, NULL,
-	ai_run, 13, NULL,
-	ai_run, 13, NULL,
-	ai_run, 13, NULL,
-	ai_run, 13, NULL,
-	ai_run, 13, NULL,
-	ai_run, 13, NULL,
-	ai_run, 13, NULL,
-	ai_run, 13, NULL,
-	ai_run, 13, NULL,
-	ai_run, 13, NULL,
-	ai_run, 13, NULL,
-	ai_run, 13, NULL,
-	ai_run, 13, NULL,
-	ai_run, 13, NULL,
-	ai_run, 13, NULL,
-	ai_run, 13, NULL,
-	ai_run, 13, NULL,
-	ai_run, 13, NULL,
-	ai_run, 13, NULL,
-	ai_run, 13, NULL,
-	ai_run, 13, NULL,
-	ai_run, 13, NULL,
-	ai_run, 13, NULL,
-	ai_run, 13, NULL,
-	ai_run, 13, NULL,
-	ai_run, 13, NULL,
-	ai_run, 13, NULL,
-	ai_run, 13, NULL,
-	ai_run, 13, NULL,
-	ai_run, 13, NULL,
-	ai_run, 13, NULL,
-	ai_run, 13, NULL,
-	ai_run, 13, NULL,
-	ai_run, 13, NULL,
-	ai_run, 13, NULL,
-	ai_run, 13, NULL,
-	ai_run, 13, NULL,
-	ai_run, 13, NULL,
-	ai_run, 13, NULL,
-	ai_run, 13, NULL,
-	ai_run, 13, NULL,
-	ai_run, 13, NULL,
-	ai_run, 13, NULL
+	SFP::ai_run, 13, nullptr,
+	SFP::ai_run, 13, nullptr,
+	SFP::ai_run, 13, nullptr,
+	SFP::ai_run, 13, nullptr,
+	SFP::ai_run, 13, nullptr,
+	SFP::ai_run, 13, nullptr,
+	SFP::ai_run, 13, nullptr,
+	SFP::ai_run, 13, nullptr,
+	SFP::ai_run, 13, nullptr,
+	SFP::ai_run, 13, nullptr,
+	SFP::ai_run, 13, nullptr,
+	SFP::ai_run, 13, nullptr,
+	SFP::ai_run, 13, nullptr,
+	SFP::ai_run, 13, nullptr,
+	SFP::ai_run, 13, nullptr,
+	SFP::ai_run, 13, nullptr,
+	SFP::ai_run, 13, nullptr,
+	SFP::ai_run, 13, nullptr,
+	SFP::ai_run, 13, nullptr,
+	SFP::ai_run, 13, nullptr,
+	SFP::ai_run, 13, nullptr,
+	SFP::ai_run, 13, nullptr,
+	SFP::ai_run, 13, nullptr,
+	SFP::ai_run, 13, nullptr,
+	SFP::ai_run, 13, nullptr,
+	SFP::ai_run, 13, nullptr,
+	SFP::ai_run, 13, nullptr,
+	SFP::ai_run, 13, nullptr,
+	SFP::ai_run, 13, nullptr,
+	SFP::ai_run, 13, nullptr,
+	SFP::ai_run, 13, nullptr,
+	SFP::ai_run, 13, nullptr,
+	SFP::ai_run, 13, nullptr,
+	SFP::ai_run, 13, nullptr,
+	SFP::ai_run, 13, nullptr,
+	SFP::ai_run, 13, nullptr,
+	SFP::ai_run, 13, nullptr,
+	SFP::ai_run, 13, nullptr,
+	SFP::ai_run, 13, nullptr,
+	SFP::ai_run, 13, nullptr,
+	SFP::ai_run, 13, nullptr,
+	SFP::ai_run, 13, nullptr,
+	SFP::ai_run, 13, nullptr,
+	SFP::ai_run, 13, nullptr,
+	SFP::ai_run, 13, nullptr,
+	SFP::ai_run, 13, nullptr,
+	SFP::ai_run, 13, nullptr,
+	SFP::ai_run, 13, nullptr,
+	SFP::ai_run, 13, nullptr,
+	SFP::ai_run, 13, nullptr,
+	SFP::ai_run, 13, nullptr,
+	SFP::ai_run, 13, nullptr
 };
 
 mmove_t floater_moves[] = {
-	{FRAME_stand101, FRAME_stand152, floater_frames_stand1, NULL},
-	{FRAME_stand201, FRAME_stand252, floater_frames_stand2, NULL},
-	{FRAME_actvat01, FRAME_actvat31, floater_frames_activate, NULL},
-	{FRAME_attak101, FRAME_attak114, floater_frames_attack1, floater_run},
-	{FRAME_attak201, FRAME_attak225, floater_frames_attack2, floater_run},
-	{FRAME_attak301, FRAME_attak334, floater_frames_attack3, floater_run},
-	{FRAME_death01, FRAME_death13, floater_frames_death, floater_dead},
-	{FRAME_pain101, FRAME_pain107, floater_frames_pain1, floater_run},
-	{FRAME_pain201, FRAME_pain208, floater_frames_pain2, floater_run},
-	{FRAME_pain301, FRAME_pain312, floater_frames_pain3, floater_run},
-	{FRAME_stand101, FRAME_stand152, floater_frames_walk, NULL},
-	{FRAME_stand101, FRAME_stand152, floater_frames_run, NULL}
+	{FRAME_stand101, FRAME_stand152, floater_frames_stand1, nullptr},
+	{FRAME_stand201, FRAME_stand252, floater_frames_stand2, nullptr},
+	{FRAME_actvat01, FRAME_actvat31, floater_frames_activate, nullptr},
+	{FRAME_attak101, FRAME_attak114, floater_frames_attack1, SFP::floater_run},
+	{FRAME_attak201, FRAME_attak225, floater_frames_attack2, SFP::floater_run},
+	{FRAME_attak301, FRAME_attak334, floater_frames_attack3, SFP::floater_run},
+	{FRAME_death01, FRAME_death13, floater_frames_death, SFP::floater_dead},
+	{FRAME_pain101, FRAME_pain107, floater_frames_pain1, SFP::floater_run},
+	{FRAME_pain201, FRAME_pain208, floater_frames_pain2, SFP::floater_run},
+	{FRAME_pain301, FRAME_pain312, floater_frames_pain3, SFP::floater_run},
+	{FRAME_stand101, FRAME_stand152, floater_frames_walk, nullptr},
+	{FRAME_stand101, FRAME_stand152, floater_frames_run, nullptr}
 };
 
 mmove_t * floater_get_currentmove(edict_t *self)
 {
-	if (!self->monsterinfo.currentmove) return NULL;
+	if (!self->monsterinfo.currentmove) return nullptr;
 	return &floater_moves[self->monsterinfo.currentmove-1];
 }
+AutoSFP(floater_get_currentmove)
 
 void floater_run (edict_t *self)
 {
@@ -552,7 +566,7 @@ void floater_zap (edict_t *self)
 
 	VectorSubtract (self->enemy->s.origin, self->s.origin, dir);
 
-	AngleVectors (self->s.angles, forward, right, NULL);
+	AngleVectors (self->s.angles, forward, right, nullptr);
 	//FIXME use a flash and replace these two lines with the commented one
 	VectorSet (offset, 18.5, -0.9, 10);
 	G_ProjectSource (self->s.origin, offset, forward, right, origin);
@@ -630,6 +644,13 @@ void floater_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int dama
 	BecomeExplosion1(self);
 }
 
+SFPEnt(pain, floater_pain)
+SFPEnt(die, floater_die)
+AutoSFP(floater_stand)
+AutoSFP(floater_walk)
+AutoSFP(floater_attack)
+AutoSFP(floater_melee)
+
 /*QUAKED monster_floater (1 .5 0) (-16 -16 -24) (16 16 32) Ambush Trigger_Spawn Sight
 */
 void SP_monster_floater (edict_t *self)
@@ -662,18 +683,18 @@ void SP_monster_floater (edict_t *self)
 	self->gib_health = -80;
 	self->mass = 300;
 
-	self->pain = floater_pain;
-	self->die = floater_die;
+	self->pain = SFP::floater_pain;
+	self->die = SFP::floater_die;
 
-	self->monsterinfo.stand = floater_stand;
-	self->monsterinfo.walk = floater_walk;
-	self->monsterinfo.run = floater_run;
+	self->monsterinfo.stand = SFP::floater_stand;
+	self->monsterinfo.walk = SFP::floater_walk;
+	self->monsterinfo.run = SFP::floater_run;
 //	self->monsterinfo.dodge = floater_dodge;
-	self->monsterinfo.attack = floater_attack;
-	self->monsterinfo.melee = floater_melee;
-	self->monsterinfo.sight = floater_sight;
-	self->monsterinfo.idle = floater_idle;
-	self->monsterinfo.get_currentmove = floater_get_currentmove;
+	self->monsterinfo.attack = SFP::floater_attack;
+	self->monsterinfo.melee = SFP::floater_melee;
+	self->monsterinfo.sight = SFP::floater_sight;
+	self->monsterinfo.idle = SFP::floater_idle;
+	self->monsterinfo.get_currentmove = SFP::floater_get_currentmove;
 
 	gi.linkentity (self);
 

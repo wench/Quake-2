@@ -63,13 +63,15 @@ void berserk_search (edict_t *self)
 
 
 void berserk_fidget (edict_t *self);
+AutoSFP(berserk_fidget)
+AutoSFP( ai_stand)
 mframe_t berserk_frames_stand [] =
 {
-	ai_stand, 0, berserk_fidget,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL
+	SFP::ai_stand, 0, SFP::berserk_fidget,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr
 };
 
 void berserk_stand (edict_t *self)
@@ -79,26 +81,26 @@ void berserk_stand (edict_t *self)
 
 mframe_t berserk_frames_stand_fidget [] =
 {
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr
 };
 
 void berserk_fidget (edict_t *self)
@@ -112,21 +114,21 @@ void berserk_fidget (edict_t *self)
 	gi.sound (self, CHAN_WEAPON, sound_idle, 1, ATTN_IDLE, 0);
 }
 
-
+AutoSFP(ai_walk)
 mframe_t berserk_frames_walk [] =
 {
-	ai_walk, 9.1, NULL,
-	ai_walk, 6.3, NULL,
-	ai_walk, 4.9, NULL,
-	ai_walk, 6.7, NULL,
-	ai_walk, 6.0, NULL,
-	ai_walk, 8.2, NULL,
-	ai_walk, 7.2, NULL,
-	ai_walk, 6.1, NULL,
-	ai_walk, 4.9, NULL,
-	ai_walk, 4.7, NULL,
-	ai_walk, 4.7, NULL,
-	ai_walk, 4.8, NULL
+	SFP::ai_walk, 9.1, nullptr,
+	SFP::ai_walk, 6.3, nullptr,
+	SFP::ai_walk, 4.9, nullptr,
+	SFP::ai_walk, 6.7, nullptr,
+	SFP::ai_walk, 6.0, nullptr,
+	SFP::ai_walk, 8.2, nullptr,
+	SFP::ai_walk, 7.2, nullptr,
+	SFP::ai_walk, 6.1, nullptr,
+	SFP::ai_walk, 4.9, nullptr,
+	SFP::ai_walk, 4.7, nullptr,
+	SFP::ai_walk, 4.7, nullptr,
+	SFP::ai_walk, 4.8, nullptr
 };
 
 void berserk_walk (edict_t *self)
@@ -158,15 +160,15 @@ void()	berserk_runb12	=[	$r_att12 ,	berserk_runb7	] {ai_run(19);};
 // running with arm in air : end loop
 */
 
-
+AutoSFP(ai_run)
 mframe_t berserk_frames_run1 [] =
 {
-	ai_run, 21, NULL,
-	ai_run, 11, NULL,
-	ai_run, 21, NULL,
-	ai_run, 25, NULL,
-	ai_run, 18, NULL,
-	ai_run, 19, NULL
+	SFP::ai_run, 21, nullptr,
+	SFP::ai_run, 11, nullptr,
+	SFP::ai_run, 21, nullptr,
+	SFP::ai_run, 25, nullptr,
+	SFP::ai_run, 18, nullptr,
+	SFP::ai_run, 19, nullptr
 };
 
 void berserk_run (edict_t *self)
@@ -189,17 +191,19 @@ void berserk_swing (edict_t *self)
 {
 	gi.sound (self, CHAN_WEAPON, sound_punch, 1, ATTN_NORM, 0);
 }
-
+AutoSFP(ai_charge)
+AutoSFP(berserk_swing)
+AutoSFP(berserk_attack_spike)
 mframe_t berserk_frames_attack_spike [] =
 {
-		ai_charge, 0, NULL,
-		ai_charge, 0, NULL,
-		ai_charge, 0, berserk_swing,
-		ai_charge, 0, berserk_attack_spike,
-		ai_charge, 0, NULL,
-		ai_charge, 0, NULL,
-		ai_charge, 0, NULL,
-		ai_charge, 0, NULL
+		SFP::ai_charge, 0, nullptr,
+		SFP::ai_charge, 0, nullptr,
+		SFP::ai_charge, 0, SFP::berserk_swing,
+		SFP::ai_charge, 0, SFP::berserk_attack_spike,
+		SFP::ai_charge, 0, nullptr,
+		SFP::ai_charge, 0, nullptr,
+		SFP::ai_charge, 0, nullptr,
+		SFP::ai_charge, 0, nullptr
 };
 
 
@@ -210,21 +214,21 @@ void berserk_attack_club (edict_t *self)
 	VectorSet (aim, MELEE_DISTANCE, self->s.mins[0], -4);
 	fire_hit (self, aim, (5 + (rand() % 6)), 400);		// Slower attack
 }
-
+AutoSFP(berserk_attack_club)
 mframe_t berserk_frames_attack_club [] =
 {	
-	ai_charge, 0, NULL,
-	ai_charge, 0, NULL,
-	ai_charge, 0, NULL,
-	ai_charge, 0, NULL,
-	ai_charge, 0, berserk_swing,
-	ai_charge, 0, NULL,
-	ai_charge, 0, NULL,
-	ai_charge, 0, NULL,
-	ai_charge, 0, berserk_attack_club,
-	ai_charge, 0, NULL,
-	ai_charge, 0, NULL,
-	ai_charge, 0, NULL
+	SFP::ai_charge, 0, nullptr,
+	SFP::ai_charge, 0, nullptr,
+	SFP::ai_charge, 0, nullptr,
+	SFP::ai_charge, 0, nullptr,
+	SFP::ai_charge, 0, SFP::berserk_swing,
+	SFP::ai_charge, 0, nullptr,
+	SFP::ai_charge, 0, nullptr,
+	SFP::ai_charge, 0, nullptr,
+	SFP::ai_charge, 0, SFP::berserk_attack_club,
+	SFP::ai_charge, 0, nullptr,
+	SFP::ai_charge, 0, nullptr,
+	SFP::ai_charge, 0, nullptr
 };
 
 
@@ -233,23 +237,24 @@ void berserk_strike (edict_t *self)
 	//FIXME play impact sound
 }
 
-
+AutoSFP(berserk_strike);
+AutoSFP(ai_move)
 mframe_t berserk_frames_attack_strike [] =
 {
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, berserk_swing,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, berserk_strike,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 9.7, NULL,
-	ai_move, 13.6, NULL
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, SFP::berserk_swing,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, SFP::berserk_strike,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 9.7, nullptr,
+	SFP::ai_move, 13.6, nullptr
 };
 	
 
@@ -285,37 +290,38 @@ void() 	berserk_atke18	=[	$r_attb18,	berserk_run1	] {ai_run(7.8);};
 */
 
 
+
 mframe_t berserk_frames_pain1 [] =
 {
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr
 };
 
 
 mframe_t berserk_frames_pain2 [] =
 {
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr
 };
 
 void berserk_pain (edict_t *self, edict_t *other, float kick, int damage)
@@ -352,53 +358,55 @@ void berserk_dead (edict_t *self)
 
 mframe_t berserk_frames_death1 [] =
 {
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr
 	
 };
 
-
 mframe_t berserk_frames_death2 [] =
 {
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr
 };
+AutoSFP(berserk_stand)
+AutoSFP(berserk_run)
+AutoSFP(berserk_dead)
 
 mmove_t berserk_moves[] = {
-	{FRAME_stand1, FRAME_stand5, berserk_frames_stand, NULL},
-	{FRAME_standb1, FRAME_standb20, berserk_frames_stand_fidget, berserk_stand},
-	{FRAME_walkc1, FRAME_walkc11, berserk_frames_walk, NULL},
-	{FRAME_run1, FRAME_run6, berserk_frames_run1, NULL},
-	{FRAME_att_c1, FRAME_att_c8, berserk_frames_attack_spike, berserk_run},
-	{FRAME_att_c9, FRAME_att_c20, berserk_frames_attack_club, berserk_run},
-	{FRAME_att_c21, FRAME_att_c34, berserk_frames_attack_strike, berserk_run},
-	{FRAME_painc1, FRAME_painc4, berserk_frames_pain1, berserk_run},
-	{FRAME_painb1, FRAME_painb20, berserk_frames_pain2, berserk_run},
-	{FRAME_death1, FRAME_death13, berserk_frames_death1, berserk_dead},
-	{FRAME_deathc1, FRAME_deathc8, berserk_frames_death2, berserk_dead}
+	{FRAME_stand1, FRAME_stand5, berserk_frames_stand, nullptr},
+	{FRAME_standb1, FRAME_standb20, berserk_frames_stand_fidget, SFP::berserk_stand},
+	{FRAME_walkc1, FRAME_walkc11, berserk_frames_walk, nullptr},
+	{FRAME_run1, FRAME_run6, berserk_frames_run1, nullptr},
+	{FRAME_att_c1, FRAME_att_c8, berserk_frames_attack_spike, SFP::berserk_run},
+	{FRAME_att_c9, FRAME_att_c20, berserk_frames_attack_club, SFP::berserk_run},
+	{FRAME_att_c21, FRAME_att_c34, berserk_frames_attack_strike, SFP::berserk_run},
+	{FRAME_painc1, FRAME_painc4, berserk_frames_pain1, SFP::berserk_run},
+	{FRAME_painb1, FRAME_painb20, berserk_frames_pain2, SFP::berserk_run},
+	{FRAME_death1, FRAME_death13, berserk_frames_death1, SFP::berserk_dead},
+	{FRAME_deathc1, FRAME_deathc8, berserk_frames_death2, SFP::berserk_dead}
 };
 
 
 mmove_t *berserk_get_currentmove(edict_t *self)
 {
-	if (!self->monsterinfo.currentmove) return NULL;
+	if (!self->monsterinfo.currentmove) return nullptr;
 	return &berserk_moves[self->monsterinfo.currentmove-1];
 }
 
@@ -432,6 +440,16 @@ void berserk_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int dama
 }
 
 
+SFPEnt(pain, berserk_pain);
+SFPEnt(die, berserk_die);
+
+SFPEnt(monsterinfo.get_currentmove, berserk_get_currentmove);
+SFPEnt(monsterinfo.walk, berserk_walk);
+
+SFPEnt(monsterinfo.melee, berserk_melee);
+SFPEnt(monsterinfo.sight, berserk_sight);
+SFPEnt(monsterinfo.search, berserk_search);
+
 /*QUAKED monster_berserk (1 .5 0) (-16 -16 -24) (16 16 32) Ambush Trigger_Spawn Sight
 */
 void SP_monster_berserk (edict_t *self)
@@ -460,18 +478,18 @@ void SP_monster_berserk (edict_t *self)
 	self->gib_health = -60;
 	self->mass = 250;
 
-	self->pain = berserk_pain;
-	self->die = berserk_die;
+	self->pain = SFP::berserk_pain;
+	self->die = SFP::berserk_die;
 
-	self->monsterinfo.get_currentmove = berserk_get_currentmove;
-	self->monsterinfo.stand = berserk_stand;
-	self->monsterinfo.walk = berserk_walk;
-	self->monsterinfo.run = berserk_run;
-	self->monsterinfo.dodge = NULL;
-	self->monsterinfo.attack = NULL;
-	self->monsterinfo.melee = berserk_melee;
-	self->monsterinfo.sight = berserk_sight;
-	self->monsterinfo.search = berserk_search;
+	self->monsterinfo.get_currentmove = SFP::berserk_get_currentmove;
+	self->monsterinfo.stand = SFP::berserk_stand;
+	self->monsterinfo.walk = SFP::berserk_walk;
+	self->monsterinfo.run = SFP::berserk_run;
+	self->monsterinfo.dodge = nullptr;
+	self->monsterinfo.attack = nullptr;
+	self->monsterinfo.melee = SFP::berserk_melee;
+	self->monsterinfo.sight = SFP::berserk_sight;
+	self->monsterinfo.search = SFP::berserk_search;
 
 	self->monsterinfo.currentmove = berserk_move_stand;
 	self->monsterinfo.scale = MODEL_SCALE;

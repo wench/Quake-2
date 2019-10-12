@@ -80,39 +80,44 @@ void ChickMoan (edict_t *self)
 	else
 		gi.sound (self, CHAN_VOICE, sound_idle2, 1, ATTN_IDLE, 0);
 }
-
+AutoSFP(ai_charge)
+AutoSFP(ai_stand)
+AutoSFP(ai_walk)
+AutoSFP(ai_move)
+AutoSFP(ai_run)
+AutoSFP(ChickMoan)
 mframe_t chick_frames_fidget [] =
 {
-	ai_stand, 0,  NULL,
-	ai_stand, 0,  NULL,
-	ai_stand, 0,  NULL,
-	ai_stand, 0,  NULL,
-	ai_stand, 0,  NULL,
-	ai_stand, 0,  NULL,
-	ai_stand, 0,  NULL,
-	ai_stand, 0,  NULL,
-	ai_stand, 0,  ChickMoan,
-	ai_stand, 0,  NULL,
-	ai_stand, 0,  NULL,
-	ai_stand, 0,  NULL,
-	ai_stand, 0,  NULL,
-	ai_stand, 0,  NULL,
-	ai_stand, 0,  NULL,
-	ai_stand, 0,  NULL,
-	ai_stand, 0,  NULL,
-	ai_stand, 0,  NULL,
-	ai_stand, 0,  NULL,
-	ai_stand, 0,  NULL,
-	ai_stand, 0,  NULL,
-	ai_stand, 0,  NULL,
-	ai_stand, 0,  NULL,
-	ai_stand, 0,  NULL,
-	ai_stand, 0,  NULL,
-	ai_stand, 0,  NULL,
-	ai_stand, 0,  NULL,
-	ai_stand, 0,  NULL,
-	ai_stand, 0,  NULL,
-	ai_stand, 0,  NULL
+	SFP::ai_stand, 0,  nullptr,
+	SFP::ai_stand, 0,  nullptr,
+	SFP::ai_stand, 0,  nullptr,
+	SFP::ai_stand, 0,  nullptr,
+	SFP::ai_stand, 0,  nullptr,
+	SFP::ai_stand, 0,  nullptr,
+	SFP::ai_stand, 0,  nullptr,
+	SFP::ai_stand, 0,  nullptr,
+	SFP::ai_stand, 0,  SFP::ChickMoan,
+	SFP::ai_stand, 0,  nullptr,
+	SFP::ai_stand, 0,  nullptr,
+	SFP::ai_stand, 0,  nullptr,
+	SFP::ai_stand, 0,  nullptr,
+	SFP::ai_stand, 0,  nullptr,
+	SFP::ai_stand, 0,  nullptr,
+	SFP::ai_stand, 0,  nullptr,
+	SFP::ai_stand, 0,  nullptr,
+	SFP::ai_stand, 0,  nullptr,
+	SFP::ai_stand, 0,  nullptr,
+	SFP::ai_stand, 0,  nullptr,
+	SFP::ai_stand, 0,  nullptr,
+	SFP::ai_stand, 0,  nullptr,
+	SFP::ai_stand, 0,  nullptr,
+	SFP::ai_stand, 0,  nullptr,
+	SFP::ai_stand, 0,  nullptr,
+	SFP::ai_stand, 0,  nullptr,
+	SFP::ai_stand, 0,  nullptr,
+	SFP::ai_stand, 0,  nullptr,
+	SFP::ai_stand, 0,  nullptr,
+	SFP::ai_stand, 0,  nullptr
 };
 
 void chick_fidget (edict_t *self)
@@ -122,39 +127,39 @@ void chick_fidget (edict_t *self)
 	if (random() <= 0.3)
 		self->monsterinfo.currentmove = chick_move_fidget;
 }
-
+AutoSFP(chick_fidget)
 mframe_t chick_frames_stand [] =
 {
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, chick_fidget,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, SFP::chick_fidget,
 
 };
 
@@ -165,46 +170,46 @@ void chick_stand (edict_t *self)
 
 mframe_t chick_frames_start_run [] =
 {
-	ai_run, 1,  NULL,
-	ai_run, 0,  NULL,
-	ai_run, 0,	 NULL,
-	ai_run, -1, NULL, 
-	ai_run, -1, NULL, 
-	ai_run, 0,  NULL,
-	ai_run, 1,  NULL,
-	ai_run, 3,  NULL,
-	ai_run, 6,	 NULL,
-	ai_run, 3,	 NULL
+	SFP::ai_run, 1,  nullptr,
+	SFP::ai_run, 0,  nullptr,
+	SFP::ai_run, 0,	 nullptr,
+	SFP::ai_run, -1, nullptr, 
+	SFP::ai_run, -1, nullptr, 
+	SFP::ai_run, 0,  nullptr,
+	SFP::ai_run, 1,  nullptr,
+	SFP::ai_run, 3,  nullptr,
+	SFP::ai_run, 6,	 nullptr,
+	SFP::ai_run, 3,	 nullptr
 };
 
 mframe_t chick_frames_run [] =
 {
-	ai_run, 6,	NULL,
-	ai_run, 8,  NULL,
-	ai_run, 13, NULL,
-	ai_run, 5,  NULL,
-	ai_run, 7,  NULL,
-	ai_run, 4,  NULL,
-	ai_run, 11, NULL,
-	ai_run, 5,  NULL,
-	ai_run, 9,  NULL,
-	ai_run, 7,  NULL
+	SFP::ai_run, 6,	nullptr,
+	SFP::ai_run, 8,  nullptr,
+	SFP::ai_run, 13, nullptr,
+	SFP::ai_run, 5,  nullptr,
+	SFP::ai_run, 7,  nullptr,
+	SFP::ai_run, 4,  nullptr,
+	SFP::ai_run, 11, nullptr,
+	SFP::ai_run, 5,  nullptr,
+	SFP::ai_run, 9,  nullptr,
+	SFP::ai_run, 7,  nullptr
 
 };
 
 
 mframe_t chick_frames_walk [] =
 {
-	ai_walk, 6,	 NULL,
-	ai_walk, 8,  NULL,
-	ai_walk, 13, NULL,
-	ai_walk, 5,  NULL,
-	ai_walk, 7,  NULL,
-	ai_walk, 4,  NULL,
-	ai_walk, 11, NULL,
-	ai_walk, 5,  NULL,
-	ai_walk, 9,  NULL,
-	ai_walk, 7,  NULL
+	SFP::ai_walk, 6,	 nullptr,
+	SFP::ai_walk, 8,  nullptr,
+	SFP::ai_walk, 13, nullptr,
+	SFP::ai_walk, 5,  nullptr,
+	SFP::ai_walk, 7,  nullptr,
+	SFP::ai_walk, 4,  nullptr,
+	SFP::ai_walk, 11, nullptr,
+	SFP::ai_walk, 5,  nullptr,
+	SFP::ai_walk, 9,  nullptr,
+	SFP::ai_walk, 7,  nullptr
 };
 
 
@@ -234,45 +239,45 @@ void chick_run (edict_t *self)
 
 mframe_t chick_frames_pain1 [] =
 {
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr
 };
 
 mframe_t chick_frames_pain2 [] =
 {
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr
 };
 
 mframe_t chick_frames_pain3 [] =
 {
-	ai_move, 0,		NULL,
-	ai_move, 0,		NULL,
-	ai_move, -6,	NULL,
-	ai_move, 3,		NULL,
-	ai_move, 11,	NULL,
-	ai_move, 3,		NULL,
-	ai_move, 0,		NULL,
-	ai_move, 0,		NULL,
-	ai_move, 4,		NULL,
-	ai_move, 1,		NULL,
-	ai_move, 0,		NULL,
-	ai_move, -3,	NULL,
-	ai_move, -4,	NULL,
-	ai_move, 5,		NULL,
-	ai_move, 7,		NULL,
-	ai_move, -2,	NULL,
-	ai_move, 3,		NULL,
-	ai_move, -5,	NULL,
-	ai_move, -2,	NULL,
-	ai_move, -8,	NULL,
-	ai_move, 2,		NULL
+	SFP::ai_move, 0,		nullptr,
+	SFP::ai_move, 0,		nullptr,
+	SFP::ai_move, -6,	nullptr,
+	SFP::ai_move, 3,		nullptr,
+	SFP::ai_move, 11,	nullptr,
+	SFP::ai_move, 3,		nullptr,
+	SFP::ai_move, 0,		nullptr,
+	SFP::ai_move, 0,		nullptr,
+	SFP::ai_move, 4,		nullptr,
+	SFP::ai_move, 1,		nullptr,
+	SFP::ai_move, 0,		nullptr,
+	SFP::ai_move, -3,	nullptr,
+	SFP::ai_move, -4,	nullptr,
+	SFP::ai_move, 5,		nullptr,
+	SFP::ai_move, 7,		nullptr,
+	SFP::ai_move, -2,	nullptr,
+	SFP::ai_move, 3,		nullptr,
+	SFP::ai_move, -5,	nullptr,
+	SFP::ai_move, -2,	nullptr,
+	SFP::ai_move, -8,	nullptr,
+	SFP::ai_move, 2,		nullptr
 };
 
 void chick_pain (edict_t *self, edict_t *other, float kick, int damage)
@@ -318,45 +323,45 @@ void chick_dead (edict_t *self)
 
 mframe_t chick_frames_death2 [] =
 {
-	ai_move, -6, NULL,
-	ai_move, 0,  NULL,
-	ai_move, -1,  NULL,
-	ai_move, -5, NULL,
-	ai_move, 0, NULL,
-	ai_move, -1,  NULL,
-	ai_move, -2,  NULL,
-	ai_move, 1,  NULL,
-	ai_move, 10, NULL,
-	ai_move, 2,  NULL,
-	ai_move, 3,  NULL,
-	ai_move, 1,  NULL,
-	ai_move, 2, NULL,
-	ai_move, 0,  NULL,
-	ai_move, 3,  NULL,
-	ai_move, 3,  NULL,
-	ai_move, 1,  NULL,
-	ai_move, -3,  NULL,
-	ai_move, -5, NULL,
-	ai_move, 4, NULL,
-	ai_move, 15, NULL,
-	ai_move, 14, NULL,
-	ai_move, 1, NULL
+	SFP::ai_move, -6, nullptr,
+	SFP::ai_move, 0,  nullptr,
+	SFP::ai_move, -1,  nullptr,
+	SFP::ai_move, -5, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, -1,  nullptr,
+	SFP::ai_move, -2,  nullptr,
+	SFP::ai_move, 1,  nullptr,
+	SFP::ai_move, 10, nullptr,
+	SFP::ai_move, 2,  nullptr,
+	SFP::ai_move, 3,  nullptr,
+	SFP::ai_move, 1,  nullptr,
+	SFP::ai_move, 2, nullptr,
+	SFP::ai_move, 0,  nullptr,
+	SFP::ai_move, 3,  nullptr,
+	SFP::ai_move, 3,  nullptr,
+	SFP::ai_move, 1,  nullptr,
+	SFP::ai_move, -3,  nullptr,
+	SFP::ai_move, -5, nullptr,
+	SFP::ai_move, 4, nullptr,
+	SFP::ai_move, 15, nullptr,
+	SFP::ai_move, 14, nullptr,
+	SFP::ai_move, 1, nullptr
 };
 
 mframe_t chick_frames_death1 [] =
 {
-	ai_move, 0,  NULL,
-	ai_move, 0,  NULL,
-	ai_move, -7, NULL,
-	ai_move, 4,  NULL,
-	ai_move, 11, NULL,
-	ai_move, 0,  NULL,
-	ai_move, 0,  NULL,
-	ai_move, 0,  NULL,
-	ai_move, 0,  NULL,
-	ai_move, 0,  NULL,
-	ai_move, 0,  NULL,
-	ai_move, 0,  NULL
+	SFP::ai_move, 0,  nullptr,
+	SFP::ai_move, 0,  nullptr,
+	SFP::ai_move, -7, nullptr,
+	SFP::ai_move, 4,  nullptr,
+	SFP::ai_move, 11, nullptr,
+	SFP::ai_move, 0,  nullptr,
+	SFP::ai_move, 0,  nullptr,
+	SFP::ai_move, 0,  nullptr,
+	SFP::ai_move, 0,  nullptr,
+	SFP::ai_move, 0,  nullptr,
+	SFP::ai_move, 0,  nullptr,
+	SFP::ai_move, 0,  nullptr
 	
 };
 
@@ -424,16 +429,18 @@ void chick_duck_up (edict_t *self)
 	self->takedamage = DAMAGE_AIM;
 	gi.linkentity (self);
 }
-
+AutoSFP(chick_duck_down)
+AutoSFP(chick_duck_hold)
+AutoSFP(chick_duck_up)
 mframe_t chick_frames_duck [] =
 {
-	ai_move, 0, chick_duck_down,
-	ai_move, 1, NULL,
-	ai_move, 4, chick_duck_hold,
-	ai_move, -4,  NULL,
-	ai_move, -5,  chick_duck_up,
-	ai_move, 3, NULL,
-	ai_move, 1,  NULL
+	SFP::ai_move, 0, SFP::chick_duck_down,
+	SFP::ai_move, 1, nullptr,
+	SFP::ai_move, 4, SFP::chick_duck_hold,
+	SFP::ai_move, -4,  nullptr,
+	SFP::ai_move, -5,  SFP::chick_duck_up,
+	SFP::ai_move, 3, nullptr,
+	SFP::ai_move, 1,  nullptr
 };
 
 void chick_dodge (edict_t *self, edict_t *attacker, float eta)
@@ -464,7 +471,7 @@ void ChickRocket (edict_t *self)
 	vec3_t	dir;
 	vec3_t	vec;
 
-	AngleVectors (self->s.angles, forward, right, NULL);
+	AngleVectors (self->s.angles, forward, right, nullptr);
 	G_ProjectSource (self->s.origin, monster_flash_offset[MZ2_CHICK_ROCKET_1], forward, right, start);
 
 	VectorCopy (self->enemy->s.origin, vec);
@@ -485,51 +492,55 @@ void ChickReload (edict_t *self)
 	gi.sound (self, CHAN_VOICE, sound_missile_reload, 1, ATTN_NORM, 0);
 }
 
+AutoSFP(Chick_PreAttack1)
+AutoSFP(chick_attack1)
 
 mframe_t chick_frames_start_attack1 [] =
 {
-	ai_charge, 0,	Chick_PreAttack1,
-	ai_charge, 0,	NULL,
-	ai_charge, 0,	NULL,
-	ai_charge, 4,	NULL,
-	ai_charge, 0,	NULL,
-	ai_charge, -3,  NULL,
-	ai_charge, 3,	NULL,
-	ai_charge, 5,	NULL,
-	ai_charge, 7,	NULL,
-	ai_charge, 0,	NULL,
-	ai_charge, 0,	NULL,
-	ai_charge, 0,	NULL,
-	ai_charge, 0,	chick_attack1
+	SFP::ai_charge, 0,	SFP::Chick_PreAttack1,
+	SFP::ai_charge, 0,	nullptr,
+	SFP::ai_charge, 0,	nullptr,
+	SFP::ai_charge, 4,	nullptr,
+	SFP::ai_charge, 0,	nullptr,
+	SFP::ai_charge, -3,  nullptr,
+	SFP::ai_charge, 3,	nullptr,
+	SFP::ai_charge, 5,	nullptr,
+	SFP::ai_charge, 7,	nullptr,
+	SFP::ai_charge, 0,	nullptr,
+	SFP::ai_charge, 0,	nullptr,
+	SFP::ai_charge, 0,	nullptr,
+	SFP::ai_charge, 0,	SFP::chick_attack1
 };
 
-
+AutoSFP(ChickRocket)
+AutoSFP(ChickReload)
+AutoSFP(chick_rerocket)
 mframe_t chick_frames_attack1 [] =
 {
-	ai_charge, 19,	ChickRocket,
-	ai_charge, -6,	NULL,
-	ai_charge, -5,	NULL,
-	ai_charge, -2,	NULL,
-	ai_charge, -7,	NULL,
-	ai_charge, 0,	NULL,
-	ai_charge, 1,	NULL,
-	ai_charge, 10,	ChickReload,
-	ai_charge, 4,	NULL,
-	ai_charge, 5,	NULL,
-	ai_charge, 6,	NULL,
-	ai_charge, 6,	NULL,
-	ai_charge, 4,	NULL,
-	ai_charge, 3,	chick_rerocket
+	SFP::ai_charge, 19,	SFP::ChickRocket,
+	SFP::ai_charge, -6,	nullptr,
+	SFP::ai_charge, -5,	nullptr,
+	SFP::ai_charge, -2,	nullptr,
+	SFP::ai_charge, -7,	nullptr,
+	SFP::ai_charge, 0,	nullptr,
+	SFP::ai_charge, 1,	nullptr,
+	SFP::ai_charge, 10,	SFP::ChickReload,
+	SFP::ai_charge, 4,	nullptr,
+	SFP::ai_charge, 5,	nullptr,
+	SFP::ai_charge, 6,	nullptr,
+	SFP::ai_charge, 6,	nullptr,
+	SFP::ai_charge, 4,	nullptr,
+	SFP::ai_charge, 3,	SFP::chick_rerocket
 
 };
 
 mframe_t chick_frames_end_attack1 [] =
 {
-	ai_charge, -3,	NULL,
-	ai_charge, 0,	NULL,
-	ai_charge, -6,	NULL,
-	ai_charge, -4,	NULL,
-	ai_charge, -2,  NULL
+	SFP::ai_charge, -3,	nullptr,
+	SFP::ai_charge, 0,	nullptr,
+	SFP::ai_charge, -6,	nullptr,
+	SFP::ai_charge, -4,	nullptr,
+	SFP::ai_charge, -2,  nullptr
 };
 
 void chick_rerocket(edict_t *self)
@@ -551,26 +562,27 @@ void chick_attack1(edict_t *self)
 {
 	self->monsterinfo.currentmove = chick_move_attack1;
 }
-
+AutoSFP(ChickSlash)
+AutoSFP(chick_reslash)
 mframe_t chick_frames_slash [] =
 {
-	ai_charge, 1,	NULL,
-	ai_charge, 7,	ChickSlash,
-	ai_charge, -7,	NULL,
-	ai_charge, 1,	NULL,
-	ai_charge, -1,	NULL,
-	ai_charge, 1,	NULL,
-	ai_charge, 0,	NULL,
-	ai_charge, 1,	NULL,
-	ai_charge, -2,	chick_reslash
+	SFP::ai_charge, 1,	nullptr,
+	SFP::ai_charge, 7,	SFP::ChickSlash,
+	SFP::ai_charge, -7,	nullptr,
+	SFP::ai_charge, 1,	nullptr,
+	SFP::ai_charge, -1,	nullptr,
+	SFP::ai_charge, 1,	nullptr,
+	SFP::ai_charge, 0,	nullptr,
+	SFP::ai_charge, 1,	nullptr,
+	SFP::ai_charge, -2,	SFP::chick_reslash
 };
 
 mframe_t chick_frames_end_slash [] =
 {
-	ai_charge, -6,	NULL,
-	ai_charge, -1,	NULL,
-	ai_charge, -6,	NULL,
-	ai_charge, 0,	NULL
+	SFP::ai_charge, -6,	nullptr,
+	SFP::ai_charge, -1,	nullptr,
+	SFP::ai_charge, -6,	nullptr,
+	SFP::ai_charge, 0,	nullptr
 };
 
 
@@ -601,34 +613,38 @@ void chick_slash(edict_t *self)
 
 mframe_t chick_frames_start_slash [] =
 {	
-	ai_charge, 1,	NULL,
-	ai_charge, 8,	NULL,
-	ai_charge, 3,	NULL
+	SFP::ai_charge, 1,	nullptr,
+	SFP::ai_charge, 8,	nullptr,
+	SFP::ai_charge, 3,	nullptr
 };
+AutoSFP(chick_stand)
+AutoSFP(chick_run)
+AutoSFP(chick_dead)
+AutoSFP(chick_slash)
 
 mmove_t chick_moves[] = {
-	{FRAME_stand201, FRAME_stand230, chick_frames_fidget, chick_stand},
-	{FRAME_stand101, FRAME_stand130, chick_frames_stand, NULL},
-	{FRAME_walk01, FRAME_walk10, chick_frames_start_run, chick_run},
-	{FRAME_walk11, FRAME_walk20, chick_frames_run, NULL},
-	{FRAME_walk11, FRAME_walk20, chick_frames_walk, NULL},
-	{FRAME_pain101, FRAME_pain105, chick_frames_pain1, chick_run},
-	{FRAME_pain201, FRAME_pain205, chick_frames_pain2, chick_run},
-	{FRAME_pain301, FRAME_pain321, chick_frames_pain3, chick_run},
-	{FRAME_death201, FRAME_death223, chick_frames_death2, chick_dead},
-	{FRAME_death101, FRAME_death112, chick_frames_death1, chick_dead},
-	{FRAME_duck01, FRAME_duck07, chick_frames_duck, chick_run},
-	{FRAME_attak101, FRAME_attak113, chick_frames_start_attack1, NULL},
-	{FRAME_attak114, FRAME_attak127, chick_frames_attack1, NULL},
-	{FRAME_attak128, FRAME_attak132, chick_frames_end_attack1, chick_run},
-	{FRAME_attak204, FRAME_attak212, chick_frames_slash, NULL},
-	{FRAME_attak213, FRAME_attak216, chick_frames_end_slash, chick_run},
-	{FRAME_attak201, FRAME_attak203, chick_frames_start_slash, chick_slash},
+	{FRAME_stand201, FRAME_stand230, chick_frames_fidget, SFP::chick_stand},
+	{FRAME_stand101, FRAME_stand130, chick_frames_stand, nullptr},
+	{FRAME_walk01, FRAME_walk10, chick_frames_start_run, SFP::chick_run},
+	{FRAME_walk11, FRAME_walk20, chick_frames_run, nullptr},
+	{FRAME_walk11, FRAME_walk20, chick_frames_walk, nullptr},
+	{FRAME_pain101, FRAME_pain105, chick_frames_pain1, SFP::chick_run},
+	{FRAME_pain201, FRAME_pain205, chick_frames_pain2, SFP::chick_run},
+	{FRAME_pain301, FRAME_pain321, chick_frames_pain3, SFP::chick_run},
+	{FRAME_death201, FRAME_death223, chick_frames_death2, SFP::chick_dead},
+	{FRAME_death101, FRAME_death112, chick_frames_death1, SFP::chick_dead},
+	{FRAME_duck01, FRAME_duck07, chick_frames_duck, SFP::chick_run},
+	{FRAME_attak101, FRAME_attak113, chick_frames_start_attack1, nullptr},
+	{FRAME_attak114, FRAME_attak127, chick_frames_attack1, nullptr},
+	{FRAME_attak128, FRAME_attak132, chick_frames_end_attack1, SFP::chick_run},
+	{FRAME_attak204, FRAME_attak212, chick_frames_slash, nullptr},
+	{FRAME_attak213, FRAME_attak216, chick_frames_end_slash, SFP::chick_run},
+	{FRAME_attak201, FRAME_attak203, chick_frames_start_slash, SFP::chick_slash},
 };
 
 mmove_t * chick_get_currentmove(edict_t *self)
 {
-	if (!self->monsterinfo.currentmove) return NULL;
+	if (!self->monsterinfo.currentmove) return nullptr;
 	return &chick_moves[self->monsterinfo.currentmove-1];
 }
 
@@ -648,6 +664,17 @@ void chick_sight(edict_t *self, edict_t *other)
 	gi.sound (self, CHAN_VOICE, sound_sight, 1, ATTN_NORM, 0);
 }
 
+SFPEnt(pain, chick_pain)
+SFPEnt(die, chick_die)
+
+
+SFPEnt(monsterinfo.walk, chick_walk)
+
+SFPEnt(monsterinfo.dodge, chick_dodge)
+SFPEnt(monsterinfo.attack, chick_attack)
+SFPEnt(monsterinfo.melee, chick_melee)
+SFPEnt(monsterinfo.sight, chick_sight)
+SFPEnt(monsterinfo.get_currentmove, chick_get_currentmove)
 /*QUAKED monster_chick (1 .5 0) (-16 -16 -24) (16 16 32) Ambush Trigger_Spawn Sight
 */
 void SP_monster_chick (edict_t *self)
@@ -684,17 +711,17 @@ void SP_monster_chick (edict_t *self)
 	self->gib_health = -70;
 	self->mass = 200;
 
-	self->pain = chick_pain;
-	self->die = chick_die;
+	self->pain = SFP::chick_pain;
+	self->die = SFP::chick_die;
 
-	self->monsterinfo.stand = chick_stand;
-	self->monsterinfo.walk = chick_walk;
-	self->monsterinfo.run = chick_run;
-	self->monsterinfo.dodge = chick_dodge;
-	self->monsterinfo.attack = chick_attack;
-	self->monsterinfo.melee = chick_melee;
-	self->monsterinfo.sight = chick_sight;
-	self->monsterinfo.get_currentmove = chick_get_currentmove;
+	self->monsterinfo.stand = SFP::chick_stand;
+	self->monsterinfo.walk = SFP::chick_walk;
+	self->monsterinfo.run = SFP::chick_run;
+	self->monsterinfo.dodge = SFP::chick_dodge;
+	self->monsterinfo.attack = SFP::chick_attack;
+	self->monsterinfo.melee = SFP::chick_melee;
+	self->monsterinfo.sight = SFP::chick_sight;
+	self->monsterinfo.get_currentmove = SFP::chick_get_currentmove;
 
 	gi.linkentity (self);
 

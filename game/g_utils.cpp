@@ -37,8 +37,8 @@ G_Find
 Searches all active entities for the next one that holds
 the matching string at fieldofs (use the FOFS() macro) in the structure.
 
-Searches beginning at the edict after from, or the beginning if NULL
-NULL will be returned if the end of the list is reached.
+Searches beginning at the edict after from, or the beginning if nullptr
+nullptr will be returned if the end of the list is reached.
 
 =============
 */
@@ -62,7 +62,7 @@ edict_t *G_Find (edict_t *from, int fieldofs, char *match)
 			return from;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 
@@ -97,7 +97,7 @@ edict_t *findradius (edict_t *from, vec3_t org, float rad)
 		return from;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 
@@ -108,8 +108,8 @@ G_PickTarget
 Searches all active entities for the next one that holds
 the matching string at fieldofs (use the FOFS() macro) in the structure.
 
-Searches beginning at the edict after from, or the beginning if NULL
-NULL will be returned if the end of the list is reached.
+Searches beginning at the edict after from, or the beginning if nullptr
+nullptr will be returned if the end of the list is reached.
 
 =============
 */
@@ -117,21 +117,21 @@ NULL will be returned if the end of the list is reached.
 
 edict_t *G_PickTarget (char *targetname)
 {
-	edict_t	*ent = NULL;
+	edict_t	*ent = nullptr;
 	int		num_choices = 0;
 	edict_t	*choice[MAXCHOICES];
-	char	*next = NULL;
+	char	*next = nullptr;
 	char	tn[MAX_QPATH];
 
 	if (!targetname)
 	{
-		gi.dprintf("G_PickTarget called with NULL targetname\n");
-		return NULL;
+		gi.dprintf("G_PickTarget called with nullptr targetname\n");
+		return nullptr;
 	}
 
 	next = targetname;
 
-	while (next != NULL)
+	while (next != nullptr)
 	{
 		char *found = strchr(next, ';');
 		if (found)
@@ -143,7 +143,7 @@ edict_t *G_PickTarget (char *targetname)
 		else 
 		{
 			strcpy (tn, next);
-			next = NULL;
+			next = nullptr;
 		}
 
 		while(1)
@@ -163,7 +163,7 @@ edict_t *G_PickTarget (char *targetname)
 	if (!num_choices)
 	{
 		gi.dprintf("G_PickTarget: target %s not found\n", targetname);
-		return NULL;
+		return nullptr;
 	}
 
 	return choice[rand() % num_choices];
@@ -176,7 +176,7 @@ void Think_Delay (edict_t *ent)
 	G_UseTargets (ent, ent->activator);
 	G_FreeEdict (ent);
 }
-
+AutoSFP(Think_Delay)
 /*
 ==============================
 G_UseTargets
@@ -206,7 +206,7 @@ void G_UseTargets (edict_t *ent, edict_t *activator)
 		t = G_Spawn();
 		t->classname = "DelayedUse";
 		t->nextthink = level.time + ent->delay;
-		t->think = Think_Delay;
+		t->think = SFP::Think_Delay;
 		t->activator = activator;
 		if (!activator)
 			gi.dprintf ("Think_Delay with no activator\n");
@@ -234,7 +234,7 @@ void G_UseTargets (edict_t *ent, edict_t *activator)
 //
 	if (ent->killtarget)
 	{
-		t = NULL;
+		t = nullptr;
 		while ((t = G_Find (t, FOFS(targetname), ent->killtarget)))
 		{
 			G_FreeEdict (t);
@@ -251,7 +251,7 @@ void G_UseTargets (edict_t *ent, edict_t *activator)
 //
 	if (ent->target)
 	{
-		t = NULL;
+		t = nullptr;
 		while ((t = G_Find (t, FOFS(targetname), ent->target)))
 		{
 			// doors fire area portals in a specific way
@@ -346,7 +346,7 @@ void G_SetMovedir (vec3_t angles, vec3_t movedir)
 	}
 	else
 	{
-		AngleVectors (angles, movedir, NULL, NULL);
+		AngleVectors (angles, movedir, nullptr, nullptr);
 	}
 
 	VectorClear (angles);
@@ -485,11 +485,12 @@ void G_FreeEdict (edict_t *ed)
 	}
 
 	memset (ed, 0, sizeof(*ed));
+	new(ed) edict_s();
 	ed->classname = "freed";
 	ed->freetime = level.time;
 	ed->inuse = false;
 }
-
+AutoSFP(G_FreeEdict);
 
 /*
 ============
@@ -518,7 +519,7 @@ void	G_TouchTriggers (edict_t *ent)
 			continue;
 		if (!hit->touch)
 			continue;
-		hit->touch (hit, ent, NULL, NULL);
+		hit->touch (hit, ent, nullptr, nullptr);
 	}
 }
 
@@ -546,7 +547,7 @@ void	G_TouchSolids (edict_t *ent)
 		if (!hit->inuse)
 			continue;
 		if (ent->touch)
-			ent->touch (hit, ent, NULL, NULL);
+			ent->touch (hit, ent, nullptr, nullptr);
 		if (!ent->inuse)
 			break;
 	}
@@ -577,7 +578,7 @@ qboolean KillBox (edict_t *ent)
 
 	while (1)
 	{
-		tr = gi.trace (ent->s.origin, ent->s.mins, ent->s.maxs, ent->s.origin, NULL, MASK_PLAYERSOLID);
+		tr = gi.trace (ent->s.origin, ent->s.mins, ent->s.maxs, ent->s.origin, nullptr, MASK_PLAYERSOLID);
 		if (!tr.ent)
 			break;
 

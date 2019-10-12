@@ -23,6 +23,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 qboolean	Pickup_Weapon (edict_t *ent, edict_t *other);
 void		Use_Weapon (edict_t *ent, gitem_t *inv);
 void		Drop_Weapon (edict_t *ent, gitem_t *inv);
+AutoSFP( Pickup_Weapon)
+AutoSFP( Use_Weapon)
+AutoSFP( Drop_Weapon)
 
 void Weapon_Blaster (edict_t *ent);
 void Weapon_Shotgun (edict_t *ent);
@@ -36,6 +39,17 @@ void Weapon_GrenadeLauncher (edict_t *ent);
 void Weapon_Railgun (edict_t *ent);
 void Weapon_BFG (edict_t *ent);
 
+AutoSFP(Weapon_Blaster)
+AutoSFP(Weapon_Shotgun)
+AutoSFP(Weapon_SuperShotgun)
+AutoSFP(Weapon_Machinegun)
+AutoSFP(Weapon_Chaingun)
+AutoSFP(Weapon_HyperBlaster)
+AutoSFP(Weapon_RocketLauncher)
+AutoSFP(Weapon_Grenade)
+AutoSFP(Weapon_GrenadeLauncher)
+AutoSFP(Weapon_Railgun)
+AutoSFP(Weapon_BFG)
 gitem_armor_t jacketarmor_info	= { 25,  50, .30, .00, ARMOR_JACKET};
 gitem_armor_t combatarmor_info	= { 50, 100, .60, .30, ARMOR_COMBAT};
 gitem_armor_t bodyarmor_info	= {100, 200, .80, .60, ARMOR_BODY};
@@ -62,7 +76,7 @@ GetItemByIndex
 gitem_t	*GetItemByIndex (int index)
 {
 	if (index == 0 || index >= game.num_items)
-		return NULL;
+		return nullptr;
 
 	return &itemlist[index];
 }
@@ -88,7 +102,7 @@ gitem_t	*FindItemByClassname (char *classname)
 			return it;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 /*
@@ -111,7 +125,7 @@ gitem_t	*FindItem (char *pickup_name)
 			return it;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 //======================================================================
@@ -142,14 +156,14 @@ void DoRespawn (edict_t *ent)
 	// send an effect
 	ent->s.event = EV_ITEM_RESPAWN;
 }
-
+AutoSFP(DoRespawn)
 void SetRespawn (edict_t *ent, float delay)
 {
 	ent->flags |= FL_RESPAWN;
 	ent->svflags |= SVF_NOCLIENT;
 	ent->solid = SOLID_NOT;
 	ent->nextthink = level.time + delay;
-	ent->think = DoRespawn;
+	ent->think = SFP::DoRespawn;
 	gi.linkentity (ent);
 }
 
@@ -183,6 +197,7 @@ qboolean Pickup_Powerup (edict_t *ent, edict_t *other)
 
 	return true;
 }
+AutoSFP(Pickup_Powerup)
 
 void Drop_General (edict_t *ent, gitem_t *item)
 {
@@ -190,6 +205,7 @@ void Drop_General (edict_t *ent, gitem_t *item)
 	ent->client->pers.inventory[ITEM_INDEX(item)]--;
 	ValidateSelectedItem (ent);
 }
+AutoSFP(Drop_General)
 
 
 //======================================================================
@@ -207,7 +223,7 @@ qboolean Pickup_Adrenaline (edict_t *ent, edict_t *other)
 
 	return true;
 }
-
+AutoSFP( Pickup_Adrenaline)
 qboolean Pickup_AncientHead (edict_t *ent, edict_t *other)
 {
 	other->max_health += 2;
@@ -217,7 +233,7 @@ qboolean Pickup_AncientHead (edict_t *ent, edict_t *other)
 
 	return true;
 }
-
+AutoSFP( Pickup_AncientHead)
 qboolean Pickup_Bandolier (edict_t *ent, edict_t *other)
 {
 	gitem_t	*item;
@@ -255,7 +271,7 @@ qboolean Pickup_Bandolier (edict_t *ent, edict_t *other)
 
 	return true;
 }
-
+AutoSFP( Pickup_Bandolier)
 qboolean Pickup_Pack (edict_t *ent, edict_t *other)
 {
 	gitem_t	*item;
@@ -333,7 +349,7 @@ qboolean Pickup_Pack (edict_t *ent, edict_t *other)
 
 	return true;
 }
-
+AutoSFP( Pickup_Pack)
 //======================================================================
 
 void Use_Quad (edict_t *ent, gitem_t *item)
@@ -360,6 +376,7 @@ void Use_Quad (edict_t *ent, gitem_t *item)
 
 	gi.sound(ent, CHAN_ITEM, gi.soundindex("items/damage.wav"), 1, ATTN_NORM, 0);
 }
+AutoSFP(Use_Quad)
 
 //======================================================================
 
@@ -375,6 +392,7 @@ void Use_Breather (edict_t *ent, gitem_t *item)
 
 //	gi.sound(ent, CHAN_ITEM, gi.soundindex("items/damage.wav"), 1, ATTN_NORM, 0);
 }
+AutoSFP(Use_Breather)
 
 //======================================================================
 
@@ -390,6 +408,7 @@ void Use_Envirosuit (edict_t *ent, gitem_t *item)
 
 //	gi.sound(ent, CHAN_ITEM, gi.soundindex("items/damage.wav"), 1, ATTN_NORM, 0);
 }
+AutoSFP(Use_Envirosuit)
 
 //======================================================================
 
@@ -405,6 +424,7 @@ void	Use_Invulnerability (edict_t *ent, gitem_t *item)
 
 	gi.sound(ent, CHAN_ITEM, gi.soundindex("items/protect.wav"), 1, ATTN_NORM, 0);
 }
+AutoSFP(Use_Invulnerability)
 
 //======================================================================
 
@@ -416,6 +436,7 @@ void	Use_Silencer (edict_t *ent, gitem_t *item)
 
 //	gi.sound(ent, CHAN_ITEM, gi.soundindex("items/damage.wav"), 1, ATTN_NORM, 0);
 }
+AutoSFP(Use_Silencer)
 
 //======================================================================
 
@@ -441,7 +462,7 @@ qboolean Pickup_Key (edict_t *ent, edict_t *other)
 	other->client->pers.inventory[ITEM_INDEX(ent->item)]++;
 	return true;
 }
-
+AutoSFP( Pickup_Key)
 //======================================================================
 
 qboolean Add_Ammo (edict_t *ent, gitem_t *item, int count)
@@ -509,7 +530,7 @@ qboolean Pickup_Ammo (edict_t *ent, edict_t *other)
 		SetRespawn (ent, 30);
 	return true;
 }
-
+AutoSFP( Pickup_Ammo)
 void Drop_Ammo (edict_t *ent, gitem_t *item)
 {
 	edict_t	*dropped;
@@ -534,6 +555,7 @@ void Drop_Ammo (edict_t *ent, gitem_t *item)
 	ent->client->pers.inventory[index] -= dropped->count;
 	ValidateSelectedItem (ent);
 }
+AutoSFP(Drop_Ammo)
 
 
 //======================================================================
@@ -552,6 +574,7 @@ void MegaHealth_think (edict_t *self)
 	else
 		G_FreeEdict (self);
 }
+AutoSFP(MegaHealth_think)
 
 qboolean Pickup_Health (edict_t *ent, edict_t *other)
 {
@@ -569,7 +592,7 @@ qboolean Pickup_Health (edict_t *ent, edict_t *other)
 
 	if (ent->style & HEALTH_TIMED)
 	{
-		ent->think = MegaHealth_think;
+		ent->think = SFP::MegaHealth_think;
 		ent->nextthink = level.time + 5;
 		ent->owner = other;
 		ent->flags |= FL_RESPAWN;
@@ -585,6 +608,7 @@ qboolean Pickup_Health (edict_t *ent, edict_t *other)
 	return true;
 }
 
+AutoSFP( Pickup_Health)
 //======================================================================
 
 int ArmorIndex (edict_t *ent)
@@ -682,6 +706,7 @@ qboolean Pickup_Armor (edict_t *ent, edict_t *other)
 
 	return true;
 }
+AutoSFP( Pickup_Armor)
 
 //======================================================================
 
@@ -723,7 +748,7 @@ void Use_PowerArmor (edict_t *ent, gitem_t *item)
 		gi.sound(ent, CHAN_AUTO, gi.soundindex("misc/power1.wav"), 1, ATTN_NORM, 0);
 	}
 }
-
+AutoSFP(Use_PowerArmor)
 qboolean Pickup_PowerArmor (edict_t *ent, edict_t *other)
 {
 	int		quantity;
@@ -743,6 +768,7 @@ qboolean Pickup_PowerArmor (edict_t *ent, edict_t *other)
 
 	return true;
 }
+AutoSFP( Pickup_PowerArmor)
 
 void Drop_PowerArmor (edict_t *ent, gitem_t *item)
 {
@@ -750,6 +776,7 @@ void Drop_PowerArmor (edict_t *ent, gitem_t *item)
 		Use_PowerArmor (ent, item);
 	Drop_General (ent, item);
 }
+AutoSFP(Drop_PowerArmor)
 
 //======================================================================
 
@@ -819,7 +846,8 @@ void Touch_Item (edict_t *ent, edict_t *other, cplane_t *plane, csurface_t *surf
 			G_FreeEdict (ent);
 	}
 }
-
+AutoSFP(Touch_Item)
+AutoSFP(G_FreeEdict)
 //======================================================================
 
 static void drop_temp_touch (edict_t *ent, edict_t *other, cplane_t *plane, csurface_t *surf)
@@ -830,16 +858,17 @@ static void drop_temp_touch (edict_t *ent, edict_t *other, cplane_t *plane, csur
 	Touch_Item (ent, other, plane, surf);
 }
 
+AutoSFP(drop_temp_touch)
 static void drop_make_touchable (edict_t *ent)
 {
-	ent->touch = Touch_Item;
+	ent->touch = SFP::Touch_Item;
 	if (deathmatch->value)
 	{
 		ent->nextthink = level.time + 29;
-		ent->think = G_FreeEdict;
+		ent->think = SFP::G_FreeEdict;
 	}
 }
-
+AutoSFP(drop_make_touchable)
 edict_t *Drop_Item (edict_t *ent, gitem_t *item)
 {
 	edict_t	*dropped;
@@ -858,14 +887,14 @@ edict_t *Drop_Item (edict_t *ent, gitem_t *item)
 	gi.setmodel (dropped, dropped->item->world_model);
 	dropped->solid = SOLID_TRIGGER;
 	dropped->movetype = MOVETYPE_TOSS;  
-	dropped->touch = drop_temp_touch;
+	dropped->touch = SFP::drop_temp_touch;
 	dropped->owner = ent;
 
 	if (ent->client)
 	{
 		trace_t	trace;
 
-		AngleVectors (ent->client->v_angle, forward, right, NULL);
+		AngleVectors (ent->client->v_angle, forward, right, nullptr);
 		VectorSet(offset, 24, 0, -16);
 		G_ProjectSource (ent->s.origin, offset, forward, right, dropped->s.origin);
 		trace = gi.trace (ent->s.origin, dropped->s.mins, dropped->s.maxs,
@@ -874,14 +903,14 @@ edict_t *Drop_Item (edict_t *ent, gitem_t *item)
 	}
 	else
 	{
-		AngleVectors (ent->s.angles, forward, right, NULL);
+		AngleVectors (ent->s.angles, forward, right, nullptr);
 		VectorCopy (ent->s.origin, dropped->s.origin);
 	}
 
 	VectorScale (forward, 100, dropped->velocity);
 	dropped->velocity[2] = 300;
 
-	dropped->think = drop_make_touchable;
+	dropped->think = SFP::drop_make_touchable;
 	dropped->nextthink = level.time + 1;
 
 	gi.linkentity (dropped);
@@ -892,22 +921,22 @@ edict_t *Drop_Item (edict_t *ent, gitem_t *item)
 void Use_Item (edict_t *ent, edict_t *other, edict_t *activator)
 {
 	ent->svflags &= ~SVF_NOCLIENT;
-	ent->use = NULL;
+	ent->use = nullptr;
 
 	if (ent->spawnflags & ITEM_NO_TOUCH)
 	{
 		ent->solid = SOLID_BBOX;
-		ent->touch = NULL;
+		ent->touch = nullptr;
 	}
 	else
 	{
 		ent->solid = SOLID_TRIGGER;
-		ent->touch = Touch_Item;
+		ent->touch = SFP::Touch_Item;
 	}
 
 	gi.linkentity (ent);
 }
-
+AutoSFP(Use_Item)
 //======================================================================
 
 /*
@@ -932,7 +961,7 @@ void droptofloor (edict_t *ent)
 		gi.setmodel (ent, ent->item->world_model);
 	ent->solid = SOLID_TRIGGER;
 	ent->movetype = MOVETYPE_TOSS;  
-	ent->touch = Touch_Item;
+	ent->touch = SFP::Touch_Item;
 
 	v = tv(0,0,-128);
 	VectorAdd (ent->s.origin, v, dest);
@@ -951,21 +980,21 @@ void droptofloor (edict_t *ent)
 	{
 		ent->flags &= ~FL_TEAMSLAVE;
 		ent->chain = ent->teamchain;
-		ent->teamchain = NULL;
+		ent->teamchain = nullptr;
 
 		ent->svflags |= SVF_NOCLIENT;
 		ent->solid = SOLID_NOT;
 		if (ent == ent->teammaster)
 		{
 			ent->nextthink = level.time + FRAMETIME;
-			ent->think = DoRespawn;
+			ent->think = SFP::DoRespawn;
 		}
 	}
 
 	if (ent->spawnflags & ITEM_NO_TOUCH)
 	{
 		ent->solid = SOLID_BBOX;
-		ent->touch = NULL;
+		ent->touch = nullptr;
 		ent->s.effects &= ~EF_ROTATE;
 		ent->s.renderfx &= ~RF_GLOW;
 	}
@@ -974,7 +1003,7 @@ void droptofloor (edict_t *ent)
 	{
 		ent->svflags |= SVF_NOCLIENT;
 		ent->solid = SOLID_NOT;
-		ent->use = Use_Item;
+		ent->use = SFP::Use_Item;
 	}
 
 	gi.linkentity (ent);
@@ -1058,6 +1087,7 @@ Items can't be immediately dropped to floor, because they might
 be on an entity that hasn't spawned yet.
 ============
 */
+AutoSFP(droptofloor)
 void SpawnItem (edict_t *ent, gitem_t *item)
 {
 	PrecacheItem (item);
@@ -1117,12 +1147,12 @@ void SpawnItem (edict_t *ent, gitem_t *item)
 	// don't let them drop items that stay in a coop game
 	if ((coop->value) && (item->flags & IT_STAY_COOP))
 	{
-		item->drop = NULL;
+		item->drop = nullptr;
 	}
 
 	ent->item = item;
 	ent->nextthink = level.time + 2 * FRAMETIME;    // items start after other solids
-	ent->think = droptofloor;
+	ent->think = SFP::droptofloor;
 	ent->s.effects = item->world_model_flags;
 	ent->s.renderfx = RF_GLOW;
 	if (ent->model)
@@ -1134,7 +1164,7 @@ void SpawnItem (edict_t *ent, gitem_t *item)
 gitem_t	itemlist[] = 
 {
 	{
-		NULL
+		nullptr
 	},	// leave index 0 alone
 
 	//
@@ -1145,18 +1175,18 @@ gitem_t	itemlist[] =
 */
 	{
 		"item_armor_body", 
-		Pickup_Armor,
-		NULL,
-		NULL,
-		NULL,
+		SFP::Pickup_Armor,
+		nullptr,
+		nullptr,
+		nullptr,
 		"misc/ar1_pkup.wav",
 		"models/items/armor/body/tris.md2", EF_ROTATE,
-		NULL,
+		nullptr,
 /* icon */		"i_bodyarmor",
 /* pickup */	"Body Armor",
 /* width */		3,
 		0,
-		NULL,
+		nullptr,
 		IT_ARMOR,
 		0,
 		&bodyarmor_info,
@@ -1168,18 +1198,18 @@ gitem_t	itemlist[] =
 */
 	{
 		"item_armor_combat", 
-		Pickup_Armor,
-		NULL,
-		NULL,
-		NULL,
+		SFP::Pickup_Armor,
+		nullptr,
+		nullptr,
+		nullptr,
 		"misc/ar1_pkup.wav",
 		"models/items/armor/combat/tris.md2", EF_ROTATE,
-		NULL,
+		nullptr,
 /* icon */		"i_combatarmor",
 /* pickup */	"Combat Armor",
 /* width */		3,
 		0,
-		NULL,
+		nullptr,
 		IT_ARMOR,
 		0,
 		&combatarmor_info,
@@ -1191,18 +1221,18 @@ gitem_t	itemlist[] =
 */
 	{
 		"item_armor_jacket", 
-		Pickup_Armor,
-		NULL,
-		NULL,
-		NULL,
+		SFP::Pickup_Armor,
+		nullptr,
+		nullptr,
+		nullptr,
 		"misc/ar1_pkup.wav",
 		"models/items/armor/jacket/tris.md2", EF_ROTATE,
-		NULL,
+		nullptr,
 /* icon */		"i_jacketarmor",
 /* pickup */	"Jacket Armor",
 /* width */		3,
 		0,
-		NULL,
+		nullptr,
 		IT_ARMOR,
 		0,
 		&jacketarmor_info,
@@ -1214,21 +1244,21 @@ gitem_t	itemlist[] =
 */
 	{
 		"item_armor_shard", 
-		Pickup_Armor,
-		NULL,
-		NULL,
-		NULL,
+		SFP::Pickup_Armor,
+		nullptr,
+		nullptr,
+		nullptr,
 		"misc/ar2_pkup.wav",
 		"models/items/armor/shard/tris.md2", EF_ROTATE,
-		NULL,
+		nullptr,
 /* icon */		"i_jacketarmor",
 /* pickup */	"Armor Shard",
 /* width */		3,
 		0,
-		NULL,
+		nullptr,
 		IT_ARMOR,
 		0,
-		NULL,
+		nullptr,
 		ARMOR_SHARD,
 /* precache */ ""
 	},
@@ -1238,21 +1268,21 @@ gitem_t	itemlist[] =
 */
 	{
 		"item_power_screen", 
-		Pickup_PowerArmor,
-		Use_PowerArmor,
-		Drop_PowerArmor,
-		NULL,
+		SFP::Pickup_PowerArmor,
+		SFP::Use_PowerArmor,
+		SFP::Drop_PowerArmor,
+		nullptr,
 		"misc/ar3_pkup.wav",
 		"models/items/armor/screen/tris.md2", EF_ROTATE,
-		NULL,
+		nullptr,
 /* icon */		"i_powerscreen",
 /* pickup */	"Power Screen",
 /* width */		0,
 		60,
-		NULL,
+		nullptr,
 		IT_ARMOR,
 		0,
-		NULL,
+		nullptr,
 		0,
 /* precache */ ""
 	},
@@ -1261,21 +1291,21 @@ gitem_t	itemlist[] =
 */
 	{
 		"item_power_shield",
-		Pickup_PowerArmor,
-		Use_PowerArmor,
-		Drop_PowerArmor,
-		NULL,
+		SFP::Pickup_PowerArmor,
+		SFP::Use_PowerArmor,
+		SFP::Drop_PowerArmor,
+		nullptr,
 		"misc/ar3_pkup.wav",
 		"models/items/armor/shield/tris.md2", EF_ROTATE,
-		NULL,
+		nullptr,
 /* icon */		"i_powershield",
 /* pickup */	"Power Shield",
 /* width */		0,
 		60,
-		NULL,
+		nullptr,
 		IT_ARMOR,
 		0,
-		NULL,
+		nullptr,
 		0,
 /* precache */ "misc/power2.wav misc/power1.wav"
 	},
@@ -1290,21 +1320,21 @@ always owned, never in the world
 */
 	{
 		"weapon_blaster", 
-		NULL,
-		Use_Weapon,
-		NULL,
-		Weapon_Blaster,
+		nullptr,
+		SFP::Use_Weapon,
+		nullptr,
+		SFP::Weapon_Blaster,
 		"misc/w_pkup.wav",
-		NULL, 0,
+		nullptr, 0,
 		"models/weapons/v_blast/tris.md2",
 /* icon */		"w_blaster",
 /* pickup */	"Blaster",
 		0,
 		0,
-		NULL,
+		nullptr,
 		IT_WEAPON|IT_STAY_COOP,
 		WEAP_BLASTER,
-		NULL,
+		nullptr,
 		0,
 /* precache */ "weapons/blastf1a.wav misc/lasfly.wav"
 	},
@@ -1313,10 +1343,10 @@ always owned, never in the world
 */
 	{
 		"weapon_shotgun", 
-		Pickup_Weapon,
-		Use_Weapon,
-		Drop_Weapon,
-		Weapon_Shotgun,
+		SFP::Pickup_Weapon,
+		SFP::Use_Weapon,
+		SFP::Drop_Weapon,
+		SFP::Weapon_Shotgun,
 		"misc/w_pkup.wav",
 		"models/weapons/g_shotg/tris.md2", EF_ROTATE,
 		"models/weapons/v_shotg/tris.md2",
@@ -1327,7 +1357,7 @@ always owned, never in the world
 		"Shells",
 		IT_WEAPON|IT_STAY_COOP,
 		WEAP_SHOTGUN,
-		NULL,
+		nullptr,
 		0,
 /* precache */ "weapons/shotgf1b.wav weapons/shotgr1b.wav"
 	},
@@ -1336,10 +1366,10 @@ always owned, never in the world
 */
 	{
 		"weapon_supershotgun", 
-		Pickup_Weapon,
-		Use_Weapon,
-		Drop_Weapon,
-		Weapon_SuperShotgun,
+		SFP::Pickup_Weapon,
+		SFP::Use_Weapon,
+		SFP::Drop_Weapon,
+		SFP::Weapon_SuperShotgun,
 		"misc/w_pkup.wav",
 		"models/weapons/g_shotg2/tris.md2", EF_ROTATE,
 		"models/weapons/v_shotg2/tris.md2",
@@ -1350,7 +1380,7 @@ always owned, never in the world
 		"Shells",
 		IT_WEAPON|IT_STAY_COOP,
 		WEAP_SUPERSHOTGUN,
-		NULL,
+		nullptr,
 		0,
 /* precache */ "weapons/sshotf1b.wav"
 	},
@@ -1359,10 +1389,10 @@ always owned, never in the world
 */
 	{
 		"weapon_machinegun", 
-		Pickup_Weapon,
-		Use_Weapon,
-		Drop_Weapon,
-		Weapon_Machinegun,
+		SFP::Pickup_Weapon,
+		SFP::Use_Weapon,
+		SFP::Drop_Weapon,
+		SFP::Weapon_Machinegun,
 		"misc/w_pkup.wav",
 		"models/weapons/g_machn/tris.md2", EF_ROTATE,
 		"models/weapons/v_machn/tris.md2",
@@ -1373,7 +1403,7 @@ always owned, never in the world
 		"Bullets",
 		IT_WEAPON|IT_STAY_COOP,
 		WEAP_MACHINEGUN,
-		NULL,
+		nullptr,
 		0,
 /* precache */ "weapons/machgf1b.wav weapons/machgf2b.wav weapons/machgf3b.wav weapons/machgf4b.wav weapons/machgf5b.wav"
 	},
@@ -1382,10 +1412,10 @@ always owned, never in the world
 */
 	{
 		"weapon_chaingun", 
-		Pickup_Weapon,
-		Use_Weapon,
-		Drop_Weapon,
-		Weapon_Chaingun,
+		SFP::Pickup_Weapon,
+		SFP::Use_Weapon,
+		SFP::Drop_Weapon,
+		SFP::Weapon_Chaingun,
 		"misc/w_pkup.wav",
 		"models/weapons/g_chain/tris.md2", EF_ROTATE,
 		"models/weapons/v_chain/tris.md2",
@@ -1396,7 +1426,7 @@ always owned, never in the world
 		"Bullets",
 		IT_WEAPON|IT_STAY_COOP,
 		WEAP_CHAINGUN,
-		NULL,
+		nullptr,
 		0,
 /* precache */ "weapons/chngnu1a.wav weapons/chngnl1a.wav weapons/machgf3b.wav` weapons/chngnd1a.wav"
 	},
@@ -1405,10 +1435,10 @@ always owned, never in the world
 */
 	{
 		"ammo_grenades",
-		Pickup_Ammo,
-		Use_Weapon,
-		Drop_Ammo,
-		Weapon_Grenade,
+		SFP::Pickup_Ammo,
+		SFP::Use_Weapon,
+		SFP::Drop_Ammo,
+		SFP::Weapon_Grenade,
 		"misc/am_pkup.wav",
 		"models/items/ammo/grenades/medium/tris.md2", 0,
 		"models/weapons/v_handgr/tris.md2",
@@ -1419,7 +1449,7 @@ always owned, never in the world
 		"grenades",
 		IT_AMMO|IT_WEAPON,
 		WEAP_GRENADES,
-		NULL,
+		nullptr,
 		AMMO_GRENADES,
 /* precache */ "weapons/hgrent1a.wav weapons/hgrena1b.wav weapons/hgrenc1b.wav weapons/hgrenb1a.wav weapons/hgrenb2a.wav "
 	},
@@ -1428,10 +1458,10 @@ always owned, never in the world
 */
 	{
 		"weapon_grenadelauncher",
-		Pickup_Weapon,
-		Use_Weapon,
-		Drop_Weapon,
-		Weapon_GrenadeLauncher,
+		SFP::Pickup_Weapon,
+		SFP::Use_Weapon,
+		SFP::Drop_Weapon,
+		SFP::Weapon_GrenadeLauncher,
 		"misc/w_pkup.wav",
 		"models/weapons/g_launch/tris.md2", EF_ROTATE,
 		"models/weapons/v_launch/tris.md2",
@@ -1442,7 +1472,7 @@ always owned, never in the world
 		"Grenades",
 		IT_WEAPON|IT_STAY_COOP,
 		WEAP_GRENADELAUNCHER,
-		NULL,
+		nullptr,
 		0,
 /* precache */ "models/objects/grenade/tris.md2 weapons/grenlf1a.wav weapons/grenlr1b.wav weapons/grenlb1b.wav"
 	},
@@ -1451,10 +1481,10 @@ always owned, never in the world
 */
 	{
 		"weapon_rocketlauncher",
-		Pickup_Weapon,
-		Use_Weapon,
-		Drop_Weapon,
-		Weapon_RocketLauncher,
+		SFP::Pickup_Weapon,
+		SFP::Use_Weapon,
+		SFP::Drop_Weapon,
+		SFP::Weapon_RocketLauncher,
 		"misc/w_pkup.wav",
 		"models/weapons/g_rocket/tris.md2", EF_ROTATE,
 		"models/weapons/v_rocket/tris.md2",
@@ -1465,7 +1495,7 @@ always owned, never in the world
 		"Rockets",
 		IT_WEAPON|IT_STAY_COOP,
 		WEAP_ROCKETLAUNCHER,
-		NULL,
+		nullptr,
 		0,
 /* precache */ "models/objects/rocket/tris.md2 weapons/rockfly.wav weapons/rocklf1a.wav weapons/rocklr1b.wav models/objects/debris2/tris.md2"
 	},
@@ -1474,10 +1504,10 @@ always owned, never in the world
 */
 	{
 		"weapon_hyperblaster", 
-		Pickup_Weapon,
-		Use_Weapon,
-		Drop_Weapon,
-		Weapon_HyperBlaster,
+		SFP::Pickup_Weapon,
+		SFP::Use_Weapon,
+		SFP::Drop_Weapon,
+		SFP::Weapon_HyperBlaster,
 		"misc/w_pkup.wav",
 		"models/weapons/g_hyperb/tris.md2", EF_ROTATE,
 		"models/weapons/v_hyperb/tris.md2",
@@ -1488,7 +1518,7 @@ always owned, never in the world
 		"Cells",
 		IT_WEAPON|IT_STAY_COOP,
 		WEAP_HYPERBLASTER,
-		NULL,
+		nullptr,
 		0,
 /* precache */ "weapons/hyprbu1a.wav weapons/hyprbl1a.wav weapons/hyprbf1a.wav weapons/hyprbd1a.wav misc/lasfly.wav"
 	},
@@ -1497,10 +1527,10 @@ always owned, never in the world
 */
 	{
 		"weapon_railgun", 
-		Pickup_Weapon,
-		Use_Weapon,
-		Drop_Weapon,
-		Weapon_Railgun,
+		SFP::Pickup_Weapon,
+		SFP::Use_Weapon,
+		SFP::Drop_Weapon,
+		SFP::Weapon_Railgun,
 		"misc/w_pkup.wav",
 		"models/weapons/g_rail/tris.md2", EF_ROTATE,
 		"models/weapons/v_rail/tris.md2",
@@ -1511,7 +1541,7 @@ always owned, never in the world
 		"Slugs",
 		IT_WEAPON|IT_STAY_COOP,
 		WEAP_RAILGUN,
-		NULL,
+		nullptr,
 		0,
 /* precache */ "weapons/rg_hum.wav"
 	},
@@ -1520,10 +1550,10 @@ always owned, never in the world
 */
 	{
 		"weapon_bfg",
-		Pickup_Weapon,
-		Use_Weapon,
-		Drop_Weapon,
-		Weapon_BFG,
+		SFP::Pickup_Weapon,
+		SFP::Use_Weapon,
+		SFP::Drop_Weapon,
+		SFP::Weapon_BFG,
 		"misc/w_pkup.wav",
 		"models/weapons/g_bfg/tris.md2", EF_ROTATE,
 		"models/weapons/v_bfg/tris.md2",
@@ -1534,7 +1564,7 @@ always owned, never in the world
 		"Cells",
 		IT_WEAPON|IT_STAY_COOP,
 		WEAP_BFG,
-		NULL,
+		nullptr,
 		0,
 /* precache */ "sprites/s_bfg1.sp2 sprites/s_bfg2.sp2 sprites/s_bfg3.sp2 weapons/bfg__f1y.wav weapons/bfg__l1a.wav weapons/bfg__x1b.wav weapons/bfg_hum.wav"
 	},
@@ -1547,21 +1577,21 @@ always owned, never in the world
 */
 	{
 		"ammo_shells",
-		Pickup_Ammo,
-		NULL,
-		Drop_Ammo,
-		NULL,
+		SFP::Pickup_Ammo,
+		nullptr,
+		SFP::Drop_Ammo,
+		nullptr,
 		"misc/am_pkup.wav",
 		"models/items/ammo/shells/medium/tris.md2", 0,
-		NULL,
+		nullptr,
 /* icon */		"a_shells",
 /* pickup */	"Shells",
 /* width */		3,
 		10,
-		NULL,
+		nullptr,
 		IT_AMMO,
 		0,
-		NULL,
+		nullptr,
 		AMMO_SHELLS,
 /* precache */ ""
 	},
@@ -1570,21 +1600,21 @@ always owned, never in the world
 */
 	{
 		"ammo_bullets",
-		Pickup_Ammo,
-		NULL,
-		Drop_Ammo,
-		NULL,
+		SFP::Pickup_Ammo,
+		nullptr,
+		SFP::Drop_Ammo,
+		nullptr,
 		"misc/am_pkup.wav",
 		"models/items/ammo/bullets/medium/tris.md2", 0,
-		NULL,
+		nullptr,
 /* icon */		"a_bullets",
 /* pickup */	"Bullets",
 /* width */		3,
 		50,
-		NULL,
+		nullptr,
 		IT_AMMO,
 		0,
-		NULL,
+		nullptr,
 		AMMO_BULLETS,
 /* precache */ ""
 	},
@@ -1593,21 +1623,21 @@ always owned, never in the world
 */
 	{
 		"ammo_cells",
-		Pickup_Ammo,
-		NULL,
-		Drop_Ammo,
-		NULL,
+		SFP::Pickup_Ammo,
+		nullptr,
+		SFP::Drop_Ammo,
+		nullptr,
 		"misc/am_pkup.wav",
 		"models/items/ammo/cells/medium/tris.md2", 0,
-		NULL,
+		nullptr,
 /* icon */		"a_cells",
 /* pickup */	"Cells",
 /* width */		3,
 		50,
-		NULL,
+		nullptr,
 		IT_AMMO,
 		0,
-		NULL,
+		nullptr,
 		AMMO_CELLS,
 /* precache */ ""
 	},
@@ -1616,21 +1646,21 @@ always owned, never in the world
 */
 	{
 		"ammo_rockets",
-		Pickup_Ammo,
-		NULL,
-		Drop_Ammo,
-		NULL,
+		SFP::Pickup_Ammo,
+		nullptr,
+		SFP::Drop_Ammo,
+		nullptr,
 		"misc/am_pkup.wav",
 		"models/items/ammo/rockets/medium/tris.md2", 0,
-		NULL,
+		nullptr,
 /* icon */		"a_rockets",
 /* pickup */	"Rockets",
 /* width */		3,
 		5,
-		NULL,
+		nullptr,
 		IT_AMMO,
 		0,
-		NULL,
+		nullptr,
 		AMMO_ROCKETS,
 /* precache */ ""
 	},
@@ -1639,21 +1669,21 @@ always owned, never in the world
 */
 	{
 		"ammo_slugs",
-		Pickup_Ammo,
-		NULL,
-		Drop_Ammo,
-		NULL,
+		SFP::Pickup_Ammo,
+		nullptr,
+		SFP::Drop_Ammo,
+		nullptr,
 		"misc/am_pkup.wav",
 		"models/items/ammo/slugs/medium/tris.md2", 0,
-		NULL,
+		nullptr,
 /* icon */		"a_slugs",
 /* pickup */	"Slugs",
 /* width */		3,
 		10,
-		NULL,
+		nullptr,
 		IT_AMMO,
 		0,
-		NULL,
+		nullptr,
 		AMMO_SLUGS,
 /* precache */ ""
 	},
@@ -1666,21 +1696,21 @@ always owned, never in the world
 */
 	{
 		"item_quad", 
-		Pickup_Powerup,
-		Use_Quad,
-		Drop_General,
-		NULL,
+		SFP::Pickup_Powerup,
+		SFP::Use_Quad,
+		SFP::Drop_General,
+		nullptr,
 		"items/pkup.wav",
 		"models/items/quaddama/tris.md2", EF_ROTATE,
-		NULL,
+		nullptr,
 /* icon */		"p_quad",
 /* pickup */	"Quad Damage",
 /* width */		2,
 		60,
-		NULL,
+		nullptr,
 		IT_POWERUP,
 		0,
-		NULL,
+		nullptr,
 		0,
 /* precache */ "items/damage.wav items/damage2.wav items/damage3.wav"
 	},
@@ -1689,21 +1719,21 @@ always owned, never in the world
 */
 	{
 		"item_invulnerability",
-		Pickup_Powerup,
-		Use_Invulnerability,
-		Drop_General,
-		NULL,
+		SFP::Pickup_Powerup,
+		SFP::Use_Invulnerability,
+		SFP::Drop_General,
+		nullptr,
 		"items/pkup.wav",
 		"models/items/invulner/tris.md2", EF_ROTATE,
-		NULL,
+		nullptr,
 /* icon */		"p_invulnerability",
 /* pickup */	"Invulnerability",
 /* width */		2,
 		300,
-		NULL,
+		nullptr,
 		IT_POWERUP,
 		0,
-		NULL,
+		nullptr,
 		0,
 /* precache */ "items/protect.wav items/protect2.wav items/protect4.wav"
 	},
@@ -1712,21 +1742,21 @@ always owned, never in the world
 */
 	{
 		"item_silencer",
-		Pickup_Powerup,
-		Use_Silencer,
-		Drop_General,
-		NULL,
+		SFP::Pickup_Powerup,
+		SFP::Use_Silencer,
+		SFP::Drop_General,
+		nullptr,
 		"items/pkup.wav",
 		"models/items/silencer/tris.md2", EF_ROTATE,
-		NULL,
+		nullptr,
 /* icon */		"p_silencer",
 /* pickup */	"Silencer",
 /* width */		2,
 		60,
-		NULL,
+		nullptr,
 		IT_POWERUP,
 		0,
-		NULL,
+		nullptr,
 		0,
 /* precache */ ""
 	},
@@ -1735,21 +1765,21 @@ always owned, never in the world
 */
 	{
 		"item_breather",
-		Pickup_Powerup,
-		Use_Breather,
-		Drop_General,
-		NULL,
+		SFP::Pickup_Powerup,
+		SFP::Use_Breather,
+		SFP::Drop_General,
+		nullptr,
 		"items/pkup.wav",
 		"models/items/breather/tris.md2", EF_ROTATE,
-		NULL,
+		nullptr,
 /* icon */		"p_rebreather",
 /* pickup */	"Rebreather",
 /* width */		2,
 		60,
-		NULL,
+		nullptr,
 		IT_STAY_COOP|IT_POWERUP,
 		0,
-		NULL,
+		nullptr,
 		0,
 /* precache */ "items/airout.wav"
 	},
@@ -1758,21 +1788,21 @@ always owned, never in the world
 */
 	{
 		"item_enviro",
-		Pickup_Powerup,
-		Use_Envirosuit,
-		Drop_General,
-		NULL,
+		SFP::Pickup_Powerup,
+		SFP::Use_Envirosuit,
+		SFP::Drop_General,
+		nullptr,
 		"items/pkup.wav",
 		"models/items/enviro/tris.md2", EF_ROTATE,
-		NULL,
+		nullptr,
 /* icon */		"p_envirosuit",
 /* pickup */	"Environment Suit",
 /* width */		2,
 		60,
-		NULL,
+		nullptr,
 		IT_STAY_COOP|IT_POWERUP,
 		0,
-		NULL,
+		nullptr,
 		0,
 /* precache */ "items/airout.wav"
 	},
@@ -1782,21 +1812,21 @@ Special item that gives +2 to maximum health
 */
 	{
 		"item_ancient_head",
-		Pickup_AncientHead,
-		NULL,
-		NULL,
-		NULL,
+		SFP::Pickup_AncientHead,
+		nullptr,
+		nullptr,
+		nullptr,
 		"items/pkup.wav",
 		"models/items/c_head/tris.md2", EF_ROTATE,
-		NULL,
+		nullptr,
 /* icon */		"i_fixme",
 /* pickup */	"Ancient Head",
 /* width */		2,
 		60,
-		NULL,
+		nullptr,
 		0,
 		0,
-		NULL,
+		nullptr,
 		0,
 /* precache */ ""
 	},
@@ -1806,21 +1836,21 @@ gives +1 to maximum health
 */
 	{
 		"item_adrenaline",
-		Pickup_Adrenaline,
-		NULL,
-		NULL,
-		NULL,
+		SFP::Pickup_Adrenaline,
+		nullptr,
+		nullptr,
+		nullptr,
 		"items/pkup.wav",
 		"models/items/adrenal/tris.md2", EF_ROTATE,
-		NULL,
+		nullptr,
 /* icon */		"p_adrenaline",
 /* pickup */	"Adrenaline",
 /* width */		2,
 		60,
-		NULL,
+		nullptr,
 		0,
 		0,
-		NULL,
+		nullptr,
 		0,
 /* precache */ ""
 	},
@@ -1829,21 +1859,21 @@ gives +1 to maximum health
 */
 	{
 		"item_bandolier",
-		Pickup_Bandolier,
-		NULL,
-		NULL,
-		NULL,
+		SFP::Pickup_Bandolier,
+		nullptr,
+		nullptr,
+		nullptr,
 		"items/pkup.wav",
 		"models/items/band/tris.md2", EF_ROTATE,
-		NULL,
+		nullptr,
 /* icon */		"p_bandolier",
 /* pickup */	"Bandolier",
 /* width */		2,
 		60,
-		NULL,
+		nullptr,
 		0,
 		0,
-		NULL,
+		nullptr,
 		0,
 /* precache */ ""
 	},
@@ -1852,21 +1882,21 @@ gives +1 to maximum health
 */
 	{
 		"item_pack",
-		Pickup_Pack,
-		NULL,
-		NULL,
-		NULL,
+		SFP::Pickup_Pack,
+		nullptr,
+		nullptr,
+		nullptr,
 		"items/pkup.wav",
 		"models/items/pack/tris.md2", EF_ROTATE,
-		NULL,
+		nullptr,
 /* icon */		"i_pack",
 /* pickup */	"Ammo Pack",
 /* width */		2,
 		180,
-		NULL,
+		nullptr,
 		0,
 		0,
-		NULL,
+		nullptr,
 		0,
 /* precache */ ""
 	},
@@ -1879,21 +1909,21 @@ key for computer centers
 */
 	{
 		"key_data_cd",
-		Pickup_Key,
-		NULL,
-		Drop_General,
-		NULL,
+		SFP::Pickup_Key,
+		nullptr,
+		SFP::Drop_General,
+		nullptr,
 		"items/pkup.wav",
 		"models/items/keys/data_cd/tris.md2", EF_ROTATE,
-		NULL,
+		nullptr,
 		"k_datacd",
 		"Data CD",
 		2,
 		0,
-		NULL,
+		nullptr,
 		IT_STAY_COOP|IT_KEY,
 		0,
-		NULL,
+		nullptr,
 		0,
 /* precache */ ""
 	},
@@ -1903,21 +1933,21 @@ warehouse circuits
 */
 	{
 		"key_power_cube",
-		Pickup_Key,
-		NULL,
-		Drop_General,
-		NULL,
+		SFP::Pickup_Key,
+		nullptr,
+		SFP::Drop_General,
+		nullptr,
 		"items/pkup.wav",
 		"models/items/keys/power/tris.md2", EF_ROTATE,
-		NULL,
+		nullptr,
 		"k_powercube",
 		"Power Cube",
 		2,
 		0,
-		NULL,
+		nullptr,
 		IT_STAY_COOP|IT_KEY,
 		0,
-		NULL,
+		nullptr,
 		0,
 /* precache */ ""
 	},
@@ -1927,21 +1957,21 @@ key for the entrance of jail3
 */
 	{
 		"key_pyramid",
-		Pickup_Key,
-		NULL,
-		Drop_General,
-		NULL,
+		SFP::Pickup_Key,
+		nullptr,
+		SFP::Drop_General,
+		nullptr,
 		"items/pkup.wav",
 		"models/items/keys/pyramid/tris.md2", EF_ROTATE,
-		NULL,
+		nullptr,
 		"k_pyramid",
 		"Pyramid Key",
 		2,
 		0,
-		NULL,
+		nullptr,
 		IT_STAY_COOP|IT_KEY,
 		0,
-		NULL,
+		nullptr,
 		0,
 /* precache */ ""
 	},
@@ -1951,21 +1981,21 @@ key for the city computer
 */
 	{
 		"key_data_spinner",
-		Pickup_Key,
-		NULL,
-		Drop_General,
-		NULL,
+		SFP::Pickup_Key,
+		nullptr,
+		SFP::Drop_General,
+		nullptr,
 		"items/pkup.wav",
 		"models/items/keys/spinner/tris.md2", EF_ROTATE,
-		NULL,
+		nullptr,
 		"k_dataspin",
 		"Data Spinner",
 		2,
 		0,
-		NULL,
+		nullptr,
 		IT_STAY_COOP|IT_KEY,
 		0,
-		NULL,
+		nullptr,
 		0,
 /* precache */ ""
 	},
@@ -1975,21 +2005,21 @@ security pass for the security level
 */
 	{
 		"key_pass",
-		Pickup_Key,
-		NULL,
-		Drop_General,
-		NULL,
+		SFP::Pickup_Key,
+		nullptr,
+		SFP::Drop_General,
+		nullptr,
 		"items/pkup.wav",
 		"models/items/keys/pass/tris.md2", EF_ROTATE,
-		NULL,
+		nullptr,
 		"k_security",
 		"Security Pass",
 		2,
 		0,
-		NULL,
+		nullptr,
 		IT_STAY_COOP|IT_KEY,
 		0,
-		NULL,
+		nullptr,
 		0,
 /* precache */ ""
 	},
@@ -1999,21 +2029,21 @@ normal door key - blue
 */
 	{
 		"key_blue_key",
-		Pickup_Key,
-		NULL,
-		Drop_General,
-		NULL,
+		SFP::Pickup_Key,
+		nullptr,
+		SFP::Drop_General,
+		nullptr,
 		"items/pkup.wav",
 		"models/items/keys/key/tris.md2", EF_ROTATE,
-		NULL,
+		nullptr,
 		"k_bluekey",
 		"Blue Key",
 		2,
 		0,
-		NULL,
+		nullptr,
 		IT_STAY_COOP|IT_KEY,
 		0,
-		NULL,
+		nullptr,
 		0,
 /* precache */ ""
 	},
@@ -2023,21 +2053,21 @@ normal door key - red
 */
 	{
 		"key_red_key",
-		Pickup_Key,
-		NULL,
-		Drop_General,
-		NULL,
+		SFP::Pickup_Key,
+		nullptr,
+		SFP::Drop_General,
+		nullptr,
 		"items/pkup.wav",
 		"models/items/keys/red_key/tris.md2", EF_ROTATE,
-		NULL,
+		nullptr,
 		"k_redkey",
 		"Red Key",
 		2,
 		0,
-		NULL,
+		nullptr,
 		IT_STAY_COOP|IT_KEY,
 		0,
-		NULL,
+		nullptr,
 		0,
 /* precache */ ""
 	},
@@ -2047,21 +2077,21 @@ tank commander's head
 */
 	{
 		"key_commander_head",
-		Pickup_Key,
-		NULL,
-		Drop_General,
-		NULL,
+		SFP::Pickup_Key,
+		nullptr,
+		SFP::Drop_General,
+		nullptr,
 		"items/pkup.wav",
 		"models/monsters/commandr/head/tris.md2", EF_GIB,
-		NULL,
+		nullptr,
 /* icon */		"k_comhead",
 /* pickup */	"Commander's Head",
 /* width */		2,
 		0,
-		NULL,
+		nullptr,
 		IT_STAY_COOP|IT_KEY,
 		0,
-		NULL,
+		nullptr,
 		0,
 /* precache */ ""
 	},
@@ -2071,48 +2101,47 @@ tank commander's head
 */
 	{
 		"key_airstrike_target",
-		Pickup_Key,
-		NULL,
-		Drop_General,
-		NULL,
+		SFP::Pickup_Key,
+		nullptr,
+		SFP::Drop_General,
+		nullptr,
 		"items/pkup.wav",
 		"models/items/keys/target/tris.md2", EF_ROTATE,
-		NULL,
+		nullptr,
 /* icon */		"i_airstrike",
 /* pickup */	"Airstrike Marker",
 /* width */		2,
 		0,
-		NULL,
+		nullptr,
 		IT_STAY_COOP|IT_KEY,
 		0,
-		NULL,
+		nullptr,
 		0,
 /* precache */ ""
 	},
 
 	{
-		NULL,
-		Pickup_Health,
-		NULL,
-		NULL,
-		NULL,
+		nullptr,
+		SFP::Pickup_Health,
+		nullptr,
+		nullptr,
+		nullptr,
 		"items/pkup.wav",
-		NULL, 0,
-		NULL,
+		nullptr, 0,
+		nullptr,
 /* icon */		"i_health",
 /* pickup */	"Health",
 /* width */		3,
 		0,
-		NULL,
+		nullptr,
 		0,
 		0,
-		NULL,
+		nullptr,
 		0,
 /* precache */ "items/s_health.wav items/n_health.wav items/l_health.wav items/m_health.wav"
 	},
-
-	// end of list marker
-	{NULL}
+		// end of list marker
+		{ 0, nullptr,nullptr, nullptr,0 }
 };
 
 

@@ -24,149 +24,185 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 mmove_t mmove_reloc;
 
+template<typename T>
+static void* constructinplace(void* where, void* what)
+{
+	if (where)
+	{
+		if (what) return new(where) T(*(T*)what);
+		else return new(where) T;
+	}
+	if (what) return new T(*(T*)what);
+	else return new T;
+}
+template<>
+static void* constructinplace<vec3_t>(void* where, void* what)
+{
+	if (where)
+	{
+		if (what) {
+			memcpy(where, what, sizeof(vec3_t));
+			where;
+		}
+		else return where;
+	}
+	where = new vec3_t();
+	if (what) {
+		memcpy(where, what, sizeof(vec3_t));
+	}
+	return where;
+}
+#include<type_traits>
+#define FCTOR(fieldname) constructinplace<std::remove_reference<decltype(((edict_s *)0)->fieldname)>::type>
+#define LLCTOR(fieldname) constructinplace<std::remove_reference<decltype(((level_locals_t *)0)->fieldname)>::type>
+#define CLCTOR(fieldname) constructinplace<std::remove_reference<decltype(((gclient_t *)0)->fieldname)>::type>
+#define FTYPEID(fieldname) &typeid(std::remove_reference<decltype(((edict_s *)0)->fieldname)>::type)
+#define LLTYPEID(fieldname) &typeid(std::remove_reference<decltype(((level_locals_t *)0)->fieldname)>::type)
+#define CLTYPEID(fieldname) &typeid(std::remove_reference<decltype(((gclient_t *)0)->fieldname)>::type)
+
 field_t fields[] = {
-	{"classname", FOFS(classname), F_LSTRING},
-	{"model", FOFS(model), F_LSTRING},
-	{"mapedict", FOFS(mapedict), F_LSTRING,FFL_NOSPAWN},
-	{"spawnflags", FOFS(spawnflags), F_INT},
-	{"speed", FOFS(speed), F_FLOAT},
-	{"accel", FOFS(accel), F_FLOAT},
-	{"decel", FOFS(decel), F_FLOAT},
-	{"target", FOFS(target), F_LSTRING},
-	{"targetname", FOFS(targetname), F_LSTRING},
-	{"pathtarget", FOFS(pathtarget), F_LSTRING},
-	{"deathtarget", FOFS(deathtarget), F_LSTRING},
-	{"killtarget", FOFS(killtarget), F_LSTRING},
-	{"combattarget", FOFS(combattarget), F_LSTRING},
-	{"message", FOFS(message), F_LSTRING},
-	{"team", FOFS(team), F_LSTRING},
-	{"wait", FOFS(wait), F_FLOAT},
-	{"delay", FOFS(delay), F_FLOAT},
-	{"random", FOFS(random), F_FLOAT},
-	{"move_origin", FOFS(move_origin), F_VECTOR},
-	{"move_angles", FOFS(move_angles), F_VECTOR},
-	{"style", FOFS(style), F_INT},
-	{"count", FOFS(count), F_INT},
-	{"health", FOFS(health), F_INT},
-	{"sounds", FOFS(sounds), F_INT},
-	{"light", 0, F_IGNORE},
-	{"dmg", FOFS(dmg), F_INT},
-	{"mass", FOFS(mass), F_INT},
-	{"volume", FOFS(volume), F_FLOAT},
-	{"attenuation", FOFS(attenuation), F_FLOAT},
-	{"map", FOFS(map), F_LSTRING},
-	{"origin", FOFS(s.origin), F_VECTOR},
-	{"angles", FOFS(s.angles), F_VECTOR},
-	{"angle", FOFS(s.angles), F_ANGLEHACK},
-	{"scale", FOFS(s.scale), F_VECTOR},
-	{"r", FOFS(s.rgb[0]), F_FLOAT},
-	{"g", FOFS(s.rgb[1]), F_FLOAT},
-	{"b", FOFS(s.rgb[2]), F_FLOAT},
-	{"rgb", FOFS(s.rgb), F_VECTOR},
-	{"offset", FOFS(s.offset), F_VECTOR},
+	{"classname", FOFS(classname), FCTOR(classname), FTYPEID(classname),F_LSTRING},
+	{"model", FOFS(model), FCTOR(model), FTYPEID(model),F_LSTRING},
+	{"mapedict", FOFS(mapedict), FCTOR(mapedict), FTYPEID(mapedict),F_LSTRING,FFL_NOSPAWN},
+	{"spawnflags", FOFS(spawnflags), FCTOR(spawnflags), FTYPEID(spawnflags),F_INT},
+	{"speed", FOFS(speed), FCTOR(speed), FTYPEID(speed),F_FLOAT},
+	{"accel", FOFS(accel), FCTOR(accel), FTYPEID(accel),F_FLOAT},
+	{"decel", FOFS(decel), FCTOR(decel), FTYPEID(decel),F_FLOAT},
+	{"target", FOFS(target), FCTOR(target), FTYPEID(target),F_LSTRING},
+	{"targetname", FOFS(targetname), FCTOR(targetname), FTYPEID(targetname),F_LSTRING},
+	{"pathtarget", FOFS(pathtarget), FCTOR(pathtarget), FTYPEID(pathtarget),F_LSTRING},
+	{"deathtarget", FOFS(deathtarget), FCTOR(deathtarget), FTYPEID(deathtarget),F_LSTRING},
+	{"killtarget", FOFS(killtarget), FCTOR(killtarget), FTYPEID(killtarget),F_LSTRING},
+	{"combattarget", FOFS(combattarget), FCTOR(combattarget), FTYPEID(combattarget),F_LSTRING},
+	{"message", FOFS(message), FCTOR(message), FTYPEID(message),F_LSTRING},
+	{"team", FOFS(team), FCTOR(team), FTYPEID(team),F_LSTRING},
+	{"wait", FOFS(wait), FCTOR(wait), FTYPEID(wait),F_FLOAT},
+	{"delay", FOFS(delay), FCTOR(delay), FTYPEID(delay),F_FLOAT},
+	{"random", FOFS(random), FCTOR(random), FTYPEID(random),F_FLOAT},
+	{"move_origin", FOFS(move_origin), FCTOR(move_origin), FTYPEID(move_origin),F_VECTOR},
+	{"move_angles", FOFS(move_angles), FCTOR(move_angles), FTYPEID(move_angles),F_VECTOR},
+	{"style", FOFS(style), FCTOR(style), FTYPEID(style),F_INT},
+	{"count", FOFS(count), FCTOR(count), FTYPEID(count),F_INT},
+	{"health", FOFS(health), FCTOR(health), FTYPEID(health),F_INT},
+	{"sounds", FOFS(sounds), FCTOR(sounds), FTYPEID(sounds),F_INT},
+	{"light", 0, nullptr, &typeid(nullptr_t), F_IGNORE},
+	{"dmg", FOFS(dmg), FCTOR(dmg), FTYPEID(dmg),F_INT},
+	{"mass", FOFS(mass), FCTOR(mass), FTYPEID(mass),F_INT},
+	{"volume", FOFS(volume), FCTOR(volume), FTYPEID(volume),F_FLOAT},
+	{"attenuation", FOFS(attenuation), FCTOR(attenuation), FTYPEID(attenuation),F_FLOAT},
+	{"map", FOFS(map), FCTOR(map), FTYPEID(map),F_LSTRING},
+	{"origin", FOFS(s.origin), FCTOR(s.origin), FTYPEID(s.origin),F_VECTOR},
+	{"angles", FOFS(s.angles), FCTOR(s.angles), FTYPEID(s.angles),F_VECTOR},
+	{"angle", FOFS(s.angles), FCTOR(s.angles), FTYPEID(s.angles),F_ANGLEHACK},
+	{"scale", FOFS(s.scale), FCTOR(s.scale), FTYPEID(s.scale),F_VECTOR},
+	{"r", FOFS(s.rgb[0]), FCTOR(s.rgb[0]), FTYPEID(s.rgb[0]),F_FLOAT},
+	{"g", FOFS(s.rgb[1]), FCTOR(s.rgb[1]), FTYPEID(s.rgb[1]),F_FLOAT},
+	{"b", FOFS(s.rgb[2]), FCTOR(s.rgb[2]), FTYPEID(s.rgb[2]),F_FLOAT},
+	{"rgb", FOFS(s.rgb), FCTOR(s.rgb), FTYPEID(s.rgb),F_VECTOR},
+	{"offset", FOFS(s.offset), FCTOR(s.offset), FTYPEID(s.offset),F_VECTOR},
 
-	{"goalentity", FOFS(goalentity), F_EDICT, FFL_NOSPAWN},
-	{"movetarget", FOFS(movetarget), F_EDICT, FFL_NOSPAWN},
-	{"enemy", FOFS(enemy), F_EDICT, FFL_NOSPAWN},
-	{"oldenemy", FOFS(oldenemy), F_EDICT, FFL_NOSPAWN},
-	{"activator", FOFS(activator), F_EDICT, FFL_NOSPAWN},
-	{"groundentity", FOFS(groundentity), F_EDICT, FFL_NOSPAWN},
-	{"teamchain", FOFS(teamchain), F_EDICT, FFL_NOSPAWN},
-	{"teammaster", FOFS(teammaster), F_EDICT, FFL_NOSPAWN},
-	{"owner", FOFS(owner), F_EDICT, FFL_NOSPAWN},
-	{"mynoise", FOFS(mynoise), F_EDICT, FFL_NOSPAWN},
-	{"mynoise2", FOFS(mynoise2), F_EDICT, FFL_NOSPAWN},
-	{"target_ent", FOFS(target_ent), F_EDICT, FFL_NOSPAWN},
-	{"chain", FOFS(chain), F_EDICT, FFL_NOSPAWN},
+	{"goalentity", FOFS(goalentity), FCTOR(goalentity), FTYPEID(goalentity),F_EDICT, FFL_NOSPAWN},
+	{"movetarget", FOFS(movetarget), FCTOR(movetarget), FTYPEID(movetarget),F_EDICT, FFL_NOSPAWN},
+	{"enemy", FOFS(enemy), FCTOR(enemy), FTYPEID(enemy),F_EDICT, FFL_NOSPAWN},
+	{"oldenemy", FOFS(oldenemy), FCTOR(oldenemy), FTYPEID(oldenemy),F_EDICT, FFL_NOSPAWN},
+	{"activator", FOFS(activator), FCTOR(activator), FTYPEID(activator),F_EDICT, FFL_NOSPAWN},
+	{"groundentity", FOFS(groundentity), FCTOR(groundentity), FTYPEID(groundentity),F_EDICT, FFL_NOSPAWN},
+	{"teamchain", FOFS(teamchain), FCTOR(teamchain), FTYPEID(teamchain),F_EDICT, FFL_NOSPAWN},
+	{"teammaster", FOFS(teammaster), FCTOR(teammaster), FTYPEID(teammaster),F_EDICT, FFL_NOSPAWN},
+	{"owner", FOFS(owner), FCTOR(owner), FTYPEID(owner),F_EDICT, FFL_NOSPAWN},
+	{"mynoise", FOFS(mynoise), FCTOR(mynoise), FTYPEID(mynoise),F_EDICT, FFL_NOSPAWN},
+	{"mynoise2", FOFS(mynoise2), FCTOR(mynoise2), FTYPEID(mynoise2),F_EDICT, FFL_NOSPAWN},
+	{"target_ent", FOFS(target_ent), FCTOR(target_ent), FTYPEID(target_ent),F_EDICT, FFL_NOSPAWN},
+	{"chain", FOFS(chain), FCTOR(chain), FTYPEID(chain),F_EDICT, FFL_NOSPAWN},
 
-	{"prethink", FOFS(prethink), F_FUNCTION, FFL_NOSPAWN},
-	{"think", FOFS(think), F_FUNCTION, FFL_NOSPAWN},
-	{"blocked", FOFS(blocked), F_FUNCTION, FFL_NOSPAWN},
-	{"touch", FOFS(touch), F_FUNCTION, FFL_NOSPAWN},
-	{"use", FOFS(use), F_FUNCTION, FFL_NOSPAWN},
-	{"pain", FOFS(pain), F_FUNCTION, FFL_NOSPAWN},
-	{"die", FOFS(die), F_FUNCTION, FFL_NOSPAWN},
+	{"prethink", FOFS(prethink), FCTOR(prethink), FTYPEID(prethink),F_FUNCTION, FFL_NOSPAWN},
+	{"think", FOFS(think), FCTOR(think), FTYPEID(think),F_FUNCTION, FFL_NOSPAWN},
+	{"blocked", FOFS(blocked), FCTOR(blocked), FTYPEID(blocked),F_FUNCTION, FFL_NOSPAWN},
+	{"touch", FOFS(touch), FCTOR(touch), FTYPEID(touch),F_FUNCTION, FFL_NOSPAWN},
+	{"use", FOFS(use), FCTOR(use), FTYPEID(use),F_FUNCTION, FFL_NOSPAWN},
+	{"pain", FOFS(pain), FCTOR(pain), FTYPEID(pain),F_FUNCTION, FFL_NOSPAWN},
+	{"die", FOFS(die), FCTOR(die), FTYPEID(die),F_FUNCTION, FFL_NOSPAWN},
 
-	{"stand", FOFS(monsterinfo.stand), F_FUNCTION, FFL_NOSPAWN},
-	{"idle", FOFS(monsterinfo.idle), F_FUNCTION, FFL_NOSPAWN},
-	{"search", FOFS(monsterinfo.search), F_FUNCTION, FFL_NOSPAWN},
-	{"walk", FOFS(monsterinfo.walk), F_FUNCTION, FFL_NOSPAWN},
-	{"run", FOFS(monsterinfo.run), F_FUNCTION, FFL_NOSPAWN},
-	{"dodge", FOFS(monsterinfo.dodge), F_FUNCTION, FFL_NOSPAWN},
-	{"attack", FOFS(monsterinfo.attack), F_FUNCTION, FFL_NOSPAWN},
-	{"melee", FOFS(monsterinfo.melee), F_FUNCTION, FFL_NOSPAWN},
-	{"sight", FOFS(monsterinfo.sight), F_FUNCTION, FFL_NOSPAWN},
-	{"checkattack", FOFS(monsterinfo.checkattack), F_FUNCTION, FFL_NOSPAWN},
-	{"get_currentmove", FOFS(monsterinfo.get_currentmove), F_FUNCTION, FFL_NOSPAWN},
-	{"custom_anim", FOFS(monsterinfo.custom_anim), F_FUNCTION, FFL_NOSPAWN},
+	{"stand", FOFS(monsterinfo.stand), FCTOR(monsterinfo.stand), FTYPEID(monsterinfo.stand),F_FUNCTION, FFL_NOSPAWN},
+	{"idle", FOFS(monsterinfo.idle), FCTOR(monsterinfo.idle), FTYPEID(monsterinfo.idle),F_FUNCTION, FFL_NOSPAWN},
+	{"search", FOFS(monsterinfo.search), FCTOR(monsterinfo.search), FTYPEID(monsterinfo.search),F_FUNCTION, FFL_NOSPAWN},
+	{"walk", FOFS(monsterinfo.walk), FCTOR(monsterinfo.walk), FTYPEID(monsterinfo.walk),F_FUNCTION, FFL_NOSPAWN},
+	{"run", FOFS(monsterinfo.run), FCTOR(monsterinfo.run), FTYPEID(monsterinfo.run),F_FUNCTION, FFL_NOSPAWN},
+	{"dodge", FOFS(monsterinfo.dodge), FCTOR(monsterinfo.dodge), FTYPEID(monsterinfo.dodge),F_FUNCTION, FFL_NOSPAWN},
+	{"attack", FOFS(monsterinfo.attack), FCTOR(monsterinfo.attack), FTYPEID(monsterinfo.attack),F_FUNCTION, FFL_NOSPAWN},
+	{"melee", FOFS(monsterinfo.melee), FCTOR(monsterinfo.melee), FTYPEID(monsterinfo.melee),F_FUNCTION, FFL_NOSPAWN},
+	{"sight", FOFS(monsterinfo.sight), FCTOR(monsterinfo.sight), FTYPEID(monsterinfo.sight),F_FUNCTION, FFL_NOSPAWN},
+	{"checkattack", FOFS(monsterinfo.checkattack), FCTOR(monsterinfo.checkattack), FTYPEID(monsterinfo.checkattack),F_FUNCTION, FFL_NOSPAWN},
+	{"get_currentmove", FOFS(monsterinfo.get_currentmove), FCTOR(monsterinfo.get_currentmove), FTYPEID(monsterinfo.get_currentmove),F_FUNCTION, FFL_NOSPAWN},
+	{"custom_anim", FOFS(monsterinfo.custom_anim), FCTOR(monsterinfo.custom_anim), FTYPEID(monsterinfo.custom_anim),F_FUNCTION, FFL_NOSPAWN},
 
-	{"endfunc", FOFS(moveinfo.endfunc), F_FUNCTION, FFL_NOSPAWN},
+	{"endfunc", FOFS(moveinfo.endfunc), FCTOR(moveinfo.endfunc), FTYPEID(moveinfo.endfunc),F_FUNCTION, FFL_NOSPAWN},
 
 	// temp spawn vars -- only valid when the spawn function is called
-	{"lip", STOFS(lip), F_INT, FFL_SPAWNTEMP},
-	{"distance", STOFS(distance), F_INT, FFL_SPAWNTEMP},
-	{"height", STOFS(height), F_INT, FFL_SPAWNTEMP},
-	{"noise", STOFS(noise), F_LSTRING, FFL_SPAWNTEMP},
-	{"pausetime", STOFS(pausetime), F_FLOAT, FFL_SPAWNTEMP},
-	{"item", STOFS(item), F_LSTRING, FFL_SPAWNTEMP},
+	{"lip", STOFS(lip), 0,&typeid(int),F_INT, FFL_SPAWNTEMP},
+	{"distance", STOFS(distance), 0,&typeid(int),F_INT, FFL_SPAWNTEMP},
+	{"height", STOFS(height), 0,&typeid(int),F_INT, FFL_SPAWNTEMP},
+	{"noise", STOFS(noise), 0,&typeid(const char *),F_LSTRING, FFL_SPAWNTEMP},
+	{"pausetime", STOFS(pausetime),0, &typeid(float), F_FLOAT, FFL_SPAWNTEMP},
+	{"item", STOFS(item),0,&typeid(const char *),F_LSTRING, FFL_SPAWNTEMP},
 
 //need for item field in edict struct, FFL_SPAWNTEMP item will be skipped on saves
-	{"item", FOFS(item), F_ITEM},
+	{"item", FOFS(item), FCTOR(item), FTYPEID(item),F_ITEM},
 
-	{"gravity", STOFS(gravity), F_LSTRING, FFL_SPAWNTEMP},
-	{"sky", STOFS(sky), F_LSTRING, FFL_SPAWNTEMP},
-	{"skyrotate", STOFS(skyrotate), F_FLOAT, FFL_SPAWNTEMP},
-	{"skyaxis", STOFS(skyaxis), F_VECTOR, FFL_SPAWNTEMP},
-	{"minyaw", STOFS(minyaw), F_FLOAT, FFL_SPAWNTEMP},
-	{"maxyaw", STOFS(maxyaw), F_FLOAT, FFL_SPAWNTEMP},
-	{"minpitch", STOFS(minpitch), F_FLOAT, FFL_SPAWNTEMP},
-	{"maxpitch", STOFS(maxpitch), F_FLOAT, FFL_SPAWNTEMP},
-	{"nextmap", STOFS(nextmap), F_LSTRING, FFL_SPAWNTEMP},
+	{"gravity", STOFS(gravity), 0,&typeid(const char *),F_LSTRING, FFL_SPAWNTEMP},
+	{"sky", STOFS(sky), 0,&typeid(const char *),F_LSTRING, FFL_SPAWNTEMP},
+	{"skyrotate", STOFS(skyrotate), 0, &typeid(float), F_FLOAT, FFL_SPAWNTEMP},
+	{"skyaxis", STOFS(skyaxis), 0, &typeid(float[3]),F_VECTOR, FFL_SPAWNTEMP},
+	{"minyaw", STOFS(minyaw), 0, &typeid(float), F_FLOAT, FFL_SPAWNTEMP},
+	{"maxyaw", STOFS(maxyaw), 0, &typeid(float), F_FLOAT, FFL_SPAWNTEMP},
+	{"minpitch", STOFS(minpitch),0, &typeid(float), F_FLOAT, FFL_SPAWNTEMP},
+	{"maxpitch", STOFS(maxpitch),0, &typeid(float), F_FLOAT, FFL_SPAWNTEMP},
+	{"nextmap", STOFS(nextmap),0,&typeid(const char *),F_LSTRING, FFL_SPAWNTEMP},
 
 	// Aquakronox fields
 
 	// New Particles stuff
 
 	// Simple: filename
-	{"npsimple", STOFS(npsimple), F_LSTRING2, FFL_SPAWNTEMP  },	
+	{"npsimple", STOFS(npsimple),0,&typeid(const char *),F_LSTRING2, FFL_SPAWNTEMP  },	
 	// Complex: id,submodel,surf,flags,filename
-	{"np", STOFS(np_0), F_LSTRING2, FFL_SPAWNTEMP },		
-	{"np_1", STOFS(np_1), F_LSTRING2, FFL_SPAWNTEMP },
-	{"np_2", STOFS(np_2), F_LSTRING2, FFL_SPAWNTEMP },
+	{"np", STOFS(np_0), 0,&typeid(const char *),F_LSTRING2, FFL_SPAWNTEMP },		
+	{"np_1", STOFS(np_1), 0,&typeid(const char *),F_LSTRING2, FFL_SPAWNTEMP },
+	{"np_2", STOFS(np_2),0,&typeid(const char *),F_LSTRING2, FFL_SPAWNTEMP },
     
-	{"newscaling", FOFS(newscaling), F_INT },
-	{"pathanim", FOFS(pathanim), F_LSTRING2 },		// Anim to play when reached pathh
-	{"sequence", FOFS(sequence), F_LSTRING2 },		// APE Sequence 
-	{"falloff", FOFS(falloff), F_FLOAT },			// Sound Falloff
-	{"spawncondition", STOFS(spawncondition), F_LSTRING2, FFL_SPAWNTEMP} ,
-	{"default_anim", FOFS(default_anim), F_LSTRING2 },
-	{"defualt_anim", FOFS(default_anim), F_LSTRING2, FFL_NOSAVE },
+	{"newscaling", FOFS(newscaling), FCTOR(newscaling), FTYPEID(newscaling),F_INT },
+	{"pathanim", FOFS(pathanim), FCTOR(pathanim), FTYPEID(pathanim),F_LSTRING2 },		// Anim to play when reached pathh
+	{"sequence", FOFS(sequence), FCTOR(sequence), FTYPEID(sequence),F_LSTRING2 },		// APE Sequence 
+	{"falloff", FOFS(falloff), FCTOR(falloff), FTYPEID(falloff),F_FLOAT },			// Sound Falloff
+	{"spawncondition", STOFS(spawncondition),0,&typeid(const char *),F_LSTRING2, FFL_SPAWNTEMP} ,
+	{"default_anim", FOFS(default_anim), FCTOR(default_anim), FTYPEID(default_anim),F_LSTRING2 },
+	{"defualt_anim", FOFS(default_anim), 0,&typeid(const char *),F_LSTRING2, FFL_NOSAVE },
 	
-	{0, 0, F_IGNORE, 0}
+	{0, 0, 0,&typeid(int), F_IGNORE, 0}
 
 };
 
 field_t		levelfields[] =
 {
-	{"changemap", LLOFS(changemap), F_LSTRING},
+	{"changemap", LLOFS(changemap), LLCTOR(changemap), LLTYPEID(changemap),F_LSTRING},
                    
-	{"sight_client", LLOFS(sight_client), F_EDICT},
-	{"sight_entity", LLOFS(sight_entity), F_EDICT},
-	{"sound_entity", LLOFS(sound_entity), F_EDICT},
-	{"sound2_entity", LLOFS(sound2_entity), F_EDICT},
+	{"sight_client", LLOFS(sight_client), LLCTOR(sight_client), LLTYPEID(sight_client),F_EDICT},
+	{"sight_entity", LLOFS(sight_entity), LLCTOR(sight_entity), LLTYPEID(sight_entity),F_EDICT},
+	{"sound_entity", LLOFS(sound_entity), LLCTOR(sound_entity), LLTYPEID(sound_entity),F_EDICT},
+	{"sound2_entity", LLOFS(sound2_entity), LLCTOR(sound2_entity), LLTYPEID(sound2_entity),F_EDICT},
 
-	{"changemap_target", LLOFS(changemap_target), F_LSTRING},
+	{"changemap_target", LLOFS(changemap_target), LLCTOR(changemap_target), LLTYPEID(changemap_target),F_LSTRING},
 
-	{NULL, 0, F_INT}
+	{nullptr, 0,0, &typeid(int), F_INT}
 };
 
 field_t		clientfields[] =
 {
-	{"pers.weapon", CLOFS(pers.weapon), F_ITEM},
-	{"pers.lastweapon", CLOFS(pers.lastweapon), F_ITEM},
-	{"newweapon", CLOFS(newweapon), F_ITEM},
+	{"pers.weapon", CLOFS(pers.weapon), CLCTOR(pers.weapon), CLTYPEID(pers.weapon), F_ITEM},
+	{"pers.lastweapon", CLOFS(pers.lastweapon), CLCTOR(pers.lastweapon), CLTYPEID(pers.lastweapon), F_ITEM},
+	{"newweapon", CLOFS(newweapon), CLCTOR(newweapon), CLTYPEID(newweapon), F_ITEM},
 
-	{NULL, 0, F_INT}
+	{nullptr, 0,0,&typeid(int), F_INT}
 };
 
 /*
@@ -258,9 +294,9 @@ void InitGame (void)
 
 void WriteField1 (FILE *f, field_t *field, byte *base)
 {
-	void		*p;
-	size_t			len;
-	int			index;
+	void		*p=0;
+	size_t			len=0;
+	int			index=0;
 
 	if (field->flags & (FFL_NOSAVE|FFL_SPAWNTEMP))
 		return;
@@ -285,21 +321,21 @@ void WriteField1 (FILE *f, field_t *field, byte *base)
 		*(int *)p = (int)len;
 		break;
 	case F_EDICT:
-		if ( *(edict_t **)p == NULL)
+		if ( *(edict_t **)p == nullptr)
 			index = -1;
 		else
 			index = *(edict_t **)p - g_edicts;
 		*(int *)p = index;
 		break;
 	case F_CLIENT:
-		if ( *(gclient_t **)p == NULL)
+		if ( *(gclient_t **)p == nullptr)
 			index = -1;
 		else
 			index = *(gclient_t **)p - game.clients;
 		*(int *)p = index;
 		break;
 	case F_ITEM:
-		if ( *(edict_t **)p == NULL)
+		if ( *(edict_t **)p == nullptr)
 			index = -1;
 		else
 			index = *(gitem_t **)p - itemlist;
@@ -308,16 +344,18 @@ void WriteField1 (FILE *f, field_t *field, byte *base)
 
 	//relative to code segment
 	case F_FUNCTION:
-		if (*(byte **)p == NULL)
-			index = 0;
-		else
-			index = *(byte **)p - ((byte *)InitGame);
-		*(int *)p = index;
-		break;
+	{
+		assert(strstr(field->tinfo->name(), "SerializableFunctionPointer"));
+		ISerializableFunctionPointer* sfp = (ISerializableFunctionPointer*)p;
+		const char* name = sfp->get_name();
+		if(name) len = strlen(name)+1;
+		*(int*)p = len;
+	}
+	break;
 
 	//relative to data segment
 	case F_MMOVE:
-		if (*(byte **)p == NULL)
+		if (*(byte **)p == nullptr)
 			index = 0;
 		else
 			index = *(byte **)p - (byte *)&mmove_reloc;
@@ -343,13 +381,25 @@ void WriteField2 (FILE *f, field_t *field, byte *base)
 	{
 	case F_LSTRING:
 	case F_LSTRING2:
-		if ( *(char **)p )
+		if (*(char**)p)
 		{
-			len = strlen(*(char **)p) + 1;
-			fwrite (*(char **)p, len, 1, f);
+			len = strlen(*(char**)p) + 1;
+			fwrite(*(char**)p, len, 1, f);
 		}
 		break;
-	}
+
+		case F_FUNCTION:
+		if (p)
+		{
+			ISerializableFunctionPointer* sfp = (ISerializableFunctionPointer*)p;
+			const char* name = sfp->get_name();
+			if (name) {
+				len = strlen(name) + 1;
+				fwrite(name, len, 1, f);
+			}
+		}
+		break;
+}
 }
 
 void ReadField (FILE *f, field_t *field, byte *base)
@@ -375,49 +425,63 @@ void ReadField (FILE *f, field_t *field, byte *base)
 	case F_LSTRING2:
 		len = *(int *)p;
 		if (!len)
-			*(char **)p = NULL;
+			*(char **)p = nullptr;
 		else
 		{
 			*(char **)p = new(TAG_LEVEL) char[len];
+			assert(p);
 			fread (*(char **)p, len, 1, f);
 		}
 		break;
 	case F_EDICT:
 		index = *(int *)p;
 		if ( index == -1 )
-			*(edict_t **)p = NULL;
+			*(edict_t **)p = nullptr;
 		else
 			*(edict_t **)p = &g_edicts[index];
 		break;
 	case F_CLIENT:
 		index = *(int *)p;
 		if ( index == -1 )
-			*(gclient_t **)p = NULL;
+			*(gclient_t **)p = nullptr;
 		else
 			*(gclient_t **)p = &game.clients[index];
 		break;
 	case F_ITEM:
 		index = *(int *)p;
 		if ( index == -1 )
-			*(gitem_t **)p = NULL;
+			*(gitem_t **)p = nullptr;
 		else
 			*(gitem_t **)p = &itemlist[index];
 		break;
 
 	//relative to code segment
-	case F_FUNCTION:
+	case F_FUNCTION:/*
 		index = *(int *)p;
 		if ( index == 0 )
-			*(byte **)p = NULL;
+			*(byte **)p = nullptr;
 		else
-			*(byte **)p = ((byte *)InitGame) + index;
+			*(byte **)p = ((byte *)InitGame) + index;*/
+	{
+		len = *(int*)p;
+		if (!len)
+			* (char**)p = nullptr;
+		else
+		{
+			char*name = new(TAG_LEVEL) char[len];
+			fread(name, len, 1, f);
+			auto sfp = ISerializableFunctionPointer::GetInterface(name);
+			delete[]name;
+			field->construct(p, sfp);
+		}
+	}
 		break;
 
 	//relative to data segment
 	case F_MMOVE:
 		index = *(int *)p;
 		if (index == 0)
-			*(byte **)p = NULL;
+			*(byte **)p = nullptr;
 		else
 			*(byte **)p = (byte *)&mmove_reloc + index;
 		break;
@@ -806,7 +870,7 @@ void ReadLevel (char *filename)
 			if (strcmp(ent->classname, "target_crosslevel_target") == 0)
 				ent->nextthink = level.time + ent->delay;
 
-			for (anox = anox_entities; anox != NULL; anox = anox->next) 
+			for (anox = anox_entities; anox != nullptr; anox = anox->next) 
 			{
 				if (!anox->classname) continue;
 				if (!Q_strcasecmp(anox->classname, ent->classname)) 

@@ -82,154 +82,168 @@ void flyer_pop_blades (edict_t *self)
 {
 	gi.sound (self, CHAN_VOICE, sound_sproing, 1, ATTN_NORM, 0);
 }
+AutoSFP(ai_charge)
+AutoSFP(ai_stand)
+AutoSFP(ai_walk)
+AutoSFP(ai_move)
+AutoSFP(ai_run)
+AutoSFP(ai_turn)
+AutoSFP(flyer_check_melee)
+AutoSFP(flyer_loop_melee)
+AutoSFP(flyer_melee)
+AutoSFP(flyer_setstart)
+AutoSFP(flyer_stand)
+AutoSFP(flyer_nextmove)
+AutoSFP(flyer_idle)
+AutoSFP(flyer_pop_blades)
 
 
 mframe_t flyer_frames_stand [] =
 {
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr
 };
 
 
 mframe_t flyer_frames_walk [] =
 {
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL,
-	ai_walk, 5, NULL
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr,
+	SFP::ai_walk, 5, nullptr
 };
 
 mframe_t flyer_frames_run [] =
 {
-	ai_run, 10, NULL,
-	ai_run, 10, NULL,
-	ai_run, 10, NULL,
-	ai_run, 10, NULL,
-	ai_run, 10, NULL,
-	ai_run, 10, NULL,
-	ai_run, 10, NULL,
-	ai_run, 10, NULL,
-	ai_run, 10, NULL,
-	ai_run, 10, NULL,
-	ai_run, 10, NULL,
-	ai_run, 10, NULL,
-	ai_run, 10, NULL,
-	ai_run, 10, NULL,
-	ai_run, 10, NULL,
-	ai_run, 10, NULL,
-	ai_run, 10, NULL,
-	ai_run, 10, NULL,
-	ai_run, 10, NULL,
-	ai_run, 10, NULL,
-	ai_run, 10, NULL,
-	ai_run, 10, NULL,
-	ai_run, 10, NULL,
-	ai_run, 10, NULL,
-	ai_run, 10, NULL,
-	ai_run, 10, NULL,
-	ai_run, 10, NULL,
-	ai_run, 10, NULL,
-	ai_run, 10, NULL,
-	ai_run, 10, NULL,
-	ai_run, 10, NULL,
-	ai_run, 10, NULL,
-	ai_run, 10, NULL,
-	ai_run, 10, NULL,
-	ai_run, 10, NULL,
-	ai_run, 10, NULL,
-	ai_run, 10, NULL,
-	ai_run, 10, NULL,
-	ai_run, 10, NULL,
-	ai_run, 10, NULL,
-	ai_run, 10, NULL,
-	ai_run, 10, NULL,
-	ai_run, 10, NULL,
-	ai_run, 10, NULL,
-	ai_run, 10, NULL
+	SFP::ai_run, 10, nullptr,
+	SFP::ai_run, 10, nullptr,
+	SFP::ai_run, 10, nullptr,
+	SFP::ai_run, 10, nullptr,
+	SFP::ai_run, 10, nullptr,
+	SFP::ai_run, 10, nullptr,
+	SFP::ai_run, 10, nullptr,
+	SFP::ai_run, 10, nullptr,
+	SFP::ai_run, 10, nullptr,
+	SFP::ai_run, 10, nullptr,
+	SFP::ai_run, 10, nullptr,
+	SFP::ai_run, 10, nullptr,
+	SFP::ai_run, 10, nullptr,
+	SFP::ai_run, 10, nullptr,
+	SFP::ai_run, 10, nullptr,
+	SFP::ai_run, 10, nullptr,
+	SFP::ai_run, 10, nullptr,
+	SFP::ai_run, 10, nullptr,
+	SFP::ai_run, 10, nullptr,
+	SFP::ai_run, 10, nullptr,
+	SFP::ai_run, 10, nullptr,
+	SFP::ai_run, 10, nullptr,
+	SFP::ai_run, 10, nullptr,
+	SFP::ai_run, 10, nullptr,
+	SFP::ai_run, 10, nullptr,
+	SFP::ai_run, 10, nullptr,
+	SFP::ai_run, 10, nullptr,
+	SFP::ai_run, 10, nullptr,
+	SFP::ai_run, 10, nullptr,
+	SFP::ai_run, 10, nullptr,
+	SFP::ai_run, 10, nullptr,
+	SFP::ai_run, 10, nullptr,
+	SFP::ai_run, 10, nullptr,
+	SFP::ai_run, 10, nullptr,
+	SFP::ai_run, 10, nullptr,
+	SFP::ai_run, 10, nullptr,
+	SFP::ai_run, 10, nullptr,
+	SFP::ai_run, 10, nullptr,
+	SFP::ai_run, 10, nullptr,
+	SFP::ai_run, 10, nullptr,
+	SFP::ai_run, 10, nullptr,
+	SFP::ai_run, 10, nullptr,
+	SFP::ai_run, 10, nullptr,
+	SFP::ai_run, 10, nullptr,
+	SFP::ai_run, 10, nullptr
 };
 
 void flyer_run (edict_t *self)
@@ -252,23 +266,23 @@ void flyer_stand (edict_t *self)
 
 mframe_t flyer_frames_start [] =
 {
-		ai_move, 0,	NULL,
-		ai_move, 0,	NULL,
-		ai_move, 0,	NULL,
-		ai_move, 0,	NULL,
-		ai_move, 0,	NULL,
-		ai_move, 0,	flyer_nextmove
+		SFP::ai_move, 0,	nullptr,
+		SFP::ai_move, 0,	nullptr,
+		SFP::ai_move, 0,	nullptr,
+		SFP::ai_move, 0,	nullptr,
+		SFP::ai_move, 0,	nullptr,
+		SFP::ai_move, 0,	SFP::flyer_nextmove
 };
 
 mframe_t flyer_frames_stop [] =
 {
-		ai_move, 0,	NULL,
-		ai_move, 0,	NULL,
-		ai_move, 0,	NULL,
-		ai_move, 0,	NULL,
-		ai_move, 0,	NULL,
-		ai_move, 0,	NULL,
-		ai_move, 0,	flyer_nextmove
+		SFP::ai_move, 0,	nullptr,
+		SFP::ai_move, 0,	nullptr,
+		SFP::ai_move, 0,	nullptr,
+		SFP::ai_move, 0,	nullptr,
+		SFP::ai_move, 0,	nullptr,
+		SFP::ai_move, 0,	nullptr,
+		SFP::ai_move, 0,	SFP::flyer_nextmove
 };
 
 void flyer_stop (edict_t *self)
@@ -284,89 +298,89 @@ void flyer_start (edict_t *self)
 
 mframe_t flyer_frames_rollright [] =
 {
-		ai_move, 0, NULL,
-		ai_move, 0, NULL,
-		ai_move, 0, NULL,
-		ai_move, 0, NULL,
-		ai_move, 0, NULL,
-		ai_move, 0, NULL,
-		ai_move, 0, NULL,
-		ai_move, 0, NULL,
-		ai_move, 0, NULL
+		SFP::ai_move, 0, nullptr,
+		SFP::ai_move, 0, nullptr,
+		SFP::ai_move, 0, nullptr,
+		SFP::ai_move, 0, nullptr,
+		SFP::ai_move, 0, nullptr,
+		SFP::ai_move, 0, nullptr,
+		SFP::ai_move, 0, nullptr,
+		SFP::ai_move, 0, nullptr,
+		SFP::ai_move, 0, nullptr
 };
 
 mframe_t flyer_frames_rollleft [] =
 {
-		ai_move, 0, NULL,
-		ai_move, 0, NULL,
-		ai_move, 0, NULL,
-		ai_move, 0, NULL,
-		ai_move, 0, NULL,
-		ai_move, 0, NULL,
-		ai_move, 0, NULL,
-		ai_move, 0, NULL,
-		ai_move, 0, NULL
+		SFP::ai_move, 0, nullptr,
+		SFP::ai_move, 0, nullptr,
+		SFP::ai_move, 0, nullptr,
+		SFP::ai_move, 0, nullptr,
+		SFP::ai_move, 0, nullptr,
+		SFP::ai_move, 0, nullptr,
+		SFP::ai_move, 0, nullptr,
+		SFP::ai_move, 0, nullptr,
+		SFP::ai_move, 0, nullptr
 };
 
 mframe_t flyer_frames_pain3 [] =
 {	
-		ai_move, 0, NULL,
-		ai_move, 0, NULL,
-		ai_move, 0, NULL,
-		ai_move, 0, NULL
+		SFP::ai_move, 0, nullptr,
+		SFP::ai_move, 0, nullptr,
+		SFP::ai_move, 0, nullptr,
+		SFP::ai_move, 0, nullptr
 };
 
 mframe_t flyer_frames_pain2 [] =
 {
-		ai_move, 0, NULL,
-		ai_move, 0, NULL,
-		ai_move, 0, NULL,
-		ai_move, 0, NULL
+		SFP::ai_move, 0, nullptr,
+		SFP::ai_move, 0, nullptr,
+		SFP::ai_move, 0, nullptr,
+		SFP::ai_move, 0, nullptr
 };
 
 mframe_t flyer_frames_pain1 [] =
 {
-		ai_move, 0, NULL,
-		ai_move, 0, NULL,
-		ai_move, 0, NULL,
-		ai_move, 0, NULL,
-		ai_move, 0, NULL,
-		ai_move, 0, NULL,
-		ai_move, 0, NULL,
-		ai_move, 0, NULL,
-		ai_move, 0, NULL
+		SFP::ai_move, 0, nullptr,
+		SFP::ai_move, 0, nullptr,
+		SFP::ai_move, 0, nullptr,
+		SFP::ai_move, 0, nullptr,
+		SFP::ai_move, 0, nullptr,
+		SFP::ai_move, 0, nullptr,
+		SFP::ai_move, 0, nullptr,
+		SFP::ai_move, 0, nullptr,
+		SFP::ai_move, 0, nullptr
 };
 
 mframe_t flyer_frames_defense [] = 
 {
-		ai_move, 0, NULL,
-		ai_move, 0, NULL,
-		ai_move, 0, NULL,		// Hold this frame
-		ai_move, 0, NULL,
-		ai_move, 0, NULL,
-		ai_move, 0, NULL
+		SFP::ai_move, 0, nullptr,
+		SFP::ai_move, 0, nullptr,
+		SFP::ai_move, 0, nullptr,		// Hold this frame
+		SFP::ai_move, 0, nullptr,
+		SFP::ai_move, 0, nullptr,
+		SFP::ai_move, 0, nullptr
 };
 
 mframe_t flyer_frames_bankright [] =
 {
-		ai_move, 0, NULL,
-		ai_move, 0, NULL,
-		ai_move, 0, NULL,
-		ai_move, 0, NULL,
-		ai_move, 0, NULL,
-		ai_move, 0, NULL,
-		ai_move, 0, NULL
+		SFP::ai_move, 0, nullptr,
+		SFP::ai_move, 0, nullptr,
+		SFP::ai_move, 0, nullptr,
+		SFP::ai_move, 0, nullptr,
+		SFP::ai_move, 0, nullptr,
+		SFP::ai_move, 0, nullptr,
+		SFP::ai_move, 0, nullptr
 };
 
 mframe_t flyer_frames_bankleft [] =
 {
-		ai_move, 0, NULL,
-		ai_move, 0, NULL,
-		ai_move, 0, NULL,
-		ai_move, 0, NULL,
-		ai_move, 0, NULL,
-		ai_move, 0, NULL,
-		ai_move, 0, NULL
+		SFP::ai_move, 0, nullptr,
+		SFP::ai_move, 0, nullptr,
+		SFP::ai_move, 0, nullptr,
+		SFP::ai_move, 0, nullptr,
+		SFP::ai_move, 0, nullptr,
+		SFP::ai_move, 0, nullptr,
+		SFP::ai_move, 0, nullptr
 };
 
 
@@ -382,7 +396,7 @@ void flyer_fire (edict_t *self, int flash_number)
 		effect = EF_HYPERBLASTER;
 	else
 		effect = 0;
-	AngleVectors (self->s.angles, forward, right, NULL);
+	AngleVectors (self->s.angles, forward, right, nullptr);
 	G_ProjectSource (self->s.origin, monster_flash_offset[flash_number], forward, right, start);
 	
 	VectorCopy (self->enemy->s.origin, end);
@@ -401,27 +415,28 @@ void flyer_fireright (edict_t *self)
 {
 	flyer_fire (self, MZ2_FLYER_BLASTER_2);
 }
-
+AutoSFP(flyer_fireleft)
+AutoSFP(flyer_fireright)
 
 mframe_t flyer_frames_attack2 [] =
 {
-		ai_charge, 0, NULL,
-		ai_charge, 0, NULL,
-		ai_charge, 0, NULL,
-		ai_charge, -10, flyer_fireleft,			// left gun
-		ai_charge, -10, flyer_fireright,		// right gun
-		ai_charge, -10, flyer_fireleft,			// left gun
-		ai_charge, -10, flyer_fireright,		// right gun
-		ai_charge, -10, flyer_fireleft,			// left gun
-		ai_charge, -10, flyer_fireright,		// right gun
-		ai_charge, -10, flyer_fireleft,			// left gun
-		ai_charge, -10, flyer_fireright,		// right gun
-		ai_charge, 0, NULL,
-		ai_charge, 0, NULL,
-		ai_charge, 0, NULL,
-		ai_charge, 0, NULL,
-		ai_charge, 0, NULL,
-		ai_charge, 0, NULL
+		SFP::ai_charge, 0, nullptr,
+		SFP::ai_charge, 0, nullptr,
+		SFP::ai_charge, 0, nullptr,
+		SFP::ai_charge, -10, SFP::flyer_fireleft,			// left gun
+		SFP::ai_charge, -10, SFP::flyer_fireright,		// right gun
+		SFP::ai_charge, -10, SFP::flyer_fireleft,			// left gun
+		SFP::ai_charge, -10, SFP::flyer_fireright,		// right gun
+		SFP::ai_charge, -10, SFP::flyer_fireleft,			// left gun
+		SFP::ai_charge, -10, SFP::flyer_fireright,		// right gun
+		SFP::ai_charge, -10, SFP::flyer_fireleft,			// left gun
+		SFP::ai_charge, -10, SFP::flyer_fireright,		// right gun
+		SFP::ai_charge, 0, nullptr,
+		SFP::ai_charge, 0, nullptr,
+		SFP::ai_charge, 0, nullptr,
+		SFP::ai_charge, 0, nullptr,
+		SFP::ai_charge, 0, nullptr,
+		SFP::ai_charge, 0, nullptr
 };
 
 
@@ -445,62 +460,64 @@ void flyer_slash_right (edict_t *self)
 
 mframe_t flyer_frames_start_melee [] =
 {
-		ai_charge, 0, flyer_pop_blades,
-		ai_charge, 0, NULL,
-		ai_charge, 0, NULL,
-		ai_charge, 0, NULL,
-		ai_charge, 0, NULL,
-		ai_charge, 0, NULL
+		SFP::ai_charge, 0, SFP::flyer_pop_blades,
+		SFP::ai_charge, 0, nullptr,
+		SFP::ai_charge, 0, nullptr,
+		SFP::ai_charge, 0, nullptr,
+		SFP::ai_charge, 0, nullptr,
+		SFP::ai_charge, 0, nullptr
 };
 
 mframe_t flyer_frames_end_melee [] =
 {
-		ai_charge, 0, NULL,
-		ai_charge, 0, NULL,
-		ai_charge, 0, NULL
+		SFP::ai_charge, 0, nullptr,
+		SFP::ai_charge, 0, nullptr,
+		SFP::ai_charge, 0, nullptr
 };
 
-
+AutoSFP(flyer_slash_left)
+AutoSFP(flyer_slash_right)
 mframe_t flyer_frames_loop_melee [] =
 {
-		ai_charge, 0, NULL,		// Loop Start
-		ai_charge, 0, NULL,
-		ai_charge, 0, flyer_slash_left,		// Left Wing Strike
-		ai_charge, 0, NULL,
-		ai_charge, 0, NULL,
-		ai_charge, 0, NULL,
-		ai_charge, 0, NULL,
-		ai_charge, 0, flyer_slash_right,	// Right Wing Strike
-		ai_charge, 0, NULL,
-		ai_charge, 0, NULL,
-		ai_charge, 0, NULL,
-		ai_charge, 0, NULL		// Loop Ends
+		SFP::ai_charge, 0, nullptr,		// Loop Start
+		SFP::ai_charge, 0, nullptr,
+		SFP::ai_charge, 0, SFP::flyer_slash_left,		// Left Wing Strike
+		SFP::ai_charge, 0, nullptr,
+		SFP::ai_charge, 0, nullptr,
+		SFP::ai_charge, 0, nullptr,
+		SFP::ai_charge, 0, nullptr,
+		SFP::ai_charge, 0, SFP::flyer_slash_right,	// Right Wing Strike
+		SFP::ai_charge, 0, nullptr,
+		SFP::ai_charge, 0, nullptr,
+		SFP::ai_charge, 0, nullptr,
+		SFP::ai_charge, 0, nullptr		// Loop Ends
 		
 };
+AutoSFP(flyer_run)
 
 mmove_t flyer_moves[] = {
-	{FRAME_stand01, FRAME_stand45, flyer_frames_stand, NULL},
-	{FRAME_stand01, FRAME_stand45, flyer_frames_walk, NULL},
-	{FRAME_stand01, FRAME_stand45, flyer_frames_run, NULL},
-	{FRAME_start01, FRAME_start06, flyer_frames_start, NULL},
-	{FRAME_stop01, FRAME_stop07, flyer_frames_stop, NULL},
-	{FRAME_rollr01, FRAME_rollr09, flyer_frames_rollright, NULL},
-	{FRAME_rollf01, FRAME_rollf09, flyer_frames_rollleft, NULL},
-	{FRAME_pain301, FRAME_pain304, flyer_frames_pain3, flyer_run},
-	{FRAME_pain201, FRAME_pain204, flyer_frames_pain2, flyer_run},
-	{FRAME_pain101, FRAME_pain109, flyer_frames_pain1, flyer_run},
-	{FRAME_defens01, FRAME_defens06, flyer_frames_defense, NULL},
-	{FRAME_bankr01, FRAME_bankr07, flyer_frames_bankright, NULL},
-	{FRAME_bankl01, FRAME_bankl07, flyer_frames_bankleft, NULL},		
-	{FRAME_attak201, FRAME_attak217, flyer_frames_attack2, flyer_run},
-	{FRAME_attak101, FRAME_attak106, flyer_frames_start_melee, flyer_loop_melee},
-	{FRAME_attak119, FRAME_attak121, flyer_frames_end_melee, flyer_run},
-	{FRAME_attak107, FRAME_attak118, flyer_frames_loop_melee, flyer_check_melee}
+	{FRAME_stand01, FRAME_stand45, flyer_frames_stand, nullptr},
+	{FRAME_stand01, FRAME_stand45, flyer_frames_walk, nullptr},
+	{FRAME_stand01, FRAME_stand45, flyer_frames_run, nullptr},
+	{FRAME_start01, FRAME_start06, flyer_frames_start, nullptr},
+	{FRAME_stop01, FRAME_stop07, flyer_frames_stop, nullptr},
+	{FRAME_rollr01, FRAME_rollr09, flyer_frames_rollright, nullptr},
+	{FRAME_rollf01, FRAME_rollf09, flyer_frames_rollleft, nullptr},
+	{FRAME_pain301, FRAME_pain304, flyer_frames_pain3, SFP::flyer_run},
+	{FRAME_pain201, FRAME_pain204, flyer_frames_pain2, SFP::flyer_run},
+	{FRAME_pain101, FRAME_pain109, flyer_frames_pain1, SFP::flyer_run},
+	{FRAME_defens01, FRAME_defens06, flyer_frames_defense, nullptr},
+	{FRAME_bankr01, FRAME_bankr07, flyer_frames_bankright, nullptr},
+	{FRAME_bankl01, FRAME_bankl07, flyer_frames_bankleft, nullptr},		
+	{FRAME_attak201, FRAME_attak217, flyer_frames_attack2, SFP::flyer_run},
+	{FRAME_attak101, FRAME_attak106, flyer_frames_start_melee, SFP::flyer_loop_melee},
+	{FRAME_attak119, FRAME_attak121, flyer_frames_end_melee, SFP::flyer_run},
+	{FRAME_attak107, FRAME_attak118, flyer_frames_loop_melee, SFP::flyer_check_melee}
 };
 
 mmove_t * flyer_get_currentmove(edict_t *self)
 {
-	if (!self->monsterinfo.currentmove) return NULL;
+	if (!self->monsterinfo.currentmove) return nullptr;
 	return &flyer_moves[self->monsterinfo.currentmove-1];
 }
 
@@ -595,6 +612,13 @@ void flyer_die(edict_t *self, edict_t *inflictor, edict_t *attacker, int damage,
 	BecomeExplosion1(self);
 }
 	
+SFPEnt(pain, flyer_pain)
+SFPEnt(die, flyer_die)
+AutoSFP(flyer_walk)
+AutoSFP(flyer_attack)
+AutoSFP(flyer_sight)
+AutoSFP(flyer_get_currentmove)
+
 
 /*QUAKED monster_flyer (1 .5 0) (-16 -16 -24) (16 16 32) Ambush Trigger_Spawn Sight
 */
@@ -610,7 +634,7 @@ void SP_monster_flyer (edict_t *self)
 	if (!Q_stricmp(level.mapname, "jail5") && (self->s.origin[2] == -104))
 	{
 		self->targetname = self->target;
-		self->target = NULL;
+		self->target = nullptr;
 	}
 
 	sound_sight = gi.soundindex ("flyer/flysght1.wav");
@@ -634,17 +658,17 @@ void SP_monster_flyer (edict_t *self)
 	self->health = 50;
 	self->mass = 50;
 
-	self->pain = flyer_pain;
-	self->die = flyer_die;
+	self->pain = SFP::flyer_pain;
+	self->die = SFP::flyer_die;
 
-	self->monsterinfo.stand = flyer_stand;
-	self->monsterinfo.walk = flyer_walk;
-	self->monsterinfo.run = flyer_run;
-	self->monsterinfo.attack = flyer_attack;
-	self->monsterinfo.melee = flyer_melee;
-	self->monsterinfo.sight = flyer_sight;
-	self->monsterinfo.idle = flyer_idle;
-	self->monsterinfo.get_currentmove = flyer_get_currentmove;
+	self->monsterinfo.stand = SFP::flyer_stand;
+	self->monsterinfo.walk = SFP::flyer_walk;
+	self->monsterinfo.run = SFP::flyer_run;
+	self->monsterinfo.attack = SFP::flyer_attack;
+	self->monsterinfo.melee = SFP::flyer_melee;
+	self->monsterinfo.sight = SFP::flyer_sight;
+	self->monsterinfo.idle = SFP::flyer_idle;
+	self->monsterinfo.get_currentmove = SFP::flyer_get_currentmove;
 
 	gi.linkentity (self);
 

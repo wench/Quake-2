@@ -59,7 +59,7 @@ void Boss2Rocket (edict_t *self)
 	vec3_t	dir;
 	vec3_t	vec;
 
-	AngleVectors (self->s.angles, forward, right, NULL);
+	AngleVectors (self->s.angles, forward, right, nullptr);
 
 //1
 	G_ProjectSource (self->s.origin, monster_flash_offset[MZ2_BOSS2_ROCKET_1], forward, right, start);
@@ -99,7 +99,7 @@ void boss2_firebullet_right (edict_t *self)
 	vec3_t	forward, right, target;
 	vec3_t	start;
 
-	AngleVectors (self->s.angles, forward, right, NULL);
+	AngleVectors (self->s.angles, forward, right, nullptr);
 	G_ProjectSource (self->s.origin, monster_flash_offset[MZ2_BOSS2_MACHINEGUN_R1], forward, right, start);
 
 	VectorMA (self->enemy->s.origin, -0.2, self->enemy->velocity, target);
@@ -115,7 +115,7 @@ void boss2_firebullet_left (edict_t *self)
 	vec3_t	forward, right, target;
 	vec3_t	start;
 	
-	AngleVectors (self->s.angles, forward, right, NULL);
+	AngleVectors (self->s.angles, forward, right, nullptr);
 	G_ProjectSource (self->s.origin, monster_flash_offset[MZ2_BOSS2_MACHINEGUN_L1], forward, right, start);
 
 	VectorMA (self->enemy->s.origin, -0.2, self->enemy->velocity, target);
@@ -135,7 +135,7 @@ void Boss2MachineGun (edict_t *self)
 	vec3_t	vec;
 	int		flash_number;
 
-	AngleVectors (self->s.angles, forward, right, NULL);
+	AngleVectors (self->s.angles, forward, right, nullptr);
 
 	flash_number = MZ2_BOSS2_MACHINEGUN_1 + (self->s.frame - FRAME_attack10);
 	G_ProjectSource (self->s.origin, monster_flash_offset[flash_number], forward, right, start);
@@ -149,255 +149,261 @@ void Boss2MachineGun (edict_t *self)
 	boss2_firebullet_left(self);
 	boss2_firebullet_right(self);
 }	
-
+AutoSFP(ai_charge)
+AutoSFP(ai_stand)
+AutoSFP(ai_walk)
+AutoSFP(ai_run)
+AutoSFP(ai_move)
 
 mframe_t boss2_frames_stand [] =
 {
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr
 };
 
 mframe_t boss2_frames_fidget [] =
 {
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr
 };
 
 mframe_t boss2_frames_walk [] =
 {
-	ai_walk,	8,	NULL,
-	ai_walk,	8,	NULL,
-	ai_walk,	8,	NULL,
-	ai_walk,	8,	NULL,
-	ai_walk,	8,	NULL,
-	ai_walk,	8,	NULL,
-	ai_walk,	8,	NULL,
-	ai_walk,	8,	NULL,
-	ai_walk,	8,	NULL,
-	ai_walk,	8,	NULL,
-	ai_walk,	8,	NULL,
-	ai_walk,	8,	NULL,
-	ai_walk,	8,	NULL,
-	ai_walk,	8,	NULL,
-	ai_walk,	8,	NULL,
-	ai_walk,	8,	NULL,
-	ai_walk,	8,	NULL,
-	ai_walk,	8,	NULL,
-	ai_walk,	8,	NULL,
-	ai_walk,	8,	NULL
+	SFP::ai_walk,	8,	nullptr,
+	SFP::ai_walk,	8,	nullptr,
+	SFP::ai_walk,	8,	nullptr,
+	SFP::ai_walk,	8,	nullptr,
+	SFP::ai_walk,	8,	nullptr,
+	SFP::ai_walk,	8,	nullptr,
+	SFP::ai_walk,	8,	nullptr,
+	SFP::ai_walk,	8,	nullptr,
+	SFP::ai_walk,	8,	nullptr,
+	SFP::ai_walk,	8,	nullptr,
+	SFP::ai_walk,	8,	nullptr,
+	SFP::ai_walk,	8,	nullptr,
+	SFP::ai_walk,	8,	nullptr,
+	SFP::ai_walk,	8,	nullptr,
+	SFP::ai_walk,	8,	nullptr,
+	SFP::ai_walk,	8,	nullptr,
+	SFP::ai_walk,	8,	nullptr,
+	SFP::ai_walk,	8,	nullptr,
+	SFP::ai_walk,	8,	nullptr,
+	SFP::ai_walk,	8,	nullptr
 };
 
 
 mframe_t boss2_frames_run [] =
 {
-	ai_run,	8,	NULL,
-	ai_run,	8,	NULL,
-	ai_run,	8,	NULL,
-	ai_run,	8,	NULL,
-	ai_run,	8,	NULL,
-	ai_run,	8,	NULL,
-	ai_run,	8,	NULL,
-	ai_run,	8,	NULL,
-	ai_run,	8,	NULL,
-	ai_run,	8,	NULL,
-	ai_run,	8,	NULL,
-	ai_run,	8,	NULL,
-	ai_run,	8,	NULL,
-	ai_run,	8,	NULL,
-	ai_run,	8,	NULL,
-	ai_run,	8,	NULL,
-	ai_run,	8,	NULL,
-	ai_run,	8,	NULL,
-	ai_run,	8,	NULL,
-	ai_run,	8,	NULL
+	SFP::ai_run,	8,	nullptr,
+	SFP::ai_run,	8,	nullptr,
+	SFP::ai_run,	8,	nullptr,
+	SFP::ai_run,	8,	nullptr,
+	SFP::ai_run,	8,	nullptr,
+	SFP::ai_run,	8,	nullptr,
+	SFP::ai_run,	8,	nullptr,
+	SFP::ai_run,	8,	nullptr,
+	SFP::ai_run,	8,	nullptr,
+	SFP::ai_run,	8,	nullptr,
+	SFP::ai_run,	8,	nullptr,
+	SFP::ai_run,	8,	nullptr,
+	SFP::ai_run,	8,	nullptr,
+	SFP::ai_run,	8,	nullptr,
+	SFP::ai_run,	8,	nullptr,
+	SFP::ai_run,	8,	nullptr,
+	SFP::ai_run,	8,	nullptr,
+	SFP::ai_run,	8,	nullptr,
+	SFP::ai_run,	8,	nullptr,
+	SFP::ai_run,	8,	nullptr
 };
-
+AutoSFP(boss2_attack_mg)
+AutoSFP(Boss2MachineGun)
+AutoSFP(boss2_reattack_mg)
 mframe_t boss2_frames_attack_pre_mg [] =
 {
-	ai_charge,	1,	NULL,
-	ai_charge,	1,	NULL,
-	ai_charge,	1,	NULL,
-	ai_charge,	1,	NULL,
-	ai_charge,	1,	NULL,
-	ai_charge,	1,	NULL,
-	ai_charge,	1,	NULL,
-	ai_charge,	1,	NULL,
-	ai_charge,	1,	boss2_attack_mg
+	SFP::ai_charge,	1,	nullptr,
+	SFP::ai_charge,	1,	nullptr,
+	SFP::ai_charge,	1,	nullptr,
+	SFP::ai_charge,	1,	nullptr,
+	SFP::ai_charge,	1,	nullptr,
+	SFP::ai_charge,	1,	nullptr,
+	SFP::ai_charge,	1,	nullptr,
+	SFP::ai_charge,	1,	nullptr,
+	SFP::ai_charge,	1,	SFP::boss2_attack_mg
 };
 
 
 // Loop this
 mframe_t boss2_frames_attack_mg [] =
 {
-	ai_charge,	1,	Boss2MachineGun,
-	ai_charge,	1,	Boss2MachineGun,
-	ai_charge,	1,	Boss2MachineGun,
-	ai_charge,	1,	Boss2MachineGun,
-	ai_charge,	1,	Boss2MachineGun,
-	ai_charge,	1,	boss2_reattack_mg
+	SFP::ai_charge,	1,	SFP::Boss2MachineGun,
+	SFP::ai_charge,	1,	SFP::Boss2MachineGun,
+	SFP::ai_charge,	1,	SFP::Boss2MachineGun,
+	SFP::ai_charge,	1,	SFP::Boss2MachineGun,
+	SFP::ai_charge,	1,	SFP::Boss2MachineGun,
+	SFP::ai_charge,	1,	SFP::boss2_reattack_mg
 };
 
 mframe_t boss2_frames_attack_post_mg [] =
 {
-	ai_charge,	1,	NULL,
-	ai_charge,	1,	NULL,
-	ai_charge,	1,	NULL,
-	ai_charge,	1,	NULL
+	SFP::ai_charge,	1,	nullptr,
+	SFP::ai_charge,	1,	nullptr,
+	SFP::ai_charge,	1,	nullptr,
+	SFP::ai_charge,	1,	nullptr
 };
-
+AutoSFP(Boss2Rocket)
 mframe_t boss2_frames_attack_rocket [] =
 {
-	ai_charge,	1,	NULL,
-	ai_charge,	1,	NULL,
-	ai_charge,	1,	NULL,
-	ai_charge,	1,	NULL,
-	ai_charge,	1,	NULL,
-	ai_charge,	1,	NULL,
-	ai_charge,	1,	NULL,
-	ai_charge,	1,	NULL,
-	ai_charge,	1,	NULL,
-	ai_charge,	1,	NULL,
-	ai_charge,	1,	NULL,
-	ai_charge,	1,	NULL,
-	ai_move,	-20,	Boss2Rocket,
-	ai_charge,	1,	NULL,
-	ai_charge,	1,	NULL,
-	ai_charge,	1,	NULL,
-	ai_charge,	1,	NULL,
-	ai_charge,	1,	NULL,
-	ai_charge,	1,	NULL,
-	ai_charge,	1,	NULL,
-	ai_charge,	1,	NULL
+	SFP::ai_charge,	1,	nullptr,
+	SFP::ai_charge,	1,	nullptr,
+	SFP::ai_charge,	1,	nullptr,
+	SFP::ai_charge,	1,	nullptr,
+	SFP::ai_charge,	1,	nullptr,
+	SFP::ai_charge,	1,	nullptr,
+	SFP::ai_charge,	1,	nullptr,
+	SFP::ai_charge,	1,	nullptr,
+	SFP::ai_charge,	1,	nullptr,
+	SFP::ai_charge,	1,	nullptr,
+	SFP::ai_charge,	1,	nullptr,
+	SFP::ai_charge,	1,	nullptr,
+	SFP::ai_move,	-20,	SFP::Boss2Rocket,
+	SFP::ai_charge,	1,	nullptr,
+	SFP::ai_charge,	1,	nullptr,
+	SFP::ai_charge,	1,	nullptr,
+	SFP::ai_charge,	1,	nullptr,
+	SFP::ai_charge,	1,	nullptr,
+	SFP::ai_charge,	1,	nullptr,
+	SFP::ai_charge,	1,	nullptr,
+	SFP::ai_charge,	1,	nullptr
 };
 
 mframe_t boss2_frames_pain_heavy [] =
 {
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr
 };
 
 mframe_t boss2_frames_pain_light [] =
 {
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr
 };
-
+AutoSFP(BossExplode)
 mframe_t boss2_frames_death [] =
 {
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	BossExplode
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	SFP::BossExplode
 };
 
 enum {
@@ -413,24 +419,27 @@ enum {
 	boss2_move_pain_light,
 	boss2_move_death,
 };
+AutoSFP(boss2_run)
+AutoSFP(boss2_dead)
+
 
 mmove_t boss2_moves[] = {
-	{FRAME_stand30, FRAME_stand50, boss2_frames_stand, NULL},
-	{FRAME_stand1, FRAME_stand30, boss2_frames_fidget, NULL},
-	{FRAME_walk1, FRAME_walk20, boss2_frames_walk, NULL},
-	{FRAME_walk1, FRAME_walk20, boss2_frames_run, NULL},
-	{FRAME_attack1, FRAME_attack9, boss2_frames_attack_pre_mg, NULL},
-	{FRAME_attack10, FRAME_attack15, boss2_frames_attack_mg, NULL},
-	{FRAME_attack16, FRAME_attack19, boss2_frames_attack_post_mg, boss2_run},
-	{FRAME_attack20, FRAME_attack40, boss2_frames_attack_rocket, boss2_run},
-	{FRAME_pain2, FRAME_pain19, boss2_frames_pain_heavy, boss2_run},
-	{FRAME_pain20, FRAME_pain23, boss2_frames_pain_light, boss2_run},
-	{FRAME_death2, FRAME_death50, boss2_frames_death, boss2_dead}
+	{FRAME_stand30, FRAME_stand50, boss2_frames_stand, nullptr},
+	{FRAME_stand1, FRAME_stand30, boss2_frames_fidget, nullptr},
+	{FRAME_walk1, FRAME_walk20, boss2_frames_walk, nullptr},
+	{FRAME_walk1, FRAME_walk20, boss2_frames_run, nullptr},
+	{FRAME_attack1, FRAME_attack9, boss2_frames_attack_pre_mg, nullptr},
+	{FRAME_attack10, FRAME_attack15, boss2_frames_attack_mg, nullptr},
+	{FRAME_attack16, FRAME_attack19, boss2_frames_attack_post_mg, SFP::boss2_run},
+	{FRAME_attack20, FRAME_attack40, boss2_frames_attack_rocket, SFP::boss2_run},
+	{FRAME_pain2, FRAME_pain19, boss2_frames_pain_heavy, SFP::boss2_run},
+	{FRAME_pain20, FRAME_pain23, boss2_frames_pain_light, SFP::boss2_run},
+	{FRAME_death2, FRAME_death50, boss2_frames_death, SFP::boss2_dead}
 };
 
 mmove_t *boss2_get_currentmove(edict_t *self)
 {
-	if (!self->monsterinfo.currentmove) return NULL;
+	if (!self->monsterinfo.currentmove) return nullptr;
 	return &boss2_moves[self->monsterinfo.currentmove-1];
 }
 
@@ -578,7 +587,7 @@ qboolean Boss2_CheckAttack (edict_t *self)
 		VectorCopy (self->enemy->s.origin, spot2);
 		spot2[2] += self->enemy->viewheight;
 
-		tr = gi.trace (spot1, NULL, NULL, spot2, self, CONTENTS_SOLID|CONTENTS_MONSTER|CONTENTS_SLIME|CONTENTS_LAVA);
+		tr = gi.trace (spot1, nullptr, nullptr, spot2, self, CONTENTS_SOLID|CONTENTS_MONSTER|CONTENTS_SLIME|CONTENTS_LAVA);
 
 		// do we have a clear shot?
 		if (tr.ent != self->enemy)
@@ -652,7 +661,15 @@ qboolean Boss2_CheckAttack (edict_t *self)
 	return false;
 }
 
+SFPEnt(pain, boss2_pain);
+SFPEnt(die, boss2_die);
 
+SFPEnt(monsterinfo.get_currentmove, boss2_get_currentmove);
+SFPEnt(monsterinfo.stand, boss2_stand);
+SFPEnt(monsterinfo.walk, boss2_walk);
+SFPEnt(monsterinfo.attack, boss2_attack);
+SFPEnt(monsterinfo.search, boss2_search);
+SFPEnt(monsterinfo.checkattack, Boss2_CheckAttack);
 
 /*QUAKED monster_boss2 (1 .5 0) (-56 -56 0) (56 56 80) Ambush Trigger_Spawn Sight
 */
@@ -684,16 +701,16 @@ void SP_monster_boss2 (edict_t *self)
 
 	self->flags |= FL_IMMUNE_LASER;
 
-	self->pain = boss2_pain;
-	self->die = boss2_die;
+	self->pain = SFP::boss2_pain;
+	self->die = SFP::boss2_die;
 
-	self->monsterinfo.get_currentmove = boss2_get_currentmove;
-	self->monsterinfo.stand = boss2_stand;
-	self->monsterinfo.walk = boss2_walk;
-	self->monsterinfo.run = boss2_run;
-	self->monsterinfo.attack = boss2_attack;
-	self->monsterinfo.search = boss2_search;
-	self->monsterinfo.checkattack = Boss2_CheckAttack;
+	self->monsterinfo.get_currentmove = SFP::boss2_get_currentmove;
+	self->monsterinfo.stand = SFP::boss2_stand;
+	self->monsterinfo.walk = SFP::boss2_walk;
+	self->monsterinfo.run = SFP::boss2_run;
+	self->monsterinfo.attack = SFP::boss2_attack;
+	self->monsterinfo.search = SFP::boss2_search;
+	self->monsterinfo.checkattack = SFP::Boss2_CheckAttack;
 	gi.linkentity (self);
 
 	self->monsterinfo.currentmove = boss2_move_stand;	

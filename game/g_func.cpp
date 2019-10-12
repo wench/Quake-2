@@ -61,6 +61,7 @@ void Move_Done (edict_t *ent)
 	VectorClear (ent->velocity);
 	ent->moveinfo.endfunc (ent);
 }
+AutoSFP(Move_Done);
 
 void Move_Final (edict_t *ent)
 {
@@ -72,9 +73,10 @@ void Move_Final (edict_t *ent)
 
 	VectorScale (ent->moveinfo.dir, ent->moveinfo.remaining_distance / FRAMETIME, ent->velocity);
 
-	ent->think = Move_Done;
+	ent->think = SFP::Move_Done;
 	ent->nextthink = level.time + FRAMETIME;
 }
+AutoSFP( Move_Final);
 
 void Move_Begin (edict_t *ent)
 {
@@ -89,12 +91,13 @@ void Move_Begin (edict_t *ent)
 	frames = floor((ent->moveinfo.remaining_distance / ent->moveinfo.speed) / FRAMETIME);
 	ent->moveinfo.remaining_distance -= frames * ent->moveinfo.speed * FRAMETIME;
 	ent->nextthink = level.time + (frames * FRAMETIME);
-	ent->think = Move_Final;
+	ent->think = SFP::Move_Final;
 }
+AutoSFP( Move_Begin);
+void Think_AccelMove(edict_t* ent);
+AutoSFP( Think_AccelMove);
 
-void Think_AccelMove (edict_t *ent);
-
-void Move_Calc (edict_t *ent, vec3_t dest, void(*func)(edict_t*))
+void Move_Calc (edict_t *ent, vec3_t dest, decltype(moveinfo_t::endfunc) func)
 {
 	VectorClear (ent->velocity);
 	VectorSubtract (dest, ent->s.origin, ent->moveinfo.dir);
@@ -110,14 +113,14 @@ void Move_Calc (edict_t *ent, vec3_t dest, void(*func)(edict_t*))
 		else
 		{
 			ent->nextthink = level.time + FRAMETIME;
-			ent->think = Move_Begin;
+			ent->think = SFP::Move_Begin;
 		}
 	}
 	else
 	{
 		// accelerative
 		ent->moveinfo.current_speed = 0;
-		ent->think = Think_AccelMove;
+		ent->think = SFP::Think_AccelMove;
 		ent->nextthink = level.time + FRAMETIME;
 	}
 }
@@ -132,7 +135,7 @@ void AngleMove_Done (edict_t *ent)
 	VectorClear (ent->avelocity);
 	ent->moveinfo.endfunc (ent);
 }
-
+AutoSFP( AngleMove_Done);
 void AngleMove_Final (edict_t *ent)
 {
 	vec3_t	move;
@@ -150,10 +153,10 @@ void AngleMove_Final (edict_t *ent)
 
 	VectorScale (move, 1.0/FRAMETIME, ent->avelocity);
 
-	ent->think = AngleMove_Done;
+	ent->think = SFP::AngleMove_Done;
 	ent->nextthink = level.time + FRAMETIME;
 }
-
+AutoSFP( AngleMove_Final);
 void AngleMove_Begin (edict_t *ent)
 {
 	vec3_t	destdelta;
@@ -186,10 +189,10 @@ void AngleMove_Begin (edict_t *ent)
 
 	// set nextthink to trigger a think when dest is reached
 	ent->nextthink = level.time + frames * FRAMETIME;
-	ent->think = AngleMove_Final;
+	ent->think = SFP::AngleMove_Final;
 }
-
-void AngleMove_Calc (edict_t *ent, void(*func)(edict_t*))
+AutoSFP( AngleMove_Begin);
+void AngleMove_Calc (edict_t *ent, decltype(moveinfo_t::endfunc) func)
 {
 	VectorClear (ent->avelocity);
 	ent->moveinfo.endfunc = func;
@@ -200,7 +203,7 @@ void AngleMove_Calc (edict_t *ent, void(*func)(edict_t*))
 	else
 	{
 		ent->nextthink = level.time + FRAMETIME;
-		ent->think = AngleMove_Begin;
+		ent->think = SFP::AngleMove_Begin;
 	}
 }
 
@@ -332,12 +335,12 @@ void Think_AccelMove (edict_t *ent)
 
 	VectorScale (ent->moveinfo.dir, ent->moveinfo.current_speed*10, ent->velocity);
 	ent->nextthink = level.time + FRAMETIME;
-	ent->think = Think_AccelMove;
+	ent->think = SFP::Think_AccelMove;
 }
 
 
 void plat_go_down (edict_t *ent);
-
+AutoSFP(plat_go_down);
 void plat_hit_top (edict_t *ent)
 {
 	if (!(ent->flags & FL_TEAMSLAVE))
@@ -348,7 +351,7 @@ void plat_hit_top (edict_t *ent)
 	}
 	ent->moveinfo.state = STATE_TOP;
 
-	ent->think = plat_go_down;
+	ent->think = SFP::plat_go_down;
 	ent->nextthink = level.time + 3;
 }
 
@@ -362,7 +365,7 @@ void plat_hit_bottom (edict_t *ent)
 	}
 	ent->moveinfo.state = STATE_BOTTOM;
 }
-
+AutoSFP(plat_hit_bottom)
 void plat_go_down (edict_t *ent)
 {
 	if (!(ent->flags & FL_TEAMSLAVE))
@@ -372,9 +375,9 @@ void plat_go_down (edict_t *ent)
 		ent->s.sound = ent->moveinfo.sound_middle;
 	}
 	ent->moveinfo.state = STATE_DOWN;
-	Move_Calc (ent, ent->moveinfo.end_origin, plat_hit_bottom);
+	Move_Calc (ent, ent->moveinfo.end_origin, SFP::plat_hit_bottom);
 }
-
+AutoSFP(plat_hit_top)
 void plat_go_up (edict_t *ent)
 {
 	if (!(ent->flags & FL_TEAMSLAVE))
@@ -384,9 +387,9 @@ void plat_go_up (edict_t *ent)
 		ent->s.sound = ent->moveinfo.sound_middle;
 	}
 	ent->moveinfo.state = STATE_UP;
-	Move_Calc (ent, ent->moveinfo.start_origin, plat_hit_top);
+	Move_Calc (ent, ent->moveinfo.start_origin, SFP::plat_hit_top);
 }
-
+AutoSFP( plat_go_up);
 void plat_blocked (edict_t *self, edict_t *other)
 {
 	if (!(other->svflags & SVF_MONSTER) && (!other->client))
@@ -405,6 +408,7 @@ void plat_blocked (edict_t *self, edict_t *other)
 	else if (self->moveinfo.state == STATE_DOWN)
 		plat_go_up (self);
 }
+AutoSFP(plat_blocked);
 
 
 void Use_Plat (edict_t *ent, edict_t *other, edict_t *activator)
@@ -413,7 +417,7 @@ void Use_Plat (edict_t *ent, edict_t *other, edict_t *activator)
 		return;		// already down
 	plat_go_down (ent);
 }
-
+AutoSFP(Use_Plat);
 
 void Touch_Plat_Center (edict_t *ent, edict_t *other, cplane_t *plane, csurface_t *surf)
 {
@@ -430,6 +434,7 @@ void Touch_Plat_Center (edict_t *ent, edict_t *other, cplane_t *plane, csurface_
 		ent->nextthink = level.time + 1;	// the player is still on the plat, so delay going down
 }
 
+AutoSFP(Touch_Plat_Center);
 void plat_spawn_inside_trigger (edict_t *ent)
 {
 	edict_t	*trigger;
@@ -439,7 +444,7 @@ void plat_spawn_inside_trigger (edict_t *ent)
 // middle trigger
 //	
 	trigger = G_Spawn();
-	trigger->touch = Touch_Plat_Center;
+	trigger->touch = SFP::Touch_Plat_Center;
 	trigger->movetype = MOVETYPE_NONE;
 	trigger->solid = SOLID_TRIGGER;
 	trigger->enemy = ent;
@@ -500,7 +505,7 @@ void SP_func_plat (edict_t *ent)
 
 	gi.setmodel (ent, ent->model);
 
-	ent->blocked = plat_blocked;
+	ent->blocked = SFP::plat_blocked;
 
 	if (!ent->speed)
 		ent->speed = 20;
@@ -531,7 +536,7 @@ void SP_func_plat (edict_t *ent)
 	else
 		ent->pos2[2] -= (ent->s.maxs[2] - ent->s.mins[2]) - st.lip;
 
-	ent->use = Use_Plat;
+	ent->use = SFP::Use_Plat;
 
 	plat_spawn_inside_trigger (ent);	// the "start moving" trigger	
 
@@ -578,12 +583,14 @@ void rotating_blocked (edict_t *self, edict_t *other)
 {
 	T_Damage (other, self, self, vec3_origin, other->s.origin, vec3_origin, self->dmg, 1, 0);
 }
+AutoSFP(rotating_blocked);
 
 void rotating_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
 {
 	if (self->avelocity[0] || self->avelocity[1] || self->avelocity[2])
 		T_Damage (other, self, self, vec3_origin, other->s.origin, vec3_origin, self->dmg, 1, 0);
 }
+AutoSFP(rotating_touch);
 
 void rotating_use (edict_t *self, edict_t *other, edict_t *activator)
 {
@@ -591,16 +598,17 @@ void rotating_use (edict_t *self, edict_t *other, edict_t *activator)
 	{
 		self->s.sound = 0;
 		VectorClear (self->avelocity);
-		self->touch = NULL;
+		self->touch = nullptr;
 	}
 	else
 	{
 		self->s.sound = self->moveinfo.sound_middle;
 		VectorScale (self->movedir, self->speed, self->avelocity);
 		if (self->spawnflags & 16)
-			self->touch = rotating_touch;
+			self->touch = SFP::rotating_touch;
 	}
 }
+AutoSFP( rotating_use);
 
 void SP_func_rotating (edict_t *ent)
 {
@@ -630,12 +638,12 @@ void SP_func_rotating (edict_t *ent)
 
 //	ent->moveinfo.sound_middle = "doors/hydro1.wav";
 
-	ent->use = rotating_use;
+	ent->use = SFP::rotating_use;
 	if (ent->dmg)
-		ent->blocked = rotating_blocked;
+		ent->blocked = SFP::rotating_blocked;
 
 	if (ent->spawnflags & 1)
-		ent->use (ent, NULL, NULL);
+		ent->use (ent, nullptr, nullptr);
 
 	if (ent->spawnflags & 64)
 		ent->s.effects |= EF_ANIM_ALL;
@@ -677,18 +685,20 @@ void button_done (edict_t *self)
 	self->s.effects &= ~EF_ANIM23;
 	self->s.effects |= EF_ANIM01;
 }
+AutoSFP( button_done);
 
 void button_return (edict_t *self)
 {
 	self->moveinfo.state = STATE_DOWN;
 
-	Move_Calc (self, self->moveinfo.start_origin, button_done);
+	Move_Calc (self, self->moveinfo.start_origin, SFP::button_done);
 
 	self->s.frame = 0;
 
 	if (self->health)
 		self->takedamage = DAMAGE_YES;
 }
+AutoSFP(button_return);
 
 void button_wait (edict_t *self)
 {
@@ -701,9 +711,10 @@ void button_wait (edict_t *self)
 	if (self->moveinfo.wait >= 0)
 	{
 		self->nextthink = level.time + self->moveinfo.wait;
-		self->think = button_return;
+		self->think = SFP::button_return;
 	}
 }
+AutoSFP( button_wait);
 
 void button_fire (edict_t *self)
 {
@@ -713,15 +724,16 @@ void button_fire (edict_t *self)
 	self->moveinfo.state = STATE_UP;
 	if (self->moveinfo.sound_start && !(self->flags & FL_TEAMSLAVE))
 		gi.sound (self, CHAN_NO_PHS_ADD+CHAN_VOICE, self->moveinfo.sound_start, 1, ATTN_STATIC, 0);
-	Move_Calc (self, self->moveinfo.end_origin, button_wait);
+	Move_Calc (self, self->moveinfo.end_origin, SFP::button_wait);
 }
+AutoSFP(button_fire);
 
 void button_use (edict_t *self, edict_t *other, edict_t *activator)
 {
 	self->activator = activator;
 	button_fire (self);
 }
-
+AutoSFP( button_use);
 void button_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
 {
 	if (!other->client)
@@ -733,6 +745,8 @@ void button_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *s
 	self->activator = other;
 	button_fire (self);
 }
+//FP4(void, edict_t* , edict_t* , cplane_t* , csurface_t* , button_touch);
+AutoSFP(button_touch)
 
 void button_killed (edict_t *self, edict_t *inflictor, edict_t *attacker, int damage, vec3_t point)
 {
@@ -741,6 +755,7 @@ void button_killed (edict_t *self, edict_t *inflictor, edict_t *attacker, int da
 	self->takedamage = DAMAGE_NO;
 	button_fire (self);
 }
+SFPEnt(die , button_killed);
 
 void SP_func_button (edict_t *ent)
 {
@@ -774,17 +789,17 @@ void SP_func_button (edict_t *ent)
 	dist = abs_movedir[0] * ent->size[0] + abs_movedir[1] * ent->size[1] + abs_movedir[2] * ent->size[2] - st.lip;
 	VectorMA (ent->pos1, dist, ent->movedir, ent->pos2);
 
-	ent->use = button_use;
+	ent->use = SFP::button_use;
 	ent->s.effects |= EF_ANIM01;
 
 	if (ent->health)
 	{
 		ent->max_health = ent->health;
-		ent->die = button_killed;
+		ent->die = SFP::button_killed;
 		ent->takedamage = DAMAGE_YES;
 	}
 	else if (! ent->targetname)
-		ent->touch = button_touch;
+		ent->touch = SFP::button_touch;
 
 	ent->moveinfo.state = STATE_BOTTOM;
 
@@ -833,7 +848,7 @@ NOMONSTER	monsters will not trigger this door
 
 void door_use_areaportals (edict_t *self, qboolean open)
 {
-	edict_t	*t = NULL;
+	edict_t	*t = nullptr;
 
 	if (!self->target)
 		return;
@@ -848,7 +863,7 @@ void door_use_areaportals (edict_t *self, qboolean open)
 }
 
 void door_go_down (edict_t *self);
-
+AutoSFP( door_go_down);
 void door_hit_top (edict_t *self)
 {
 	if (!(self->flags & FL_TEAMSLAVE))
@@ -862,10 +877,11 @@ void door_hit_top (edict_t *self)
 		return;
 	if (self->moveinfo.wait >= 0)
 	{
-		self->think = door_go_down;
+		self->think = SFP::door_go_down;
 		self->nextthink = level.time + self->moveinfo.wait;
 	}
 }
+AutoSFP( door_hit_top);
 
 void door_hit_bottom (edict_t *self)
 {
@@ -878,7 +894,7 @@ void door_hit_bottom (edict_t *self)
 	self->moveinfo.state = STATE_BOTTOM;
 	door_use_areaportals (self, false);
 }
-
+AutoSFP(door_hit_bottom)
 void door_go_down (edict_t *self)
 {
 	if (!(self->flags & FL_TEAMSLAVE))
@@ -895,10 +911,11 @@ void door_go_down (edict_t *self)
 	
 	self->moveinfo.state = STATE_DOWN;
 	if (strcmp(self->classname, "func_door") == 0)
-		Move_Calc (self, self->moveinfo.start_origin, door_hit_bottom);
+		Move_Calc (self, self->moveinfo.start_origin, SFP::door_hit_bottom);
 	else if (strcmp(self->classname, "func_door_rotating") == 0)
-		AngleMove_Calc (self, door_hit_bottom);
+		AngleMove_Calc (self, SFP::door_hit_bottom);
 }
+//SFP1(void, edict_s*, door_go_down);
 
 void door_go_up (edict_t *self, edict_t *activator)
 {
@@ -920,13 +937,14 @@ void door_go_up (edict_t *self, edict_t *activator)
 	}
 	self->moveinfo.state = STATE_UP;
 	if (strcmp(self->classname, "func_door") == 0)
-		Move_Calc (self, self->moveinfo.end_origin, door_hit_top);
+		Move_Calc (self, self->moveinfo.end_origin, SFP::door_hit_top);
 	else if (strcmp(self->classname, "func_door_rotating") == 0)
-		AngleMove_Calc (self, door_hit_top);
+		AngleMove_Calc (self, SFP::door_hit_top);
 
 	G_UseTargets (self, activator);
 	door_use_areaportals (self, true);
 }
+//SFP1(void, edict_s*, door_go_down);
 
 void door_use (edict_t *self, edict_t *other, edict_t *activator)
 {
@@ -942,8 +960,8 @@ void door_use (edict_t *self, edict_t *other, edict_t *activator)
 			// trigger all paired doors
 			for (ent = self ; ent ; ent = ent->teamchain)
 			{
-				ent->message = NULL;
-				ent->touch = NULL;
+				ent->message = nullptr;
+				ent->touch = nullptr;
 				door_go_down (ent);
 			}
 			return;
@@ -953,12 +971,13 @@ void door_use (edict_t *self, edict_t *other, edict_t *activator)
 	// trigger all paired doors
 	for (ent = self ; ent ; ent = ent->teamchain)
 	{
-		ent->message = NULL;
-		ent->touch = NULL;
+		ent->message = nullptr;
+		ent->touch = nullptr;
 		door_go_up (ent, activator);
 	}
 };
-
+//SFP1(void, edict_s*, door_go_down);
+AutoSFP(door_use)
 void Touch_DoorTrigger (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
 {
 	if (other->health <= 0)
@@ -976,6 +995,8 @@ void Touch_DoorTrigger (edict_t *self, edict_t *other, cplane_t *plane, csurface
 
 	door_use (self->owner, other, other);
 }
+
+AutoSFP(Touch_DoorTrigger)
 
 void Think_CalcMoveSpeed (edict_t *self)
 {
@@ -1016,7 +1037,7 @@ void Think_CalcMoveSpeed (edict_t *self)
 		ent->moveinfo.speed = newspeed;
 	}
 }
-
+AutoSFP(Think_CalcMoveSpeed);
 void Think_SpawnDoorTrigger (edict_t *ent)
 {
 	edict_t		*other;
@@ -1046,7 +1067,7 @@ void Think_SpawnDoorTrigger (edict_t *ent)
 	other->owner = ent;
 	other->solid = SOLID_TRIGGER;
 	other->movetype = MOVETYPE_NONE;
-	other->touch = Touch_DoorTrigger;
+	other->touch = SFP::Touch_DoorTrigger;
 	gi.linkentity (other);
 
 	if (ent->spawnflags & DOOR_START_OPEN)
@@ -1054,6 +1075,7 @@ void Think_SpawnDoorTrigger (edict_t *ent)
 
 	Think_CalcMoveSpeed (ent);
 }
+AutoSFP(Think_SpawnDoorTrigger);
 
 void door_blocked  (edict_t *self, edict_t *other)
 {
@@ -1090,7 +1112,7 @@ void door_blocked  (edict_t *self, edict_t *other)
 		}
 	}
 }
-
+AutoSFP(door_blocked)
 void door_killed (edict_t *self, edict_t *inflictor, edict_t *attacker, int damage, vec3_t point)
 {
 	edict_t	*ent;
@@ -1102,6 +1124,7 @@ void door_killed (edict_t *self, edict_t *inflictor, edict_t *attacker, int dama
 	}
 	door_use (self->teammaster, attacker, attacker);
 }
+SFPEnt(die,door_killed);
 
 void door_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
 {
@@ -1115,6 +1138,7 @@ void door_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *sur
 	gi.centerprintf (other, "%s", self->message);
 	gi.sound (other, CHAN_AUTO, gi.soundindex ("misc/talk1.wav"), 1, ATTN_NORM, 0);
 }
+AutoSFP(door_touch)
 
 void SP_func_door (edict_t *ent)
 {
@@ -1132,8 +1156,8 @@ void SP_func_door (edict_t *ent)
 	ent->solid = SOLID_BSP;
 	gi.setmodel (ent, ent->model);
 
-	ent->blocked = door_blocked;
-	ent->use = door_use;
+	ent->blocked = SFP::door_blocked;
+	ent->use = SFP::door_use;
 	
 	if (!ent->speed)
 		ent->speed = 100;
@@ -1170,13 +1194,13 @@ void SP_func_door (edict_t *ent)
 	if (ent->health)
 	{
 		ent->takedamage = DAMAGE_YES;
-		ent->die = door_killed;
+		ent->die = SFP::door_killed;
 		ent->max_health = ent->health;
 	}
 	else if (ent->targetname && ent->message)
 	{
 		gi.soundindex ("misc/talk.wav");
-		ent->touch = door_touch;
+		ent->touch = SFP::door_touch;
 	}
 	
 	ent->moveinfo.speed = ent->speed;
@@ -1201,9 +1225,9 @@ void SP_func_door (edict_t *ent)
 
 	ent->nextthink = level.time + FRAMETIME;
 	if (ent->health || ent->targetname)
-		ent->think = Think_CalcMoveSpeed;
+		ent->think = SFP::Think_CalcMoveSpeed;
 	else
-		ent->think = Think_SpawnDoorTrigger;
+		ent->think = SFP::Think_SpawnDoorTrigger;
 }
 
 
@@ -1269,8 +1293,8 @@ void SP_func_door_rotating (edict_t *ent)
 	ent->solid = SOLID_BSP;
 	gi.setmodel (ent, ent->model);
 
-	ent->blocked = door_blocked;
-	ent->use = door_use;
+	ent->blocked = SFP::door_blocked;
+	ent->use = SFP::door_use;
 
 	if (!ent->speed)
 		ent->speed = 100;
@@ -1303,14 +1327,14 @@ void SP_func_door_rotating (edict_t *ent)
 	if (ent->health)
 	{
 		ent->takedamage = DAMAGE_YES;
-		ent->die = door_killed;
+		ent->die = SFP::door_killed;
 		ent->max_health = ent->health;
 	}
 	
 	if (ent->targetname && ent->message)
 	{
 		gi.soundindex ("misc/talk.wav");
-		ent->touch = door_touch;
+		ent->touch = SFP::door_touch;
 	}
 
 	ent->moveinfo.state = STATE_BOTTOM;
@@ -1330,9 +1354,9 @@ void SP_func_door_rotating (edict_t *ent)
 
 	ent->nextthink = level.time + FRAMETIME;
 	if (ent->health || ent->targetname)
-		ent->think = Think_CalcMoveSpeed;
+		ent->think = SFP::Think_CalcMoveSpeed;
 	else
-		ent->think = Think_SpawnDoorTrigger;
+		ent->think = SFP::Think_SpawnDoorTrigger;
 }
 
 
@@ -1407,7 +1431,7 @@ void SP_func_water (edict_t *self)
 		self->wait = -1;
 	self->moveinfo.wait = self->wait;
 
-	self->use = door_use;
+	self->use = SFP::door_use;
 
 	if (self->wait == -1)
 		self->spawnflags |= DOOR_TOGGLE;
@@ -1454,6 +1478,7 @@ void train_blocked (edict_t *self, edict_t *other)
 	self->touch_debounce_time = level.time + 0.5;
 	T_Damage (other, self, self, vec3_origin, other->s.origin, vec3_origin, self->dmg, 1, 0);
 }
+AutoSFP(train_next)
 
 void train_wait (edict_t *self)
 {
@@ -1478,7 +1503,7 @@ void train_wait (edict_t *self)
 		if (self->moveinfo.wait > 0)
 		{
 			self->nextthink = level.time + self->moveinfo.wait;
-			self->think = train_next;
+			self->think = SFP::train_next;
 		}
 		else if (self->spawnflags & TRAIN_TOGGLE)  // && wait < 0
 		{
@@ -1501,7 +1526,7 @@ void train_wait (edict_t *self)
 	}
 	
 }
-
+AutoSFP(train_wait)
 void train_next (edict_t *self)
 {
 	edict_t		*ent;
@@ -1554,7 +1579,7 @@ again:
 	self->moveinfo.state = STATE_TOP;
 	VectorCopy (self->s.origin, self->moveinfo.start_origin);
 	VectorCopy (dest, self->moveinfo.end_origin);
-	Move_Calc (self, dest, train_wait);
+	Move_Calc (self, dest, SFP::train_wait);
 	self->spawnflags |= TRAIN_START_ON;
 }
 
@@ -1569,7 +1594,7 @@ void train_resume (edict_t *self)
 	self->moveinfo.state = STATE_TOP;
 	VectorCopy (self->s.origin, self->moveinfo.start_origin);
 	VectorCopy (dest, self->moveinfo.end_origin);
-	Move_Calc (self, dest, train_wait);
+	Move_Calc (self, dest, SFP::train_wait);
 	self->spawnflags |= TRAIN_START_ON;
 }
 
@@ -1600,7 +1625,7 @@ void func_train_find (edict_t *self)
 	if (self->spawnflags & TRAIN_START_ON)
 	{
 		self->nextthink = level.time + FRAMETIME;
-		self->think = train_next;
+		self->think = SFP::train_next;
 		self->activator = self;
 	}
 }
@@ -1625,13 +1650,16 @@ void train_use (edict_t *self, edict_t *other, edict_t *activator)
 			train_next(self);
 	}
 }
+AutoSFP(train_blocked)
+SFPEnt(use, train_use)
+SFPEnt(think, func_train_find)
 
 void SP_func_train (edict_t *self)
 {
 	self->movetype = MOVETYPE_PUSH;
 
 	VectorClear (self->s.angles);
-	self->blocked = train_blocked;
+	self->blocked = SFP::train_blocked;
 	if (self->spawnflags & TRAIN_BLOCK_STOPS)
 		self->dmg = 0;
 	else
@@ -1651,7 +1679,7 @@ void SP_func_train (edict_t *self)
 	self->moveinfo.speed = self->speed;
 	self->moveinfo.accel = self->moveinfo.decel = self->moveinfo.speed;
 
-	self->use = train_use;
+	self->use = SFP::train_use;
 
 	gi.linkentity (self);
 
@@ -1660,7 +1688,7 @@ void SP_func_train (edict_t *self)
 		// start trains on the second frame, to make sure their targets have had
 		// a chance to spawn
 		self->nextthink = level.time + FRAMETIME;
-		self->think = func_train_find;
+		self->think = SFP::func_train_find;
 	}
 	else
 	{
@@ -1697,7 +1725,7 @@ void trigger_elevator_use (edict_t *self, edict_t *other, edict_t *activator)
 	self->movetarget->target_ent = target;
 	train_resume (self->movetarget);
 }
-
+AutoSFP(trigger_elevator_use)
 void trigger_elevator_init (edict_t *self)
 {
 	if (!self->target)
@@ -1717,14 +1745,15 @@ void trigger_elevator_init (edict_t *self)
 		return;
 	}
 
-	self->use = trigger_elevator_use;
+	self->use = SFP::trigger_elevator_use;
 	self->svflags = SVF_NOCLIENT;
 
 }
+AutoSFP(trigger_elevator_init)
 
 void SP_trigger_elevator (edict_t *self)
 {
-	self->think = trigger_elevator_init;
+	self->think = SFP::trigger_elevator_init;
 	self->nextthink = level.time + FRAMETIME;
 }
 
@@ -1766,14 +1795,15 @@ void func_timer_use (edict_t *self, edict_t *other, edict_t *activator)
 	else
 		func_timer_think (self);
 }
-
+AutoSFP(func_timer_use);
+AutoSFP(func_timer_think);
 void SP_func_timer (edict_t *self)
 {
 	if (!self->wait)
 		self->wait = 1.0;
 
-	self->use = func_timer_use;
-	self->think = func_timer_think;
+	self->use = SFP::func_timer_use;
+	self->think = SFP::func_timer_think;
 
 	if (self->random >= self->wait)
 	{
@@ -1813,7 +1843,7 @@ void func_conveyor_use (edict_t *self, edict_t *other, edict_t *activator)
 	if (!(self->spawnflags & 2))
 		self->count = 0;
 }
-
+AutoSFP(func_conveyor_use)
 void SP_func_conveyor (edict_t *self)
 {
 	if (!self->speed)
@@ -1825,7 +1855,7 @@ void SP_func_conveyor (edict_t *self)
 		self->speed = 0;
 	}
 
-	self->use = func_conveyor_use;
+	self->use = SFP::func_conveyor_use;
 
 	gi.setmodel (self, self->model);
 	self->solid = SOLID_BSP;
@@ -1858,25 +1888,33 @@ void door_secret_move5 (edict_t *self);
 void door_secret_move6 (edict_t *self);
 void door_secret_done (edict_t *self);
 
+AutoSFP(door_secret_move1)
+AutoSFP(door_secret_move2)
+AutoSFP(door_secret_move3)
+AutoSFP(door_secret_move4)
+AutoSFP(door_secret_move5)
+AutoSFP(door_secret_move6)
+AutoSFP(door_secret_done)
 void door_secret_use (edict_t *self, edict_t *other, edict_t *activator)
 {
 	// make sure we're not already moving
 	if (!VectorCompare(self->s.origin, vec3_origin))
 		return;
 
-	Move_Calc (self, self->pos1, door_secret_move1);
+	Move_Calc (self, self->pos1, SFP::door_secret_move1);
 	door_use_areaportals (self, true);
 }
 
+AutoSFP(door_secret_use)
 void door_secret_move1 (edict_t *self)
 {
 	self->nextthink = level.time + 1.0;
-	self->think = door_secret_move2;
+	self->think = SFP::door_secret_move2;
 }
 
 void door_secret_move2 (edict_t *self)
 {
-	Move_Calc (self, self->pos2, door_secret_move3);
+	Move_Calc (self, self->pos2, SFP::door_secret_move3);
 }
 
 void door_secret_move3 (edict_t *self)
@@ -1884,23 +1922,23 @@ void door_secret_move3 (edict_t *self)
 	if (self->wait == -1)
 		return;
 	self->nextthink = level.time + self->wait;
-	self->think = door_secret_move4;
+	self->think = SFP::door_secret_move4;
 }
 
 void door_secret_move4 (edict_t *self)
 {
-	Move_Calc (self, self->pos1, door_secret_move5);
+	Move_Calc (self, self->pos1, SFP::door_secret_move5);
 }
 
 void door_secret_move5 (edict_t *self)
 {
 	self->nextthink = level.time + 1.0;
-	self->think = door_secret_move6;
+	self->think = SFP::door_secret_move6;
 }
 
 void door_secret_move6 (edict_t *self)
 {
-	Move_Calc (self, vec3_origin, door_secret_done);
+	Move_Calc (self, vec3_origin, SFP::door_secret_done);
 }
 
 void door_secret_done (edict_t *self)
@@ -1930,12 +1968,14 @@ void door_secret_blocked  (edict_t *self, edict_t *other)
 
 	T_Damage (other, self, self, vec3_origin, other->s.origin, vec3_origin, self->dmg, 1, 0);
 }
+AutoSFP(door_secret_blocked);
 
 void door_secret_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int damage, vec3_t point)
 {
 	self->takedamage = DAMAGE_NO;
 	door_secret_use (self, attacker, attacker);
 }
+SFPEnt(die,door_secret_die);
 
 void SP_func_door_secret (edict_t *ent)
 {
@@ -1952,14 +1992,14 @@ void SP_func_door_secret (edict_t *ent)
 	ent->solid = SOLID_BSP;
 	gi.setmodel (ent, ent->model);
 
-	ent->blocked = door_secret_blocked;
-	ent->use = door_secret_use;
+	ent->blocked = SFP::door_secret_blocked;
+	ent->use = SFP::door_secret_use;
 
 	if (!(ent->targetname) || (ent->spawnflags & SECRET_ALWAYS_SHOOT))
 	{
 		ent->health = 0;
 		ent->takedamage = DAMAGE_YES;
-		ent->die = door_secret_die;
+		ent->die = SFP::door_secret_die;
 	}
 
 	if (!ent->dmg)
@@ -1990,13 +2030,13 @@ void SP_func_door_secret (edict_t *ent)
 	if (ent->health)
 	{
 		ent->takedamage = DAMAGE_YES;
-		ent->die = door_killed;
+		ent->die = SFP::door_killed;
 		ent->max_health = ent->health;
 	}
 	else if (ent->targetname && ent->message)
 	{
 		gi.soundindex ("misc/talk.wav");
-		ent->touch = door_touch;
+		ent->touch = SFP::door_touch;
 	}
 	
 	ent->classname = "func_door";
@@ -2012,11 +2052,11 @@ void use_killbox (edict_t *self, edict_t *other, edict_t *activator)
 {
 	KillBox (self);
 }
-
+AutoSFP(use_killbox)
 void SP_func_killbox (edict_t *ent)
 {
 	gi.setmodel (ent, ent->model);
-	ent->use = use_killbox;
+	ent->use = SFP::use_killbox;
 	ent->svflags = SVF_NOCLIENT;
 }
 

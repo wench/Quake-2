@@ -54,13 +54,18 @@ static int	sound_hook_hit;
 static int	sound_hook_heal;
 static int	sound_hook_retract;
 
+AutoSFP(ai_charge)
+AutoSFP(ai_stand)
+AutoSFP(ai_walk)
+AutoSFP(ai_move)
+AutoSFP(ai_run)
 
 edict_t *medic_FindDeadMonster (edict_t *self)
 {
-	edict_t	*ent = NULL;
-	edict_t	*best = NULL;
+	edict_t	*ent = nullptr;
+	edict_t	*best = nullptr;
 
-	while ((ent = findradius(ent, self->s.origin, 1024)) != NULL)
+	while ((ent = findradius(ent, self->s.origin, 1024)) != nullptr)
 	{
 		if (ent == self)
 			continue;
@@ -88,6 +93,7 @@ edict_t *medic_FindDeadMonster (edict_t *self)
 
 	return best;
 }
+AutoSFP(medic_FindDeadMonster)
 
 void medic_idle (edict_t *self)
 {
@@ -104,6 +110,7 @@ void medic_idle (edict_t *self)
 		FoundTarget (self);
 	}
 }
+AutoSFP(medic_idle)
 
 void medic_search (edict_t *self)
 {
@@ -124,6 +131,7 @@ void medic_search (edict_t *self)
 		}
 	}
 }
+AutoSFP(medic_search)
 
 void medic_sight (edict_t *self, edict_t *other)
 {
@@ -133,96 +141,96 @@ void medic_sight (edict_t *self, edict_t *other)
 
 mframe_t medic_frames_stand [] =
 {
-	ai_stand, 0, medic_idle,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
-	ai_stand, 0, NULL,
+	SFP::ai_stand, 0, SFP::medic_idle,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
+	SFP::ai_stand, 0, nullptr,
 
 };
 
@@ -230,38 +238,40 @@ void medic_stand (edict_t *self)
 {
 	self->monsterinfo.currentmove = medic_move_stand;
 }
+AutoSFP(medic_stand)
 
 
 mframe_t medic_frames_walk [] =
 {
-	ai_walk, 6.2,	NULL,
-	ai_walk, 18.1,  NULL,
-	ai_walk, 1,		NULL,
-	ai_walk, 9,		NULL,
-	ai_walk, 10,	NULL,
-	ai_walk, 9,		NULL,
-	ai_walk, 11,	NULL,
-	ai_walk, 11.6,  NULL,
-	ai_walk, 2,		NULL,
-	ai_walk, 9.9,	NULL,
-	ai_walk, 14,	NULL,
-	ai_walk, 9.3,	NULL
+	SFP::ai_walk, 6.2,	nullptr,
+	SFP::ai_walk, 18.1,  nullptr,
+	SFP::ai_walk, 1,		nullptr,
+	SFP::ai_walk, 9,		nullptr,
+	SFP::ai_walk, 10,	nullptr,
+	SFP::ai_walk, 9,		nullptr,
+	SFP::ai_walk, 11,	nullptr,
+	SFP::ai_walk, 11.6,  nullptr,
+	SFP::ai_walk, 2,		nullptr,
+	SFP::ai_walk, 9.9,	nullptr,
+	SFP::ai_walk, 14,	nullptr,
+	SFP::ai_walk, 9.3,	nullptr
 };
 
 void medic_walk (edict_t *self)
 {
 	self->monsterinfo.currentmove = medic_move_walk;
 }
+AutoSFP(medic_walk)
 
 
 mframe_t medic_frames_run [] =
 {
-	ai_run, 18,		NULL,
-	ai_run, 22.5,	NULL,
-	ai_run, 25.4,	NULL,
-	ai_run, 23.4,	NULL,
-	ai_run, 24,		NULL,
-	ai_run, 35.6,	NULL
+	SFP::ai_run, 18,		nullptr,
+	SFP::ai_run, 22.5,	nullptr,
+	SFP::ai_run, 25.4,	nullptr,
+	SFP::ai_run, 23.4,	nullptr,
+	SFP::ai_run, 24,		nullptr,
+	SFP::ai_run, 35.6,	nullptr
 	
 };
 
@@ -288,37 +298,38 @@ void medic_run (edict_t *self)
 	else
 		self->monsterinfo.currentmove = medic_move_run;
 }
+AutoSFP(medic_run)
 
 
 mframe_t medic_frames_pain1 [] =
 {
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr
 };
 
 mframe_t medic_frames_pain2 [] =
 {
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr
 };
 
 void medic_pain (edict_t *self, edict_t *other, float kick, int damage)
@@ -361,7 +372,7 @@ void medic_fire_blaster (edict_t *self)
 	else
 		effect = 0;
 
-	AngleVectors (self->s.angles, forward, right, NULL);
+	AngleVectors (self->s.angles, forward, right, nullptr);
 	G_ProjectSource (self->s.origin, monster_flash_offset[MZ2_MEDIC_BLASTER_1], forward, right, start);
 
 	VectorCopy (self->enemy->s.origin, end);
@@ -381,39 +392,40 @@ void medic_dead (edict_t *self)
 	self->nextthink = 0;
 	gi.linkentity (self);
 }
-
+AutoSFP(medic_fire_blaster)
+AutoSFP(medic_dead)
 mframe_t medic_frames_death [] =
 {
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0, NULL
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr
 };
 
 void medic_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int damage, vec3_t point)
@@ -422,7 +434,7 @@ void medic_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int damage
 
 	// if we had a pending patient, free him up for another medic
 	if ((self->enemy) && (self->enemy->owner == self))
-		self->enemy->owner = NULL;
+		self->enemy->owner = nullptr;
 
 // check for gib
 	if (self->health <= self->gib_health)
@@ -476,24 +488,27 @@ void medic_duck_up (edict_t *self)
 	gi.linkentity (self);
 }
 
+AutoSFP(medic_duck_down)
+AutoSFP(medic_duck_hold)
+AutoSFP(medic_duck_up)
 mframe_t medic_frames_duck [] =
 {
-	ai_move, -1,	NULL,
-	ai_move, -1,	NULL,
-	ai_move, -1,	medic_duck_down,
-	ai_move, -1,	medic_duck_hold,
-	ai_move, -1,	NULL,
-	ai_move, -1,	NULL,
-	ai_move, -1,	medic_duck_up,
-	ai_move, -1,	NULL,
-	ai_move, -1,	NULL,
-	ai_move, -1,	NULL,
-	ai_move, -1,	NULL,
-	ai_move, -1,	NULL,
-	ai_move, -1,	NULL,
-	ai_move, -1,	NULL,
-	ai_move, -1,	NULL,
-	ai_move, -1,	NULL
+	SFP::ai_move, -1,	nullptr,
+	SFP::ai_move, -1,	nullptr,
+	SFP::ai_move, -1,	SFP::medic_duck_down,
+	SFP::ai_move, -1,	SFP::medic_duck_hold,
+	SFP::ai_move, -1,	nullptr,
+	SFP::ai_move, -1,	nullptr,
+	SFP::ai_move, -1,	SFP::medic_duck_up,
+	SFP::ai_move, -1,	nullptr,
+	SFP::ai_move, -1,	nullptr,
+	SFP::ai_move, -1,	nullptr,
+	SFP::ai_move, -1,	nullptr,
+	SFP::ai_move, -1,	nullptr,
+	SFP::ai_move, -1,	nullptr,
+	SFP::ai_move, -1,	nullptr,
+	SFP::ai_move, -1,	nullptr,
+	SFP::ai_move, -1,	nullptr
 };
 
 void medic_dodge (edict_t *self, edict_t *attacker, float eta)
@@ -506,25 +521,25 @@ void medic_dodge (edict_t *self, edict_t *attacker, float eta)
 
 	self->monsterinfo.currentmove = medic_move_duck;
 }
-
+AutoSFP(medic_dodge)
 mframe_t medic_frames_attackHyperBlaster [] =
 {
-	ai_charge, 0,	NULL,
-	ai_charge, 0,	NULL,
-	ai_charge, 0,	NULL,
-	ai_charge, 0,	NULL,
-	ai_charge, 0,	medic_fire_blaster,
-	ai_charge, 0,	medic_fire_blaster,
-	ai_charge, 0,	medic_fire_blaster,
-	ai_charge, 0,	medic_fire_blaster,
-	ai_charge, 0,	medic_fire_blaster,
-	ai_charge, 0,	medic_fire_blaster,
-	ai_charge, 0,	medic_fire_blaster,
-	ai_charge, 0,	medic_fire_blaster,
-	ai_charge, 0,	medic_fire_blaster,
-	ai_charge, 0,	medic_fire_blaster,
-	ai_charge, 0,	medic_fire_blaster,
-	ai_charge, 0,	medic_fire_blaster
+	SFP::ai_charge, 0,	nullptr,
+	SFP::ai_charge, 0,	nullptr,
+	SFP::ai_charge, 0,	nullptr,
+	SFP::ai_charge, 0,	nullptr,
+	SFP::ai_charge, 0,	SFP::medic_fire_blaster,
+	SFP::ai_charge, 0,	SFP::medic_fire_blaster,
+	SFP::ai_charge, 0,	SFP::medic_fire_blaster,
+	SFP::ai_charge, 0,	SFP::medic_fire_blaster,
+	SFP::ai_charge, 0,	SFP::medic_fire_blaster,
+	SFP::ai_charge, 0,	SFP::medic_fire_blaster,
+	SFP::ai_charge, 0,	SFP::medic_fire_blaster,
+	SFP::ai_charge, 0,	SFP::medic_fire_blaster,
+	SFP::ai_charge, 0,	SFP::medic_fire_blaster,
+	SFP::ai_charge, 0,	SFP::medic_fire_blaster,
+	SFP::ai_charge, 0,	SFP::medic_fire_blaster,
+	SFP::ai_charge, 0,	SFP::medic_fire_blaster
 };
 
 
@@ -534,24 +549,24 @@ void medic_continue (edict_t *self)
 		if (random() <= 0.95)
 			self->monsterinfo.currentmove = medic_move_attackHyperBlaster;
 }
-
+AutoSFP(medic_continue)
 
 mframe_t medic_frames_attackBlaster [] =
 {
-	ai_charge, 0,	NULL,
-	ai_charge, 5,	NULL,
-	ai_charge, 5,	NULL,
-	ai_charge, 3,	NULL,
-	ai_charge, 2,	NULL,
-	ai_charge, 0,	NULL,
-	ai_charge, 0,	NULL,
-	ai_charge, 0,	NULL,
-	ai_charge, 0,	medic_fire_blaster,
-	ai_charge, 0,	NULL,
-	ai_charge, 0,	NULL,
-	ai_charge, 0,	medic_fire_blaster,	
-	ai_charge, 0,	NULL,
-	ai_charge, 0,	medic_continue	// Change to medic_continue... Else, go to frame 32
+	SFP::ai_charge, 0,	nullptr,
+	SFP::ai_charge, 5,	nullptr,
+	SFP::ai_charge, 5,	nullptr,
+	SFP::ai_charge, 3,	nullptr,
+	SFP::ai_charge, 2,	nullptr,
+	SFP::ai_charge, 0,	nullptr,
+	SFP::ai_charge, 0,	nullptr,
+	SFP::ai_charge, 0,	nullptr,
+	SFP::ai_charge, 0,	SFP::medic_fire_blaster,
+	SFP::ai_charge, 0,	nullptr,
+	SFP::ai_charge, 0,	nullptr,
+	SFP::ai_charge, 0,	SFP::medic_fire_blaster,
+	SFP::ai_charge, 0,	nullptr,
+	SFP::ai_charge, 0,	SFP::medic_continue	// Change to medic_continue... Else, go to frame 32
 };
 
 
@@ -586,7 +601,7 @@ void medic_cable_attack (edict_t *self)
 	if (!self->enemy->inuse)
 		return;
 
-	AngleVectors (self->s.angles, f, r, NULL);
+	AngleVectors (self->s.angles, f, r, nullptr);
 	VectorCopy (medic_cable_offsets[self->s.frame - FRAME_attack42], offset);
 	G_ProjectSource (self->s.origin, offset, f, r, start);
 
@@ -603,7 +618,7 @@ void medic_cable_attack (edict_t *self)
 	if (fabs(angles[0]) > 45)
 		return;
 
-	tr = gi.trace (start, NULL, NULL, self->enemy->s.origin, self, MASK_SHOT);
+	tr = gi.trace (start, nullptr, nullptr, self->enemy->s.origin, self, MASK_SHOT);
 	if (tr.fraction != 1.0 && tr.ent != self->enemy)
 		return;
 
@@ -616,13 +631,13 @@ void medic_cable_attack (edict_t *self)
 	{
 		self->enemy->spawnflags = 0;
 		self->enemy->monsterinfo.aiflags = 0;
-		self->enemy->target = NULL;
-		self->enemy->targetname = NULL;
-		self->enemy->combattarget = NULL;
-		self->enemy->deathtarget = NULL;
+		self->enemy->target = nullptr;
+		self->enemy->targetname = nullptr;
+		self->enemy->combattarget = nullptr;
+		self->enemy->deathtarget = nullptr;
 		self->enemy->owner = self;
 		ED_CallSpawn (self->enemy);
-		self->enemy->owner = NULL;
+		self->enemy->owner = nullptr;
 		if (self->enemy->think)
 		{
 			self->enemy->nextthink = level.time;
@@ -661,37 +676,39 @@ void medic_hook_retract (edict_t *self)
 	gi.sound (self, CHAN_WEAPON, sound_hook_retract, 1, ATTN_NORM, 0);
 	self->enemy->monsterinfo.aiflags &= ~AI_RESURRECTING;
 }
-
+AutoSFP(medic_hook_launch)
+AutoSFP(medic_cable_attack)
+AutoSFP(medic_hook_retract)
 mframe_t medic_frames_attackCable [] =
 {
-	ai_move, 2,		NULL,
-	ai_move, 3,		NULL,
-	ai_move, 5,		NULL,
-	ai_move, 4.4,	NULL,
-	ai_charge, 4.7,	NULL,
-	ai_charge, 5,	NULL,
-	ai_charge, 6,	NULL,
-	ai_charge, 4,	NULL,
-	ai_charge, 0,	NULL,
-	ai_move, 0,		medic_hook_launch,
-	ai_move, 0,		medic_cable_attack,
-	ai_move, 0,		medic_cable_attack,
-	ai_move, 0,		medic_cable_attack,
-	ai_move, 0,		medic_cable_attack,
-	ai_move, 0,		medic_cable_attack,
-	ai_move, 0,		medic_cable_attack,
-	ai_move, 0,		medic_cable_attack,
-	ai_move, 0,		medic_cable_attack,
-	ai_move, 0,		medic_cable_attack,
-	ai_move, -15,	medic_hook_retract,
-	ai_move, -1.5,	NULL,
-	ai_move, -1.2,	NULL,
-	ai_move, -3,	NULL,
-	ai_move, -2,	NULL,
-	ai_move, 0.3,	NULL,
-	ai_move, 0.7,	NULL,
-	ai_move, 1.2,	NULL,
-	ai_move, 1.3,	NULL
+	SFP::ai_move, 2,		nullptr,
+	SFP::ai_move, 3,		nullptr,
+	SFP::ai_move, 5,		nullptr,
+	SFP::ai_move, 4.4,	nullptr,
+	SFP::ai_charge, 4.7,	nullptr,
+	SFP::ai_charge, 5,	nullptr,
+	SFP::ai_charge, 6,	nullptr,
+	SFP::ai_charge, 4,	nullptr,
+	SFP::ai_charge, 0,	nullptr,
+	SFP::ai_move, 0,		SFP::medic_hook_launch,
+	SFP::ai_move, 0,		SFP::medic_cable_attack,
+	SFP::ai_move, 0,		SFP::medic_cable_attack,
+	SFP::ai_move, 0,		SFP::medic_cable_attack,
+	SFP::ai_move, 0,		SFP::medic_cable_attack,
+	SFP::ai_move, 0,		SFP::medic_cable_attack,
+	SFP::ai_move, 0,		SFP::medic_cable_attack,
+	SFP::ai_move, 0,		SFP::medic_cable_attack,
+	SFP::ai_move, 0,		SFP::medic_cable_attack,
+	SFP::ai_move, 0,		SFP::medic_cable_attack,
+	SFP::ai_move, -15,	SFP::medic_hook_retract,
+	SFP::ai_move, -1.5,	nullptr,
+	SFP::ai_move, -1.2,	nullptr,
+	SFP::ai_move, -3,	nullptr,
+	SFP::ai_move, -2,	nullptr,
+	SFP::ai_move, 0.3,	nullptr,
+	SFP::ai_move, 0.7,	nullptr,
+	SFP::ai_move, 1.2,	nullptr,
+	SFP::ai_move, 1.3,	nullptr
 };
 
 
@@ -713,27 +730,33 @@ qboolean medic_checkattack (edict_t *self)
 
 	return M_CheckAttack (self);
 }
-
+//AutoSFP*()
 mmove_t medic_moves[] = {
-	{FRAME_wait1, FRAME_wait90, medic_frames_stand, NULL},
-	{FRAME_walk1, FRAME_walk12, medic_frames_walk, NULL},
-	{FRAME_run1, FRAME_run6, medic_frames_run, NULL},
-	{FRAME_paina1, FRAME_paina8, medic_frames_pain1, medic_run},
-	{FRAME_painb1, FRAME_painb15, medic_frames_pain2, medic_run},
-	{FRAME_death1, FRAME_death30, medic_frames_death, medic_dead},
-	{FRAME_duck1, FRAME_duck16, medic_frames_duck, medic_run},
-	{FRAME_attack15, FRAME_attack30, medic_frames_attackHyperBlaster, medic_run},
-	{FRAME_attack1, FRAME_attack14, medic_frames_attackBlaster, medic_run},
-	{FRAME_attack33, FRAME_attack60, medic_frames_attackCable, medic_run}
+	{FRAME_wait1, FRAME_wait90, medic_frames_stand, nullptr},
+	{FRAME_walk1, FRAME_walk12, medic_frames_walk, nullptr},
+	{FRAME_run1, FRAME_run6, medic_frames_run, nullptr},
+	{FRAME_paina1, FRAME_paina8, medic_frames_pain1, SFP::medic_run},
+	{FRAME_painb1, FRAME_painb15, medic_frames_pain2, SFP::medic_run},
+	{FRAME_death1, FRAME_death30, medic_frames_death,SFP::medic_dead},
+	{FRAME_duck1, FRAME_duck16, medic_frames_duck, SFP::medic_run},
+	{FRAME_attack15, FRAME_attack30, medic_frames_attackHyperBlaster, SFP::medic_run},
+	{FRAME_attack1, FRAME_attack14, medic_frames_attackBlaster, SFP::medic_run},
+	{FRAME_attack33, FRAME_attack60, medic_frames_attackCable, SFP::medic_run}
 };
 
 mmove_t * medic_get_currentmove(edict_t *self)
 {
-	if (!self->monsterinfo.currentmove) return NULL;
+	if (!self->monsterinfo.currentmove) return nullptr;
 	return &medic_moves[self->monsterinfo.currentmove-1];
 }
 
+SFPEnt(pain, medic_pain)
+SFPEnt(die, medic_die)
 
+SFPEnt(monsterinfo.attack, medic_attack)
+SFPEnt(monsterinfo.sight, medic_sight)
+SFPEnt(monsterinfo.checkattack, medic_checkattack)
+SFPEnt(monsterinfo.get_currentmove, medic_get_currentmove)
 /*QUAKED monster_medic (1 .5 0) (-16 -16 -24) (16 16 32) Ambush Trigger_Spawn Sight
 */
 void SP_monster_medic (edict_t *self)
@@ -767,20 +790,20 @@ void SP_monster_medic (edict_t *self)
 	self->gib_health = -130;
 	self->mass = 400;
 
-	self->pain = medic_pain;
-	self->die = medic_die;
+	self->pain = SFP::medic_pain;
+	self->die = SFP::medic_die;
 
-	self->monsterinfo.stand = medic_stand;
-	self->monsterinfo.walk = medic_walk;
-	self->monsterinfo.run = medic_run;
-	self->monsterinfo.dodge = medic_dodge;
-	self->monsterinfo.attack = medic_attack;
-	self->monsterinfo.melee = NULL;
-	self->monsterinfo.sight = medic_sight;
-	self->monsterinfo.idle = medic_idle;
-	self->monsterinfo.search = medic_search;
-	self->monsterinfo.checkattack = medic_checkattack;
-	self->monsterinfo.get_currentmove = medic_get_currentmove;
+	self->monsterinfo.stand = SFP::medic_stand;
+	self->monsterinfo.walk = SFP::medic_walk;
+	self->monsterinfo.run = SFP::medic_run;
+	self->monsterinfo.dodge = SFP::medic_dodge;
+	self->monsterinfo.attack = SFP::medic_attack;
+	self->monsterinfo.melee = nullptr;
+	self->monsterinfo.sight = SFP::medic_sight;
+	self->monsterinfo.idle = SFP::medic_idle;
+	self->monsterinfo.search = SFP::medic_search;
+	self->monsterinfo.checkattack = SFP::medic_checkattack;
+	self->monsterinfo.get_currentmove = SFP::medic_get_currentmove;
 
 	gi.linkentity (self);
 

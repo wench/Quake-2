@@ -226,14 +226,14 @@ void EndDMLevel (void)
 	// see if it's in the map list
 	if (*sv_maplist->string) {
 		s = Q_strdup(sv_maplist->string);
-		f = NULL;
+		f = nullptr;
 		t = strtok(s, seps);
-		while (t != NULL) {
+		while (t != nullptr) {
 			if (Q_stricmp(t, level.mapname) == 0) {
 				// it's in the list, go to the next one
-				t = strtok(NULL, seps);
-				if (t == NULL) { // end of list, go to first one
-					if (f == NULL) // there isn't a first one, same level
+				t = strtok(nullptr, seps);
+				if (t == nullptr) { // end of list, go to first one
+					if (f == nullptr) // there isn't a first one, same level
 						BeginIntermission (CreateTargetChangeLevel (level.mapname) );
 					else
 						BeginIntermission (CreateTargetChangeLevel (f) );
@@ -244,7 +244,7 @@ void EndDMLevel (void)
 			}
 			if (!f)
 				f = t;
-			t = strtok(NULL, seps);
+			t = strtok(nullptr, seps);
 		}
 		delete[] s;
 	}
@@ -252,7 +252,7 @@ void EndDMLevel (void)
 	if (level.nextmap[0]) // go to a specific map
 		BeginIntermission (CreateTargetChangeLevel (level.nextmap) );
 	else {	// search for a changelevel
-		ent = G_Find (NULL, FOFS(classname), "target_changelevel");
+		ent = G_Find (nullptr, FOFS(classname), "target_changelevel");
 		if (!ent)
 		{	// the map designer didn't include a changelevel,
 			// so create a fake ent that goes back to the same level
@@ -351,7 +351,7 @@ void ExitLevel (void)
 	else
 		Com_sprintf (command, sizeof(command), "gamemap \"%s\"\n", level.changemap);
 	gi.AddCommandString (command);
-	level.changemap = NULL;
+	level.changemap = nullptr;
 	level.exitintermission = 0;
 	level.intermissiontime = 0;
 	ClientEndServerFrames ();
@@ -411,7 +411,7 @@ void G_RunFrame (void)
 		// if the ground entity moved, make sure we are still on it
 		if ((ent->groundentity) && (ent->groundentity->linkcount != ent->groundentity_linkcount))
 		{
-			ent->groundentity = NULL;
+			ent->groundentity = nullptr;
 			if ( !(ent->flags & (FL_SWIM|FL_FLY)) && (ent->svflags & SVF_MONSTER) )
 			{
 				M_CheckGround (ent);
@@ -440,6 +440,12 @@ void G_RunFrame (void)
 void* operator new (size_t bytes, MemoryTag tag) throw() { return gi.TagMalloc(bytes, tag); }
 void operator delete (void* buf, MemoryTag tag) throw() { return gi.TagFree(buf); }
 
-void* operator new (size_t bytes)  { return gi.TagMalloc(bytes, 0); }
+
+void* operator new (size_t bytes)  
+{ 
+	if (gi.TagMalloc)
+		return gi.TagMalloc(bytes, 0);
+	else return malloc(bytes);
+}
 void operator delete (void* buf) throw() { return gi.TagFree(buf); }
  

@@ -51,10 +51,14 @@ enum {
 };
 
 void flipper_stand (edict_t *self);
-
+AutoSFP(ai_charge)
+AutoSFP(ai_stand)
+AutoSFP(ai_walk)
+AutoSFP(ai_move)
+AutoSFP(ai_run)
 mframe_t flipper_frames_stand [] =
 {
-	ai_stand, 0, NULL
+	SFP::ai_stand, 0, nullptr
 };
 	
 
@@ -67,32 +71,32 @@ void flipper_stand (edict_t *self)
 
 mframe_t flipper_frames_run [] =
 {
-	ai_run, FLIPPER_RUN_SPEED, NULL,	// 6
-	ai_run, FLIPPER_RUN_SPEED, NULL,
-	ai_run, FLIPPER_RUN_SPEED, NULL,
-	ai_run, FLIPPER_RUN_SPEED, NULL,
-	ai_run, FLIPPER_RUN_SPEED, NULL,	// 10
+	SFP::ai_run, FLIPPER_RUN_SPEED, nullptr,	// 6
+	SFP::ai_run, FLIPPER_RUN_SPEED, nullptr,
+	SFP::ai_run, FLIPPER_RUN_SPEED, nullptr,
+	SFP::ai_run, FLIPPER_RUN_SPEED, nullptr,
+	SFP::ai_run, FLIPPER_RUN_SPEED, nullptr,	// 10
 
-	ai_run, FLIPPER_RUN_SPEED, NULL,
-	ai_run, FLIPPER_RUN_SPEED, NULL,
-	ai_run, FLIPPER_RUN_SPEED, NULL,
-	ai_run, FLIPPER_RUN_SPEED, NULL,
-	ai_run, FLIPPER_RUN_SPEED, NULL,
-	ai_run, FLIPPER_RUN_SPEED, NULL,
-	ai_run, FLIPPER_RUN_SPEED, NULL,
-	ai_run, FLIPPER_RUN_SPEED, NULL,
-	ai_run, FLIPPER_RUN_SPEED, NULL,
-	ai_run, FLIPPER_RUN_SPEED, NULL,	// 20
+	SFP::ai_run, FLIPPER_RUN_SPEED, nullptr,
+	SFP::ai_run, FLIPPER_RUN_SPEED, nullptr,
+	SFP::ai_run, FLIPPER_RUN_SPEED, nullptr,
+	SFP::ai_run, FLIPPER_RUN_SPEED, nullptr,
+	SFP::ai_run, FLIPPER_RUN_SPEED, nullptr,
+	SFP::ai_run, FLIPPER_RUN_SPEED, nullptr,
+	SFP::ai_run, FLIPPER_RUN_SPEED, nullptr,
+	SFP::ai_run, FLIPPER_RUN_SPEED, nullptr,
+	SFP::ai_run, FLIPPER_RUN_SPEED, nullptr,
+	SFP::ai_run, FLIPPER_RUN_SPEED, nullptr,	// 20
 
-	ai_run, FLIPPER_RUN_SPEED, NULL,
-	ai_run, FLIPPER_RUN_SPEED, NULL,
-	ai_run, FLIPPER_RUN_SPEED, NULL,
-	ai_run, FLIPPER_RUN_SPEED, NULL,
-	ai_run, FLIPPER_RUN_SPEED, NULL,
-	ai_run, FLIPPER_RUN_SPEED, NULL,
-	ai_run, FLIPPER_RUN_SPEED, NULL,
-	ai_run, FLIPPER_RUN_SPEED, NULL,
-	ai_run, FLIPPER_RUN_SPEED, NULL		// 29
+	SFP::ai_run, FLIPPER_RUN_SPEED, nullptr,
+	SFP::ai_run, FLIPPER_RUN_SPEED, nullptr,
+	SFP::ai_run, FLIPPER_RUN_SPEED, nullptr,
+	SFP::ai_run, FLIPPER_RUN_SPEED, nullptr,
+	SFP::ai_run, FLIPPER_RUN_SPEED, nullptr,
+	SFP::ai_run, FLIPPER_RUN_SPEED, nullptr,
+	SFP::ai_run, FLIPPER_RUN_SPEED, nullptr,
+	SFP::ai_run, FLIPPER_RUN_SPEED, nullptr,
+	SFP::ai_run, FLIPPER_RUN_SPEED, nullptr		// 29
 };
 
 void flipper_run_loop (edict_t *self)
@@ -102,12 +106,12 @@ void flipper_run_loop (edict_t *self)
 
 mframe_t flipper_frames_run_start [] =
 {
-	ai_run, 8, NULL,
-	ai_run, 8, NULL,
-	ai_run, 8, NULL,
-	ai_run, 8, NULL,
-	ai_run, 8, NULL,
-	ai_run, 8, NULL
+	SFP::ai_run, 8, nullptr,
+	SFP::ai_run, 8, nullptr,
+	SFP::ai_run, 8, nullptr,
+	SFP::ai_run, 8, nullptr,
+	SFP::ai_run, 8, nullptr,
+	SFP::ai_run, 8, nullptr
 };
 
 void flipper_run (edict_t *self)
@@ -118,44 +122,44 @@ void flipper_run (edict_t *self)
 /* Standard Swimming */ 
 mframe_t flipper_frames_walk [] =
 {
-	ai_walk, 4, NULL,
-	ai_walk, 4, NULL,
-	ai_walk, 4, NULL,
-	ai_walk, 4, NULL,
-	ai_walk, 4, NULL,
-	ai_walk, 4, NULL,
-	ai_walk, 4, NULL,
-	ai_walk, 4, NULL,
-	ai_walk, 4, NULL,
-	ai_walk, 4, NULL,
-	ai_walk, 4, NULL,
-	ai_walk, 4, NULL,
-	ai_walk, 4, NULL,
-	ai_walk, 4, NULL,
-	ai_walk, 4, NULL,
-	ai_walk, 4, NULL,
-	ai_walk, 4, NULL,
-	ai_walk, 4, NULL,
-	ai_walk, 4, NULL,
-	ai_walk, 4, NULL,
-	ai_walk, 4, NULL,
-	ai_walk, 4, NULL,
-	ai_walk, 4, NULL,
-	ai_walk, 4, NULL
+	SFP::ai_walk, 4, nullptr,
+	SFP::ai_walk, 4, nullptr,
+	SFP::ai_walk, 4, nullptr,
+	SFP::ai_walk, 4, nullptr,
+	SFP::ai_walk, 4, nullptr,
+	SFP::ai_walk, 4, nullptr,
+	SFP::ai_walk, 4, nullptr,
+	SFP::ai_walk, 4, nullptr,
+	SFP::ai_walk, 4, nullptr,
+	SFP::ai_walk, 4, nullptr,
+	SFP::ai_walk, 4, nullptr,
+	SFP::ai_walk, 4, nullptr,
+	SFP::ai_walk, 4, nullptr,
+	SFP::ai_walk, 4, nullptr,
+	SFP::ai_walk, 4, nullptr,
+	SFP::ai_walk, 4, nullptr,
+	SFP::ai_walk, 4, nullptr,
+	SFP::ai_walk, 4, nullptr,
+	SFP::ai_walk, 4, nullptr,
+	SFP::ai_walk, 4, nullptr,
+	SFP::ai_walk, 4, nullptr,
+	SFP::ai_walk, 4, nullptr,
+	SFP::ai_walk, 4, nullptr,
+	SFP::ai_walk, 4, nullptr
 };
 
 void flipper_walk (edict_t *self)
 {
 	self->monsterinfo.currentmove = flipper_move_walk;
 }
-
+AutoSFP(flipper_run)
 mframe_t flipper_frames_start_run [] =
 {
-	ai_run, 8, NULL,
-	ai_run, 8, NULL,
-	ai_run, 8, NULL,
-	ai_run, 8, NULL,
-	ai_run, 8, flipper_run
+	SFP::ai_run, 8, nullptr,
+	SFP::ai_run, 8, nullptr,
+	SFP::ai_run, 8, nullptr,
+	SFP::ai_run, 8, nullptr,
+	SFP::ai_run, 8, SFP::flipper_run
 };
 
 void flipper_start_run (edict_t *self)
@@ -165,20 +169,20 @@ void flipper_start_run (edict_t *self)
 
 mframe_t flipper_frames_pain2 [] =
 {
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0,	NULL,
-	ai_move, 0,	NULL,
-	ai_move, 0, NULL
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0,	nullptr,
+	SFP::ai_move, 0,	nullptr,
+	SFP::ai_move, 0, nullptr
 };
 
 mframe_t flipper_frames_pain1 [] =
 {
-	ai_move, 0, NULL,
-	ai_move, 0, NULL,
-	ai_move, 0,	NULL,
-	ai_move, 0,	NULL,
-	ai_move, 0, NULL
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0, nullptr,
+	SFP::ai_move, 0,	nullptr,
+	SFP::ai_move, 0,	nullptr,
+	SFP::ai_move, 0, nullptr
 };
 
 void flipper_bite (edict_t *self)
@@ -193,29 +197,32 @@ void flipper_preattack (edict_t *self)
 {
 	gi.sound (self, CHAN_WEAPON, sound_chomp, 1, ATTN_NORM, 0);
 }
+AutoSFP(flipper_preattack)
+AutoSFP(flipper_bite)
+
 
 mframe_t flipper_frames_attack [] =
 {
-	ai_charge, 0,	flipper_preattack,
-	ai_charge, 0,	NULL,
-	ai_charge, 0,	NULL,
-	ai_charge, 0,	NULL,
-	ai_charge, 0,	NULL,
-	ai_charge, 0,	NULL,
-	ai_charge, 0,	NULL,
-	ai_charge, 0,	NULL,
-	ai_charge, 0,	NULL,
-	ai_charge, 0,	NULL,
-	ai_charge, 0,	NULL,
-	ai_charge, 0,	NULL,
-	ai_charge, 0,	NULL,
-	ai_charge, 0,	flipper_bite,
-	ai_charge, 0,	NULL,
-	ai_charge, 0,	NULL,
-	ai_charge, 0,	NULL,
-	ai_charge, 0,	NULL,
-	ai_charge, 0,	flipper_bite,
-	ai_charge, 0,	NULL
+	SFP::ai_charge, 0,	SFP::flipper_preattack,
+	SFP::ai_charge, 0,	nullptr,
+	SFP::ai_charge, 0,	nullptr,
+	SFP::ai_charge, 0,	nullptr,
+	SFP::ai_charge, 0,	nullptr,
+	SFP::ai_charge, 0,	nullptr,
+	SFP::ai_charge, 0,	nullptr,
+	SFP::ai_charge, 0,	nullptr,
+	SFP::ai_charge, 0,	nullptr,
+	SFP::ai_charge, 0,	nullptr,
+	SFP::ai_charge, 0,	nullptr,
+	SFP::ai_charge, 0,	nullptr,
+	SFP::ai_charge, 0,	nullptr,
+	SFP::ai_charge, 0,	SFP::flipper_bite,
+	SFP::ai_charge, 0,	nullptr,
+	SFP::ai_charge, 0,	nullptr,
+	SFP::ai_charge, 0,	nullptr,
+	SFP::ai_charge, 0,	nullptr,
+	SFP::ai_charge, 0,	SFP::flipper_bite,
+	SFP::ai_charge, 0,	nullptr
 };
 
 void flipper_melee(edict_t *self)
@@ -263,84 +270,85 @@ void flipper_dead (edict_t *self)
 
 mframe_t flipper_frames_death [] =
 {
-	ai_move, 0,	 NULL,
-	ai_move, 0,	 NULL,
-	ai_move, 0,	 NULL,
-	ai_move, 0,	 NULL,
-	ai_move, 0,	 NULL,
-	ai_move, 0,	 NULL,
-	ai_move, 0,	 NULL,
-	ai_move, 0,	 NULL,
-	ai_move, 0,	 NULL,
-	ai_move, 0,	 NULL,
+	SFP::ai_move, 0,	 nullptr,
+	SFP::ai_move, 0,	 nullptr,
+	SFP::ai_move, 0,	 nullptr,
+	SFP::ai_move, 0,	 nullptr,
+	SFP::ai_move, 0,	 nullptr,
+	SFP::ai_move, 0,	 nullptr,
+	SFP::ai_move, 0,	 nullptr,
+	SFP::ai_move, 0,	 nullptr,
+	SFP::ai_move, 0,	 nullptr,
+	SFP::ai_move, 0,	 nullptr,
 
-	ai_move, 0,	 NULL,
-	ai_move, 0,	 NULL,
-	ai_move, 0,	 NULL,
-	ai_move, 0,	 NULL,
-	ai_move, 0,	 NULL,
-	ai_move, 0,	 NULL,
-	ai_move, 0,	 NULL,
-	ai_move, 0,	 NULL,
-	ai_move, 0,	 NULL,
-	ai_move, 0,	 NULL,
+	SFP::ai_move, 0,	 nullptr,
+	SFP::ai_move, 0,	 nullptr,
+	SFP::ai_move, 0,	 nullptr,
+	SFP::ai_move, 0,	 nullptr,
+	SFP::ai_move, 0,	 nullptr,
+	SFP::ai_move, 0,	 nullptr,
+	SFP::ai_move, 0,	 nullptr,
+	SFP::ai_move, 0,	 nullptr,
+	SFP::ai_move, 0,	 nullptr,
+	SFP::ai_move, 0,	 nullptr,
 
-	ai_move, 0,	 NULL,
-	ai_move, 0,	 NULL,
-	ai_move, 0,	 NULL,
-	ai_move, 0,	 NULL,
-	ai_move, 0,	 NULL,
-	ai_move, 0,	 NULL,
-	ai_move, 0,	 NULL,
-	ai_move, 0,	 NULL,
-	ai_move, 0,	 NULL,
-	ai_move, 0,	 NULL,
+	SFP::ai_move, 0,	 nullptr,
+	SFP::ai_move, 0,	 nullptr,
+	SFP::ai_move, 0,	 nullptr,
+	SFP::ai_move, 0,	 nullptr,
+	SFP::ai_move, 0,	 nullptr,
+	SFP::ai_move, 0,	 nullptr,
+	SFP::ai_move, 0,	 nullptr,
+	SFP::ai_move, 0,	 nullptr,
+	SFP::ai_move, 0,	 nullptr,
+	SFP::ai_move, 0,	 nullptr,
 
-	ai_move, 0,	 NULL,
-	ai_move, 0,	 NULL,
-	ai_move, 0,	 NULL,
-	ai_move, 0,	 NULL,
-	ai_move, 0,	 NULL,
-	ai_move, 0,	 NULL,
-	ai_move, 0,	 NULL,
-	ai_move, 0,	 NULL,
-	ai_move, 0,	 NULL,
-	ai_move, 0,	 NULL,
+	SFP::ai_move, 0,	 nullptr,
+	SFP::ai_move, 0,	 nullptr,
+	SFP::ai_move, 0,	 nullptr,
+	SFP::ai_move, 0,	 nullptr,
+	SFP::ai_move, 0,	 nullptr,
+	SFP::ai_move, 0,	 nullptr,
+	SFP::ai_move, 0,	 nullptr,
+	SFP::ai_move, 0,	 nullptr,
+	SFP::ai_move, 0,	 nullptr,
+	SFP::ai_move, 0,	 nullptr,
 
-	ai_move, 0,	 NULL,
-	ai_move, 0,	 NULL,
-	ai_move, 0,	 NULL,
-	ai_move, 0,	 NULL,
-	ai_move, 0,	 NULL,
-	ai_move, 0,	 NULL,
-	ai_move, 0,	 NULL,
-	ai_move, 0,	 NULL,
-	ai_move, 0,	 NULL,
-	ai_move, 0,	 NULL,
+	SFP::ai_move, 0,	 nullptr,
+	SFP::ai_move, 0,	 nullptr,
+	SFP::ai_move, 0,	 nullptr,
+	SFP::ai_move, 0,	 nullptr,
+	SFP::ai_move, 0,	 nullptr,
+	SFP::ai_move, 0,	 nullptr,
+	SFP::ai_move, 0,	 nullptr,
+	SFP::ai_move, 0,	 nullptr,
+	SFP::ai_move, 0,	 nullptr,
+	SFP::ai_move, 0,	 nullptr,
 
-	ai_move, 0,	 NULL,
-	ai_move, 0,	 NULL,
-	ai_move, 0,	 NULL,
-	ai_move, 0,	 NULL,
-	ai_move, 0,	 NULL,
-	ai_move, 0,	 NULL
+	SFP::ai_move, 0,	 nullptr,
+	SFP::ai_move, 0,	 nullptr,
+	SFP::ai_move, 0,	 nullptr,
+	SFP::ai_move, 0,	 nullptr,
+	SFP::ai_move, 0,	 nullptr,
+	SFP::ai_move, 0,	 nullptr
 };
-
+AutoSFP(flipper_run_loop)
+AutoSFP(flipper_dead)
 mmove_t flipper_moves[] = {
-	{FRAME_flphor01, FRAME_flphor01, flipper_frames_stand, NULL},
-	{FRAME_flpver06, FRAME_flpver29, flipper_frames_run, NULL},
-	{FRAME_flpver01, FRAME_flpver06, flipper_frames_run_start, flipper_run_loop},
-	{FRAME_flphor01, FRAME_flphor24, flipper_frames_walk, NULL},
-	{FRAME_flphor01, FRAME_flphor05, flipper_frames_start_run, NULL},
-	{FRAME_flppn101, FRAME_flppn105, flipper_frames_pain2, flipper_run},
-	{FRAME_flppn201, FRAME_flppn205, flipper_frames_pain1, flipper_run},
-	{FRAME_flpbit01, FRAME_flpbit20, flipper_frames_attack, flipper_run},
-	{FRAME_flpdth01, FRAME_flpdth56, flipper_frames_death, flipper_dead},
+	{FRAME_flphor01, FRAME_flphor01, flipper_frames_stand, nullptr},
+	{FRAME_flpver06, FRAME_flpver29, flipper_frames_run, nullptr},
+	{FRAME_flpver01, FRAME_flpver06, flipper_frames_run_start, SFP::flipper_run_loop},
+	{FRAME_flphor01, FRAME_flphor24, flipper_frames_walk, nullptr},
+	{FRAME_flphor01, FRAME_flphor05, flipper_frames_start_run, nullptr},
+	{FRAME_flppn101, FRAME_flppn105, flipper_frames_pain2, SFP::flipper_run},
+	{FRAME_flppn201, FRAME_flppn205, flipper_frames_pain1, SFP::flipper_run},
+	{FRAME_flpbit01, FRAME_flpbit20, flipper_frames_attack, SFP::flipper_run},
+	{FRAME_flpdth01, FRAME_flpdth56, flipper_frames_death, SFP::flipper_dead},
 };
 
 mmove_t * flipper_get_currentmove(edict_t *self)
 {
-	if (!self->monsterinfo.currentmove) return NULL;
+	if (!self->monsterinfo.currentmove) return nullptr;
 	return &flipper_moves[self->monsterinfo.currentmove-1];
 }
 
@@ -375,7 +383,15 @@ void flipper_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int dama
 	self->takedamage = DAMAGE_YES;
 	self->monsterinfo.currentmove = flipper_move_death;
 }
+SFPEnt(pain, flipper_pain)
+SFPEnt(die, flipper_die)
 
+SFPEnt(monsterinfo.stand, flipper_stand)
+SFPEnt(monsterinfo.walk, flipper_walk)
+SFPEnt(monsterinfo.run, flipper_start_run)
+SFPEnt(monsterinfo.melee, flipper_melee)
+SFPEnt(monsterinfo.sight, flipper_sight)
+SFPEnt(monsterinfo.get_currentmove, flipper_get_currentmove)
 /*QUAKED monster_flipper (1 .5 0) (-16 -16 -24) (16 16 32) Ambush Trigger_Spawn Sight
 */
 void SP_monster_flipper (edict_t *self)
@@ -405,15 +421,15 @@ void SP_monster_flipper (edict_t *self)
 	self->gib_health = -30;
 	self->mass = 100;
 
-	self->pain = flipper_pain;
-	self->die = flipper_die;
+	self->pain = SFP::flipper_pain;
+	self->die = SFP::flipper_die;
 
-	self->monsterinfo.stand = flipper_stand;
-	self->monsterinfo.walk = flipper_walk;
-	self->monsterinfo.run = flipper_start_run;
-	self->monsterinfo.melee = flipper_melee;
-	self->monsterinfo.sight = flipper_sight;
-	self->monsterinfo.get_currentmove = flipper_get_currentmove;
+	self->monsterinfo.stand = SFP::flipper_stand;
+	self->monsterinfo.walk = SFP::flipper_walk;
+	self->monsterinfo.run = SFP::flipper_start_run;
+	self->monsterinfo.melee = SFP::flipper_melee;
+	self->monsterinfo.sight = SFP::flipper_sight;
+	self->monsterinfo.get_currentmove = SFP::flipper_get_currentmove;
 
 	gi.linkentity (self);
 

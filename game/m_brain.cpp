@@ -74,6 +74,18 @@ void brain_search (edict_t *self)
 void brain_run (edict_t *self);
 void brain_dead (edict_t *self);
 
+AutoSFP(ai_charge)
+AutoSFP(ai_stand)
+AutoSFP(ai_walk)
+AutoSFP(ai_move)
+AutoSFP(ai_run)
+AutoSFP(ai_turn)
+
+AutoSFP(brain_sight)
+AutoSFP(brain_search)
+AutoSFP(brain_run)
+AutoSFP(brain_dead)
+
 
 //
 // STAND
@@ -81,38 +93,38 @@ void brain_dead (edict_t *self);
 
 mframe_t brain_frames_stand [] =
 {
-	ai_stand,	0,	NULL,
-	ai_stand,	0,	NULL,
-	ai_stand,	0,	NULL,
-	ai_stand,	0,	NULL,
-	ai_stand,	0,	NULL,
-	ai_stand,	0,	NULL,
-	ai_stand,	0,	NULL,
-	ai_stand,	0,	NULL,
-	ai_stand,	0,	NULL,
-	ai_stand,	0,	NULL,
+	SFP::ai_stand,	0,	nullptr,
+	SFP::ai_stand,	0,	nullptr,
+	SFP::ai_stand,	0,	nullptr,
+	SFP::ai_stand,	0,	nullptr,
+	SFP::ai_stand,	0,	nullptr,
+	SFP::ai_stand,	0,	nullptr,
+	SFP::ai_stand,	0,	nullptr,
+	SFP::ai_stand,	0,	nullptr,
+	SFP::ai_stand,	0,	nullptr,
+	SFP::ai_stand,	0,	nullptr,
 
-	ai_stand,	0,	NULL,
-	ai_stand,	0,	NULL,
-	ai_stand,	0,	NULL,
-	ai_stand,	0,	NULL,
-	ai_stand,	0,	NULL,
-	ai_stand,	0,	NULL,
-	ai_stand,	0,	NULL,
-	ai_stand,	0,	NULL,
-	ai_stand,	0,	NULL,
-	ai_stand,	0,	NULL,
+	SFP::ai_stand,	0,	nullptr,
+	SFP::ai_stand,	0,	nullptr,
+	SFP::ai_stand,	0,	nullptr,
+	SFP::ai_stand,	0,	nullptr,
+	SFP::ai_stand,	0,	nullptr,
+	SFP::ai_stand,	0,	nullptr,
+	SFP::ai_stand,	0,	nullptr,
+	SFP::ai_stand,	0,	nullptr,
+	SFP::ai_stand,	0,	nullptr,
+	SFP::ai_stand,	0,	nullptr,
 
-	ai_stand,	0,	NULL,
-	ai_stand,	0,	NULL,
-	ai_stand,	0,	NULL,
-	ai_stand,	0,	NULL,
-	ai_stand,	0,	NULL,
-	ai_stand,	0,	NULL,
-	ai_stand,	0,	NULL,
-	ai_stand,	0,	NULL,
-	ai_stand,	0,	NULL,
-	ai_stand,	0,	NULL
+	SFP::ai_stand,	0,	nullptr,
+	SFP::ai_stand,	0,	nullptr,
+	SFP::ai_stand,	0,	nullptr,
+	SFP::ai_stand,	0,	nullptr,
+	SFP::ai_stand,	0,	nullptr,
+	SFP::ai_stand,	0,	nullptr,
+	SFP::ai_stand,	0,	nullptr,
+	SFP::ai_stand,	0,	nullptr,
+	SFP::ai_stand,	0,	nullptr,
+	SFP::ai_stand,	0,	nullptr
 };
 
 void brain_stand (edict_t *self)
@@ -127,38 +139,38 @@ void brain_stand (edict_t *self)
 
 mframe_t brain_frames_idle [] =
 {
-	ai_stand,	0,	NULL,
-	ai_stand,	0,	NULL,
-	ai_stand,	0,	NULL,
-	ai_stand,	0,	NULL,
-	ai_stand,	0,	NULL,
-	ai_stand,	0,	NULL,
-	ai_stand,	0,	NULL,
-	ai_stand,	0,	NULL,
-	ai_stand,	0,	NULL,
-	ai_stand,	0,	NULL,
+	SFP::ai_stand,	0,	nullptr,
+	SFP::ai_stand,	0,	nullptr,
+	SFP::ai_stand,	0,	nullptr,
+	SFP::ai_stand,	0,	nullptr,
+	SFP::ai_stand,	0,	nullptr,
+	SFP::ai_stand,	0,	nullptr,
+	SFP::ai_stand,	0,	nullptr,
+	SFP::ai_stand,	0,	nullptr,
+	SFP::ai_stand,	0,	nullptr,
+	SFP::ai_stand,	0,	nullptr,
 
-	ai_stand,	0,	NULL,
-	ai_stand,	0,	NULL,
-	ai_stand,	0,	NULL,
-	ai_stand,	0,	NULL,
-	ai_stand,	0,	NULL,
-	ai_stand,	0,	NULL,
-	ai_stand,	0,	NULL,
-	ai_stand,	0,	NULL,
-	ai_stand,	0,	NULL,
-	ai_stand,	0,	NULL,
+	SFP::ai_stand,	0,	nullptr,
+	SFP::ai_stand,	0,	nullptr,
+	SFP::ai_stand,	0,	nullptr,
+	SFP::ai_stand,	0,	nullptr,
+	SFP::ai_stand,	0,	nullptr,
+	SFP::ai_stand,	0,	nullptr,
+	SFP::ai_stand,	0,	nullptr,
+	SFP::ai_stand,	0,	nullptr,
+	SFP::ai_stand,	0,	nullptr,
+	SFP::ai_stand,	0,	nullptr,
 
-	ai_stand,	0,	NULL,
-	ai_stand,	0,	NULL,
-	ai_stand,	0,	NULL,
-	ai_stand,	0,	NULL,
-	ai_stand,	0,	NULL,
-	ai_stand,	0,	NULL,
-	ai_stand,	0,	NULL,
-	ai_stand,	0,	NULL,
-	ai_stand,	0,	NULL,
-	ai_stand,	0,	NULL
+	SFP::ai_stand,	0,	nullptr,
+	SFP::ai_stand,	0,	nullptr,
+	SFP::ai_stand,	0,	nullptr,
+	SFP::ai_stand,	0,	nullptr,
+	SFP::ai_stand,	0,	nullptr,
+	SFP::ai_stand,	0,	nullptr,
+	SFP::ai_stand,	0,	nullptr,
+	SFP::ai_stand,	0,	nullptr,
+	SFP::ai_stand,	0,	nullptr,
+	SFP::ai_stand,	0,	nullptr
 };
 
 void brain_idle (edict_t *self)
@@ -173,17 +185,17 @@ void brain_idle (edict_t *self)
 //
 mframe_t brain_frames_walk1 [] =
 {
-	ai_walk,	7,	NULL,
-	ai_walk,	2,	NULL,
-	ai_walk,	3,	NULL,
-	ai_walk,	3,	NULL,
-	ai_walk,	1,	NULL,
-	ai_walk,	0,	NULL,
-	ai_walk,	0,	NULL,
-	ai_walk,	9,	NULL,
-	ai_walk,	-4,	NULL,
-	ai_walk,	-1,	NULL,
-	ai_walk,	2,	NULL
+	SFP::ai_walk,	7,	nullptr,
+	SFP::ai_walk,	2,	nullptr,
+	SFP::ai_walk,	3,	nullptr,
+	SFP::ai_walk,	3,	nullptr,
+	SFP::ai_walk,	1,	nullptr,
+	SFP::ai_walk,	0,	nullptr,
+	SFP::ai_walk,	0,	nullptr,
+	SFP::ai_walk,	9,	nullptr,
+	SFP::ai_walk,	-4,	nullptr,
+	SFP::ai_walk,	-1,	nullptr,
+	SFP::ai_walk,	2,	nullptr
 };
 
 // walk2 is FUBAR, do not use
@@ -196,51 +208,51 @@ void brain_walk2_cycle (edict_t *self)
 
 mframe_t brain_frames_walk2 [] =
 {
-	ai_walk,	3,	NULL,
-	ai_walk,	-2,	NULL,
-	ai_walk,	-4,	NULL,
-	ai_walk,	-3,	NULL,
-	ai_walk,	0,	NULL,
-	ai_walk,	1,	NULL,
-	ai_walk,	12,	NULL,
-	ai_walk,	0,	NULL,
-	ai_walk,	-3,	NULL,
-	ai_walk,	0,	NULL,
+	SFP::ai_walk,	3,	nullptr,
+	SFP::ai_walk,	-2,	nullptr,
+	SFP::ai_walk,	-4,	nullptr,
+	SFP::ai_walk,	-3,	nullptr,
+	SFP::ai_walk,	0,	nullptr,
+	SFP::ai_walk,	1,	nullptr,
+	SFP::ai_walk,	12,	nullptr,
+	SFP::ai_walk,	0,	nullptr,
+	SFP::ai_walk,	-3,	nullptr,
+	SFP::ai_walk,	0,	nullptr,
 
-	ai_walk,	-2,	NULL,
-	ai_walk,	0,	NULL,
-	ai_walk,	0,	NULL,
-	ai_walk,	1,	NULL,
-	ai_walk,	0,	NULL,
-	ai_walk,	0,	NULL,
-	ai_walk,	0,	NULL,
-	ai_walk,	0,	NULL,
-	ai_walk,	0,	NULL,
-	ai_walk,	10,	NULL,		// Cycle Start
+	SFP::ai_walk,	-2,	nullptr,
+	SFP::ai_walk,	0,	nullptr,
+	SFP::ai_walk,	0,	nullptr,
+	SFP::ai_walk,	1,	nullptr,
+	SFP::ai_walk,	0,	nullptr,
+	SFP::ai_walk,	0,	nullptr,
+	SFP::ai_walk,	0,	nullptr,
+	SFP::ai_walk,	0,	nullptr,
+	SFP::ai_walk,	0,	nullptr,
+	SFP::ai_walk,	10,	nullptr,		// Cycle Start
 
-	ai_walk,	-1,	NULL,
-	ai_walk,	7,	NULL,
-	ai_walk,	0,	NULL,
-	ai_walk,	3,	NULL,
-	ai_walk,	-3,	NULL,
-	ai_walk,	2,	NULL,
-	ai_walk,	4,	NULL,
-	ai_walk,	-3,	NULL,
-	ai_walk,	2,	NULL,
-	ai_walk,	0,	NULL,
+	SFP::ai_walk,	-1,	nullptr,
+	SFP::ai_walk,	7,	nullptr,
+	SFP::ai_walk,	0,	nullptr,
+	SFP::ai_walk,	3,	nullptr,
+	SFP::ai_walk,	-3,	nullptr,
+	SFP::ai_walk,	2,	nullptr,
+	SFP::ai_walk,	4,	nullptr,
+	SFP::ai_walk,	-3,	nullptr,
+	SFP::ai_walk,	2,	nullptr,
+	SFP::ai_walk,	0,	nullptr,
 
-	ai_walk,	4,	brain_walk2_cycle,
-	ai_walk,	-1,	NULL,
-	ai_walk,	-1,	NULL,
-	ai_walk,	-8,	NULL,		
-	ai_walk,	0,	NULL,
-	ai_walk,	1,	NULL,
-	ai_walk,	5,	NULL,
-	ai_walk,	2,	NULL,
-	ai_walk,	-1,	NULL,
-	ai_walk,	-5,	NULL
+	SFP::ai_walk,	4,	brain_walk2_cycle,
+	SFP::ai_walk,	-1,	nullptr,
+	SFP::ai_walk,	-1,	nullptr,
+	SFP::ai_walk,	-8,	nullptr,		
+	SFP::ai_walk,	0,	nullptr,
+	SFP::ai_walk,	1,	nullptr,
+	SFP::ai_walk,	5,	nullptr,
+	SFP::ai_walk,	2,	nullptr,
+	SFP::ai_walk,	-1,	nullptr,
+	SFP::ai_walk,	-5,	nullptr
 };
-mmove_t brain_move_walk2 = {FRAME_walk201, FRAME_walk240, brain_frames_walk2, NULL};
+mmove_t brain_move_walk2 = {FRAME_walk201, FRAME_walk240, brain_frames_walk2, nullptr};
 #endif
 
 void brain_walk (edict_t *self)
@@ -255,62 +267,62 @@ void brain_walk (edict_t *self)
 
 mframe_t brain_frames_defense [] =
 {
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr
 };
 
 mframe_t brain_frames_pain3 [] =
 {
-	ai_move,	-2,	NULL,
-	ai_move,	2,	NULL,
-	ai_move,	1,	NULL,
-	ai_move,	3,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	-4,	NULL
+	SFP::ai_move,	-2,	nullptr,
+	SFP::ai_move,	2,	nullptr,
+	SFP::ai_move,	1,	nullptr,
+	SFP::ai_move,	3,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	-4,	nullptr
 };
 
 mframe_t brain_frames_pain2 [] =
 {
-	ai_move,	-2,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	3,	NULL,
-	ai_move,	1,	NULL,
-	ai_move,	-2,	NULL
+	SFP::ai_move,	-2,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	3,	nullptr,
+	SFP::ai_move,	1,	nullptr,
+	SFP::ai_move,	-2,	nullptr
 };
 
 mframe_t brain_frames_pain1 [] =
 {
-	ai_move,	-6,	NULL,
-	ai_move,	-2,	NULL,
-	ai_move,	-6,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	2,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	2,	NULL,
-	ai_move,	1,	NULL,
-	ai_move,	7,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	3,	NULL,
-	ai_move,	-1,	NULL
+	SFP::ai_move,	-6,	nullptr,
+	SFP::ai_move,	-2,	nullptr,
+	SFP::ai_move,	-6,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	2,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	2,	nullptr,
+	SFP::ai_move,	1,	nullptr,
+	SFP::ai_move,	7,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	3,	nullptr,
+	SFP::ai_move,	-1,	nullptr
 };
 
 
@@ -343,17 +355,19 @@ void brain_duck_up (edict_t *self)
 	self->takedamage = DAMAGE_AIM;
 	gi.linkentity (self);
 }
-
+AutoSFP(brain_duck_down)
+AutoSFP(brain_duck_hold)
+AutoSFP(brain_duck_up)
 mframe_t brain_frames_duck [] =
 {
-	ai_move,	0,	NULL,
-	ai_move,	-2,	brain_duck_down,
-	ai_move,	17,	brain_duck_hold,
-	ai_move,	-3,	NULL,
-	ai_move,	-1,	brain_duck_up,
-	ai_move,	-5,	NULL,
-	ai_move,	-6,	NULL,
-	ai_move,	-6,	NULL
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	-2,	SFP::brain_duck_down,
+	SFP::ai_move,	17,	SFP::brain_duck_hold,
+	SFP::ai_move,	-3,	nullptr,
+	SFP::ai_move,	-1,	SFP::brain_duck_up,
+	SFP::ai_move,	-5,	nullptr,
+	SFP::ai_move,	-6,	nullptr,
+	SFP::ai_move,	-6,	nullptr
 };
 
 void brain_dodge (edict_t *self, edict_t *attacker, float eta)
@@ -371,33 +385,33 @@ void brain_dodge (edict_t *self, edict_t *attacker, float eta)
 
 mframe_t brain_frames_death2 [] =
 {
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	9,	NULL,
-	ai_move,	0,	NULL
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	9,	nullptr,
+	SFP::ai_move,	0,	nullptr
 };
 
 mframe_t brain_frames_death1 [] =
 {
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	-2,	NULL,
-	ai_move,	9,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL,
-	ai_move,	0,	NULL
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	-2,	nullptr,
+	SFP::ai_move,	9,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr,
+	SFP::ai_move,	0,	nullptr
 };
 
 
@@ -432,27 +446,30 @@ void brain_hit_left (edict_t *self)
 	if (fire_hit (self, aim, (15 + (rand() %5)), 40))
 		gi.sound (self, CHAN_WEAPON, sound_melee3, 1, ATTN_NORM, 0);
 }
-
+AutoSFP(brain_swing_right)
+AutoSFP(brain_hit_right)
+AutoSFP(brain_swing_left)
+AutoSFP(brain_hit_left)
 mframe_t brain_frames_attack1 [] =
 {
-	ai_charge,	8,	NULL,
-	ai_charge,	3,	NULL,
-	ai_charge,	5,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	-3,	brain_swing_right,
-	ai_charge,	0,	NULL,
-	ai_charge,	-5,	NULL,
-	ai_charge,	-7,	brain_hit_right,
-	ai_charge,	0,	NULL,
-	ai_charge,	6,	brain_swing_left,
-	ai_charge,	1,	NULL,
-	ai_charge,	2,	brain_hit_left,
-	ai_charge,	-3,	NULL,
-	ai_charge,	6,	NULL,
-	ai_charge,	-1,	NULL,
-	ai_charge,	-3,	NULL,
-	ai_charge,	2,	NULL,
-	ai_charge,	-11,NULL
+	SFP::ai_charge,	8,	nullptr,
+	SFP::ai_charge,	3,	nullptr,
+	SFP::ai_charge,	5,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	-3,	SFP::brain_swing_right,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	-5,	nullptr,
+	SFP::ai_charge,	-7,	SFP::brain_hit_right,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	6,	SFP::brain_swing_left,
+	SFP::ai_charge,	1,	nullptr,
+	SFP::ai_charge,	2,	SFP::brain_hit_left,
+	SFP::ai_charge,	-3,	nullptr,
+	SFP::ai_charge,	6,	nullptr,
+	SFP::ai_charge,	-1,	nullptr,
+	SFP::ai_charge,	-3,	nullptr,
+	SFP::ai_charge,	2,	nullptr,
+	SFP::ai_charge,	-11,nullptr
 };
 
 void brain_chest_open (edict_t *self)
@@ -481,26 +498,28 @@ void brain_chest_closed (edict_t *self)
 		self->monsterinfo.currentmove = brain_move_attack1;
 	}
 }
-
+AutoSFP(brain_chest_open)
+AutoSFP(brain_tentacle_attack)
+AutoSFP(brain_chest_closed)
 mframe_t brain_frames_attack2 [] =
 {
-	ai_charge,	5,	NULL,
-	ai_charge,	-4,	NULL,
-	ai_charge,	-4,	NULL,
-	ai_charge,	-3,	NULL,
-	ai_charge,	0,	brain_chest_open,
-	ai_charge,	0,	NULL,
-	ai_charge,	13,	brain_tentacle_attack,
-	ai_charge,	0,	NULL,
-	ai_charge,	2,	NULL,
-	ai_charge,	0,	NULL,
-	ai_charge,	-9,	brain_chest_closed,
-	ai_charge,	0,	NULL,
-	ai_charge,	4,	NULL,
-	ai_charge,	3,	NULL,
-	ai_charge,	2,	NULL,
-	ai_charge,	-3,	NULL,
-	ai_charge,	-6,	NULL
+	SFP::ai_charge,	5,	nullptr,
+	SFP::ai_charge,	-4,	nullptr,
+	SFP::ai_charge,	-4,	nullptr,
+	SFP::ai_charge,	-3,	nullptr,
+	SFP::ai_charge,	0,	SFP::brain_chest_open,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	13,	SFP::brain_tentacle_attack,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	2,	nullptr,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	-9,	SFP::brain_chest_closed,
+	SFP::ai_charge,	0,	nullptr,
+	SFP::ai_charge,	4,	nullptr,
+	SFP::ai_charge,	3,	nullptr,
+	SFP::ai_charge,	2,	nullptr,
+	SFP::ai_charge,	-3,	nullptr,
+	SFP::ai_charge,	-6,	nullptr
 };
 
 void brain_melee(edict_t *self)
@@ -518,38 +537,38 @@ void brain_melee(edict_t *self)
 
 mframe_t brain_frames_run [] =
 {
-	ai_run,	9,	NULL,
-	ai_run,	2,	NULL,
-	ai_run,	3,	NULL,
-	ai_run,	3,	NULL,
-	ai_run,	1,	NULL,
-	ai_run,	0,	NULL,
-	ai_run,	0,	NULL,
-	ai_run,	10,	NULL,
-	ai_run,	-4,	NULL,
-	ai_run,	-1,	NULL,
-	ai_run,	2,	NULL
+	SFP::ai_run,	9,	nullptr,
+	SFP::ai_run,	2,	nullptr,
+	SFP::ai_run,	3,	nullptr,
+	SFP::ai_run,	3,	nullptr,
+	SFP::ai_run,	1,	nullptr,
+	SFP::ai_run,	0,	nullptr,
+	SFP::ai_run,	0,	nullptr,
+	SFP::ai_run,	10,	nullptr,
+	SFP::ai_run,	-4,	nullptr,
+	SFP::ai_run,	-1,	nullptr,
+	SFP::ai_run,	2,	nullptr
 };
-
+AutoSFP(brain_stand)
 mmove_t brain_moves[] = {
-	{FRAME_stand01, FRAME_stand30, brain_frames_stand, NULL},
-	{FRAME_stand31, FRAME_stand60, brain_frames_idle, brain_stand},
-	{FRAME_walk101, FRAME_walk111, brain_frames_walk1, NULL},
-	{FRAME_defens01, FRAME_defens08, brain_frames_defense, NULL},
-	{FRAME_pain301, FRAME_pain306, brain_frames_pain3, brain_run},
-	{FRAME_pain201, FRAME_pain208, brain_frames_pain2, brain_run},
-	{FRAME_pain101, FRAME_pain121, brain_frames_pain1, brain_run},
-	{FRAME_duck01, FRAME_duck08, brain_frames_duck, brain_run},
-	{FRAME_death201, FRAME_death205, brain_frames_death2, brain_dead},
-	{FRAME_death101, FRAME_death118, brain_frames_death1, brain_dead},
-	{FRAME_attak101, FRAME_attak118, brain_frames_attack1, brain_run},
-	{FRAME_attak201, FRAME_attak217, brain_frames_attack2, brain_run},
-	{FRAME_walk101, FRAME_walk111, brain_frames_run, NULL}
+	{FRAME_stand01, FRAME_stand30, brain_frames_stand, nullptr},
+	{FRAME_stand31, FRAME_stand60, brain_frames_idle, SFP::brain_stand},
+	{FRAME_walk101, FRAME_walk111, brain_frames_walk1, nullptr},
+	{FRAME_defens01, FRAME_defens08, brain_frames_defense, nullptr},
+	{FRAME_pain301, FRAME_pain306, brain_frames_pain3, SFP::brain_run},
+	{FRAME_pain201, FRAME_pain208, brain_frames_pain2, SFP::brain_run},
+	{FRAME_pain101, FRAME_pain121, brain_frames_pain1, SFP::brain_run},
+	{FRAME_duck01, FRAME_duck08, brain_frames_duck, SFP::brain_run},
+	{FRAME_death201, FRAME_death205, brain_frames_death2, SFP::brain_dead},
+	{FRAME_death101, FRAME_death118, brain_frames_death1, SFP::brain_dead},
+	{FRAME_attak101, FRAME_attak118, brain_frames_attack1, SFP::brain_run},
+	{FRAME_attak201, FRAME_attak217, brain_frames_attack2, SFP::brain_run},
+	{FRAME_walk101, FRAME_walk111, brain_frames_run, nullptr}
 };
 
 mmove_t * brain_get_currentmove(edict_t *self)
 {
-	if (!self->monsterinfo.currentmove) return NULL;
+	if (!self->monsterinfo.currentmove) return nullptr;
 	return &brain_moves[self->monsterinfo.currentmove-1];
 }
 
@@ -640,6 +659,15 @@ void brain_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int damage
 		self->monsterinfo.currentmove = brain_move_death2;
 }
 
+	SFPEnt(pain, brain_pain);
+	SFPEnt(die, brain_die);
+
+	SFPEnt(monsterinfo.walk, brain_walk);
+	SFPEnt(monsterinfo.dodge, brain_dodge);
+//	SFPEnt(monsterinfo.attack, brain_attack);
+	SFPEnt(monsterinfo.melee, brain_melee);
+	SFPEnt(monsterinfo.idle, brain_idle);
+	SFPEnt(monsterinfo.get_currentmove, brain_get_currentmove);
 /*QUAKED monster_brain (1 .5 0) (-16 -16 -24) (16 16 32) Ambush Trigger_Spawn Sight
 */
 void SP_monster_brain (edict_t *self)
@@ -675,19 +703,19 @@ void SP_monster_brain (edict_t *self)
 	self->gib_health = -150;
 	self->mass = 400;
 
-	self->pain = brain_pain;
-	self->die = brain_die;
+	self->pain = SFP::brain_pain;
+	self->die = SFP::brain_die;
 
-	self->monsterinfo.stand = brain_stand;
-	self->monsterinfo.walk = brain_walk;
-	self->monsterinfo.run = brain_run;
-	self->monsterinfo.dodge = brain_dodge;
+	self->monsterinfo.stand = SFP::brain_stand;
+	self->monsterinfo.walk = SFP::brain_walk;
+	self->monsterinfo.run = SFP::brain_run;
+	self->monsterinfo.dodge = SFP::brain_dodge;
 //	self->monsterinfo.attack = brain_attack;
-	self->monsterinfo.melee = brain_melee;
-	self->monsterinfo.sight = brain_sight;
-	self->monsterinfo.search = brain_search;
-	self->monsterinfo.idle = brain_idle;
-	self->monsterinfo.get_currentmove = brain_get_currentmove;
+	self->monsterinfo.melee = SFP::brain_melee;
+	self->monsterinfo.sight = SFP::brain_sight;
+	self->monsterinfo.search = SFP::brain_search;
+	self->monsterinfo.idle = SFP::brain_idle;
+	self->monsterinfo.get_currentmove = SFP::brain_get_currentmove;
 
 	self->monsterinfo.power_armor_type = POWER_ARMOR_SCREEN;
 	self->monsterinfo.power_armor_power = 100;

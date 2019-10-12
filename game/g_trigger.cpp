@@ -37,8 +37,8 @@ void multi_wait (edict_t *ent)
 {
 	ent->nextthink = 0;
 }
-
-
+AutoSFP(multi_wait)
+AutoSFP(G_FreeEdict)
 // the trigger was just activated
 // ent->activator should be set to the activator so it can be held through a delay
 // so wait for the delay time before firing
@@ -51,15 +51,15 @@ void multi_trigger (edict_t *ent)
 
 	if (ent->wait > 0)	
 	{
-		ent->think = multi_wait;
+		ent->think = SFP::multi_wait;
 		ent->nextthink = level.time + ent->wait;
 	}
 	else
 	{	// we can't just remove (self) here, because this is a touch function
 		// called while looping through area links...
-		ent->touch = NULL;
+		ent->touch = nullptr;
 		ent->nextthink = level.time + FRAMETIME;
-		ent->think = G_FreeEdict;
+		ent->think = SFP::G_FreeEdict;
 	}
 }
 
@@ -88,7 +88,7 @@ void Touch_Multi (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *su
 	{
 		vec3_t	forward;
 
-		AngleVectors(other->s.angles, forward, NULL, NULL);
+		AngleVectors(other->s.angles, forward, nullptr, nullptr);
 		if (_DotProduct(forward, self->movedir) < 0)
 			return;
 	}
@@ -96,7 +96,8 @@ void Touch_Multi (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *su
 	self->activator = other;
 	multi_trigger (self);
 }
-
+AutoSFP(Use_Multi)
+AutoSFP(Touch_Multi)
 /*QUAKED trigger_multiple (.5 .5 .5) ? MONSTER NOT_PLAYER TRIGGERED
 Variable sized repeatable trigger.  Must be targeted at one or more entities.
 If "delay" is set, the trigger waits some time after activating before firing.
@@ -111,10 +112,10 @@ set "message" to text string
 void trigger_enable (edict_t *self, edict_t *other, edict_t *activator)
 {
 	self->solid = SOLID_TRIGGER;
-	self->use = Use_Multi;
+	self->use = SFP::Use_Multi;
 	gi.linkentity (self);
 }
-
+AutoSFP(trigger_enable)
 void SP_trigger_multiple (edict_t *ent)
 {
 	if (ent->sounds == 1)
@@ -126,7 +127,7 @@ void SP_trigger_multiple (edict_t *ent)
 	
 	if (!ent->wait)
 		ent->wait = 0.2;
-	ent->touch = Touch_Multi;
+	ent->touch = SFP::Touch_Multi;
 	ent->movetype = MOVETYPE_NONE;
 	//ent->svflags |= SVF_NOCLIENT;
 
@@ -134,12 +135,12 @@ void SP_trigger_multiple (edict_t *ent)
 	if (ent->spawnflags & 4)
 	{
 		ent->solid = SOLID_NOT;
-		ent->use = trigger_enable;
+		ent->use = SFP::trigger_enable;
 	}
 	else
 	{
 		ent->solid = SOLID_TRIGGER;
-		ent->use = Use_Multi;
+		ent->use = SFP::Use_Multi;
 	}
 
 	if (!VectorCompare(ent->s.angles, vec3_origin))
@@ -190,10 +191,10 @@ void trigger_relay_use (edict_t *self, edict_t *other, edict_t *activator)
 {
 	G_UseTargets (self, activator);
 }
-
+AutoSFP(trigger_relay_use)
 void SP_trigger_relay (edict_t *self)
 {
-	self->use = trigger_relay_use;
+	self->use = SFP::trigger_relay_use;
 }
 
 
@@ -276,9 +277,9 @@ void trigger_key_use (edict_t *self, edict_t *other, edict_t *activator)
 
 	G_UseTargets (self, activator);
 
-	self->use = NULL;
+	self->use = nullptr;
 }
-
+AutoSFP(trigger_key_use)
 void SP_trigger_key (edict_t *self)
 {
 	if (!st.item)
@@ -303,7 +304,7 @@ void SP_trigger_key (edict_t *self)
 	gi.soundindex ("misc/keytry.wav");
 	gi.soundindex ("misc/keyuse.wav");
 
-	self->use = trigger_key_use;
+	self->use = SFP::trigger_key_use;
 }
 
 
@@ -347,15 +348,14 @@ void trigger_counter_use(edict_t *self, edict_t *other, edict_t *activator)
 	}
 	self->activator = activator;
 	multi_trigger (self);
-}
-
+}AutoSFP(trigger_counter_use)
 void SP_trigger_counter (edict_t *self)
 {
 	self->wait = -1;
 	if (!self->count)
 		self->count = 2;
 
-	self->use = trigger_counter_use;
+	self->use = SFP::trigger_counter_use;
 }
 
 
@@ -421,11 +421,12 @@ void trigger_push_touch (edict_t *self, edict_t *other, cplane_t *plane, csurfac
 Pushes the player
 "speed"		defaults to 1000
 */
+AutoSFP(trigger_push_touch)
 void SP_trigger_push (edict_t *self)
 {
 	InitTrigger (self);
 	windsound = gi.soundindex ("misc/windfly.wav");
-	self->touch = trigger_push_touch;
+	self->touch = SFP::trigger_push_touch;
 	if (!self->speed)
 		self->speed = 1000;
 	gi.linkentity (self);
@@ -461,7 +462,7 @@ void hurt_use (edict_t *self, edict_t *other, edict_t *activator)
 	gi.linkentity (self);
 
 	if (!(self->spawnflags & 2))
-		self->use = NULL;
+		self->use = nullptr;
 }
 
 
@@ -492,13 +493,14 @@ void hurt_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *sur
 		dflags = 0;
 	T_Damage (other, self, self, vec3_origin, other->s.origin, vec3_origin, self->dmg, self->dmg, dflags, MOD_TRIGGER_HURT);
 }
-
+AutoSFP(hurt_touch)
+AutoSFP(hurt_use)
 void SP_trigger_hurt (edict_t *self)
 {
 	InitTrigger (self);
 
 	self->noise_index = gi.soundindex ("world/electro.wav");
-	self->touch = hurt_touch;
+	self->touch = SFP::hurt_touch;
 
 	if (!self->dmg)
 		self->dmg = 5;
@@ -509,7 +511,7 @@ void SP_trigger_hurt (edict_t *self)
 		self->solid = SOLID_TRIGGER;
 
 	if (self->spawnflags & 2)
-		self->use = hurt_use;
+		self->use = SFP::hurt_use;
 
 	gi.linkentity (self);
 }
@@ -533,7 +535,7 @@ void trigger_gravity_touch (edict_t *self, edict_t *other, cplane_t *plane, csur
 {
 	other->gravity = self->gravity;
 }
-
+AutoSFP(trigger_gravity_touch)
 void SP_trigger_gravity (edict_t *self)
 {
 	if (st.gravity == 0)
@@ -545,7 +547,7 @@ void SP_trigger_gravity (edict_t *self)
 
 	InitTrigger (self);
 	self->gravity = atoi(st.gravity);
-	self->touch = trigger_gravity_touch;
+	self->touch = SFP::trigger_gravity_touch;
 }
 
 
@@ -579,10 +581,10 @@ void trigger_monsterjump_touch (edict_t *self, edict_t *other, cplane_t *plane, 
 	if (!other->groundentity)
 		return;
 	
-	other->groundentity = NULL;
+	other->groundentity = nullptr;
 	other->velocity[2] = self->movedir[2];
 }
-
+AutoSFP(trigger_monsterjump_touch)
 void SP_trigger_monsterjump (edict_t *self)
 {
 	if (!self->speed)
@@ -592,7 +594,7 @@ void SP_trigger_monsterjump (edict_t *self)
 	if (self->s.angles[YAW] == 0)
 		self->s.angles[YAW] = 360;
 	InitTrigger (self);
-	self->touch = trigger_monsterjump_touch;
+	self->touch = SFP::trigger_monsterjump_touch;
 	self->movedir[2] = st.height;
 }
 
@@ -638,9 +640,9 @@ void trigger_changelevel_touch (edict_t *self, edict_t *other, cplane_t *plane, 
 
 	BeginIntermission (self);
 }
-
+AutoSFP(trigger_changelevel_touch)
 extern void use_target_changelevel (edict_t *self, edict_t *other, edict_t *activator);
-
+AutoSFP(use_target_changelevel);
 void SP_trigger_changelevel (edict_t *ent)
 {
 	if (!ent->map)
@@ -651,8 +653,8 @@ void SP_trigger_changelevel (edict_t *ent)
 	}
 
 	InitTrigger(ent);
-	ent->touch = trigger_changelevel_touch;
-	ent->use = use_target_changelevel;
+	ent->touch = SFP::trigger_changelevel_touch;
+	ent->use = SFP::use_target_changelevel;
 }
 
 

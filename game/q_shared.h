@@ -80,9 +80,6 @@ const bool qtrue = true;
 typedef enum { qfalse, qtrue }	qboolean;
 #endif
 
-#ifndef NULL
-#define NULL ((void *)0)
-#endif
 
 
 // angle indexes

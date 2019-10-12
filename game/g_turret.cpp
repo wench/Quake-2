@@ -197,7 +197,7 @@ void turret_breach_think (edict_t *self)
 		}
 	}
 }
-
+AutoSFP(turret_breach_think)
 void turret_breach_finish_init (edict_t *self)
 {
 	// get and save info for muzzle location
@@ -213,10 +213,11 @@ void turret_breach_finish_init (edict_t *self)
 	}
 
 	self->teammaster->dmg = self->dmg;
-	self->think = turret_breach_think;
+	self->think = SFP::turret_breach_think;
 	self->think (self);
 }
-
+AutoSFP(turret_blocked);
+AutoSFP(turret_breach_finish_init);
 void SP_turret_breach (edict_t *self)
 {
 	self->solid = SOLID_BSP;
@@ -243,9 +244,9 @@ void SP_turret_breach (edict_t *self)
 	self->ideal_yaw = self->s.angles[YAW];
 	self->move_angles[YAW] = self->ideal_yaw;
 
-	self->blocked = turret_blocked;
+	self->blocked = SFP::turret_blocked;
 
-	self->think = turret_breach_finish_init;
+	self->think = SFP::turret_breach_finish_init;
 	self->nextthink = level.time + FRAMETIME;
 	gi.linkentity (self);
 }
@@ -261,7 +262,7 @@ void SP_turret_base (edict_t *self)
 	self->solid = SOLID_BSP;
 	self->movetype = MOVETYPE_PUSH;
 	gi.setmodel (self, self->model);
-	self->blocked = turret_blocked;
+	self->blocked = SFP::turret_blocked;
 	gi.linkentity (self);
 }
 
@@ -285,12 +286,12 @@ void turret_driver_die (edict_t *self, edict_t *inflictor, edict_t *attacker, in
 	// remove the driver from the end of them team chain
 	for (ent = self->target_ent->teammaster; ent->teamchain != self; ent = ent->teamchain)
 		;
-	ent->teamchain = NULL;
-	self->teammaster = NULL;
+	ent->teamchain = nullptr;
+	self->teammaster = nullptr;
 	self->flags &= ~FL_TEAMSLAVE;
 
-	self->target_ent->owner = NULL;
-	self->target_ent->teammaster->owner = NULL;
+	self->target_ent->owner = nullptr;
+	self->target_ent->teammaster->owner = nullptr;
 
 	infantry_die (self, inflictor, attacker, damage,point);
 }
@@ -306,7 +307,7 @@ void turret_driver_think (edict_t *self)
 	self->nextthink = level.time + FRAMETIME;
 
 	if (self->enemy && (!self->enemy->inuse || self->enemy->health <= 0))
-		self->enemy = NULL;
+		self->enemy = nullptr;
 
 	if (!self->enemy)
 	{
@@ -350,13 +351,13 @@ void turret_driver_think (edict_t *self)
 	//FIXME how do we really want to pass this along?
 	self->target_ent->spawnflags |= 65536;
 }
-
+AutoSFP(turret_driver_think)
 void turret_driver_link (edict_t *self)
 {
 	vec3_t	vec;
 	edict_t	*ent;
 
-	self->think = turret_driver_think;
+	self->think = SFP::turret_driver_think;
 	self->nextthink = level.time + FRAMETIME;
 
 	self->target_ent = G_PickTarget (self->target);
@@ -383,7 +384,10 @@ void turret_driver_link (edict_t *self)
 	self->teammaster = self->target_ent->teammaster;
 	self->flags |= FL_TEAMSLAVE;
 }
-
+SFPEnt(die, turret_driver_die)
+AutoSFP(infantry_stand);
+AutoSFP(monster_use);
+AutoSFP(turret_driver_link)
 void SP_turret_driver (edict_t *self)
 {
 	if (deathmatch->value)
@@ -403,8 +407,8 @@ void SP_turret_driver (edict_t *self)
 	self->mass = 200;
 	self->viewheight = 24;
 
-	self->die = turret_driver_die;
-	self->monsterinfo.stand = infantry_stand;
+	self->die = SFP::turret_driver_die;
+	self->monsterinfo.stand = SFP::infantry_stand;
 
 	self->flags |= FL_NO_KNOCKBACK;
 
@@ -413,7 +417,7 @@ void SP_turret_driver (edict_t *self)
 	self->svflags |= SVF_MONSTER;
 	self->s.renderfx |= RF_FRAMELERP;
 	self->takedamage = DAMAGE_AIM;
-	self->use = monster_use;
+	self->use = SFP::monster_use;
 	self->clipmask = MASK_MONSTERSOLID;
 	VectorCopy (self->s.origin, self->s.old_origin);
 	self->monsterinfo.aiflags |= AI_STAND_GROUND|AI_DUCKED;
@@ -425,7 +429,7 @@ void SP_turret_driver (edict_t *self)
 			gi.dprintf("%s at %s has bad item: %s\n", self->classname, vtos(self->s.origin), st.item);
 	}
 
-	self->think = turret_driver_link;
+	self->think = SFP::turret_driver_link;
 	self->nextthink = level.time + FRAMETIME;
 
 	gi.linkentity (self);

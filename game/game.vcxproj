@@ -290,6 +290,7 @@
     <ClCompile Include="g_turret.cpp" />
     <ClCompile Include="g_utils.cpp" />
     <ClCompile Include="g_weapon.cpp" />
+    <ClCompile Include="SerializableFunctionPointer.cpp" />
     <ClCompile Include="m_actor.cpp" />
     <ClCompile Include="m_berserk.cpp" />
     <ClCompile Include="m_boss2.cpp" />
@@ -325,6 +326,7 @@
   <ItemGroup>
     <ClInclude Include="game.h" />
     <ClInclude Include="g_local.h" />
+    <ClInclude Include="SerializableFunctionPointer.h" />
     <ClInclude Include="m_actor.h" />
     <ClInclude Include="m_berserk.h" />
     <ClInclude Include="m_boss2.h" />

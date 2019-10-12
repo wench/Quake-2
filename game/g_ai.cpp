@@ -52,7 +52,7 @@ void AI_SetSightClient (void)
 	edict_t	*ent;
 	int		start, check;
 
-	if (level.sight_client == NULL)
+	if (level.sight_client == nullptr)
 		start = 1;
 	else
 		start = level.sight_client - g_edicts;
@@ -73,7 +73,7 @@ void AI_SetSightClient (void)
 		}
 		if (check == start)
 		{
-			level.sight_client = NULL;
+			level.sight_client = nullptr;
 			return;		// nobody to see
 		}
 	}
@@ -315,7 +315,7 @@ qboolean infront (edict_t *self, edict_t *other)
 	float	dot;
 	vec3_t	forward;
 	
-	AngleVectors (self->s.angles, forward, NULL, NULL);
+	AngleVectors (self->s.angles, forward, nullptr, nullptr);
 	VectorSubtract (other->s.origin, self->s.origin, vec);
 	VectorNormalize (vec);
 	dot = DotProduct (vec, forward);
@@ -375,11 +375,11 @@ void FoundTarget (edict_t *self)
 	}
 
 	// clear out our combattarget, these are a one shot deal
-	self->combattarget = NULL;
+	self->combattarget = nullptr;
 	self->monsterinfo.aiflags |= AI_COMBAT_POINT;
 
 	// clear the targetname, that point is ours!
-	self->movetarget->targetname = NULL;
+	self->movetarget->targetname = nullptr;
 	self->monsterinfo.pausetime = 0;
 
 	// run for it
@@ -530,7 +530,7 @@ qboolean FindTarget (edict_t *self)
 				self->enemy = self->enemy->enemy;
 				if (!self->enemy->client)
 				{
-					self->enemy = NULL;
+					self->enemy = nullptr;
 					return false;
 				}
 			}
@@ -618,7 +618,7 @@ qboolean M_CheckAttack (edict_t *self)
 		VectorCopy (self->enemy->s.origin, spot2);
 		spot2[2] += self->enemy->viewheight;
 
-		tr = gi.trace (spot1, NULL, NULL, spot2, self, CONTENTS_SOLID|CONTENTS_MONSTER|CONTENTS_SLIME|CONTENTS_LAVA|CONTENTS_WINDOW);
+		tr = gi.trace (spot1, nullptr, nullptr, spot2, self, CONTENTS_SOLID|CONTENTS_MONSTER|CONTENTS_SLIME|CONTENTS_LAVA|CONTENTS_WINDOW);
 
 		// do we have a clear shot?
 		if (tr.ent != self->enemy)
@@ -691,7 +691,7 @@ qboolean M_CheckAttack (edict_t *self)
 
 	return false;
 }
-
+AutoSFP(M_CheckAttack);
 
 /*
 =============
@@ -787,7 +787,7 @@ qboolean ai_checkattack (edict_t *self, float dist)
 					if (self->movetarget)
 						self->goalentity = self->movetarget;
 					else
-						self->goalentity = NULL;
+						self->goalentity = nullptr;
 				self->monsterinfo.aiflags &= ~AI_SOUND_TARGET;
 				if (self->monsterinfo.aiflags & AI_TEMP_STAND_GROUND)
 					self->monsterinfo.aiflags &= ~(AI_STAND_GROUND | AI_TEMP_STAND_GROUND);
@@ -832,12 +832,12 @@ qboolean ai_checkattack (edict_t *self, float dist)
 
 	if (hesDeadJim)
 	{
-		self->enemy = NULL;
+		self->enemy = nullptr;
 	// FIXME: look all around for other targets
 		if (self->oldenemy && self->oldenemy->health > 0)
 		{
 			self->enemy = self->oldenemy;
-			self->oldenemy = NULL;
+			self->oldenemy = nullptr;
 			HuntTarget (self);
 		}
 		else
@@ -1009,7 +1009,7 @@ void ai_run (edict_t *self, float dist)
 		{
 //			dprint("was temp goal; retrying original\n");
 			self->monsterinfo.aiflags &= ~AI_PURSUE_TEMP;
-			marker = NULL;
+			marker = nullptr;
 			VectorCopy (self->monsterinfo.saved_goal, self->monsterinfo.last_sighting);
 			new_ = true;
 		}
@@ -1057,7 +1057,7 @@ void ai_run (edict_t *self, float dist)
 			center = tr.fraction;
 			d2 = d1 * ((center+1)/2);
 			self->s.angles[YAW] = self->ideal_yaw = vectoyaw(v);
-			AngleVectors(self->s.angles, v_forward, v_right, NULL);
+			AngleVectors(self->s.angles, v_forward, v_right, nullptr);
 
 			VectorSet(v, d2, -16, 0);
 			G_ProjectSource (self->s.origin, v, v_forward, v_right, left_target);
