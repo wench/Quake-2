@@ -1,18 +1,23 @@
 ﻿// DisAPE.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
-#define _CRT_SECURE_NO_WARNINGS
 
 #include <iostream>
 #include "..\APElib\APEFILE.h"
 #include "..\APElib\FILEREADER.h"
+#include "..\APElib\BUFFEREADER.h"
 int main()
 {
-	const char* fn = "C:\\GOG Galaxy\\Games\\Anachronox\\anachrodox\\Anoxfiles\\anoxdata\\gameflow\\rowdys.ape";
+	const char* fn =  "C:\\GOG Galaxy\\Games\\Anachronox\\anachrodox\\Anoxfiles\\anoxdata\\gameflow\\rowdys.ape";
 		auto f = fopen(fn, "rb");
 	FILEREADER file =f;
+	READER& r = file;
+	uint8_t* buffer = new uint8_t[r.Length];
+	r.read(r.Length, buffer);
+	BUFFEREADER breader(buffer, r.Length);
+	fclose(f);
 	APEFILE af;
 
-	af.Parse(file);
+	af.Parse(breader);
     std::cout << "Hello World!\n";
 }
 

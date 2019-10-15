@@ -80,7 +80,14 @@ public:
 
 		return bytes;
 	}
-
+	 size_t read(size_t bytes, void* buf)
+	{
+		return read(bytes, (char*)buf);
+	}
+	 size_t read(size_t bytes, uint8_t* buf)
+	{
+		return read(bytes, (char*)buf);
+	}
 	template<class Type1, class... Types>
 	std::tuple<Type1, Types...> readTuple()
 	{

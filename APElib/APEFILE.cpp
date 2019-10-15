@@ -6,7 +6,7 @@ bool APEFILE::Parse(READER& reader)
 	auto check = std::make_tuple< uint32_t, uint32_t>(317, 0xFFFFFFFF);
 	if (header != check) return false;
 	
-	for (;;)
+	while (reader.Get_remaining() >= 8)
 	{
 		auto v = reader.readi32();
 		if ((v == 0))
@@ -31,5 +31,5 @@ bool APEFILE::Parse(READER& reader)
 		else
 		windows.push_back(new APE::Window(reader, v));
 	}
-	
+	return true;
 }
