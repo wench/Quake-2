@@ -537,10 +537,10 @@ namespace APE
 	};
 	struct BGColourCommand :public Command
 	{
-		uint8_t rgba[4];
+		uint8_t colors[4][4];
 		BGColourCommand(READER& reader)
 		{
-			reader.read(4, rgba);
+			reader.read(sizeof(colors), colors);
 				
 		}
 

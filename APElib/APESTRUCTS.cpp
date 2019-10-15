@@ -639,7 +639,7 @@ namespace APE
 			{
 				throw new std::exception();
 			}
-			expr = v1;
+			conditions.push_back(v1);
 			uint64_t ccend;
 			commands = ReadNested(reader, condcode, prevconcode, isif, ccend);
 			condcode = ccend;

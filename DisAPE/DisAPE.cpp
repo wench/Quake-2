@@ -7,7 +7,7 @@
 #include "..\APElib\BUFFEREADER.h"
 int main()
 {
-	const char* fn =  "C:\\GOG Galaxy\\Games\\Anachronox\\anachrodox\\Anoxfiles\\anoxdata\\gameflow\\rowdys.ape";
+	const char* fn =  "C:\\GOG Galaxy\\Games\\Anachronox\\anachrodox\\Anoxfiles\\anoxdata\\gameflow\\hephaestus.ape";
 		auto f = fopen(fn, "rb");
 	FILEREADER file =f;
 	READER& r = file;

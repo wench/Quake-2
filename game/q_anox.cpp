@@ -471,11 +471,15 @@ void anox_setup_moves(anox_entity_desc_t *desc)
 	if (!info) Sys_Error("Couldn't get model info for anox monster\n");
 
 
+	//desc->moves = new(TAG_GAME) mmove_t[info->num_framesets + 2];
+	//all_frames = new(TAG_GAME) mframe_t[info->num_framesets + 2];
 	gi.TTagMalloc(desc->moves,(info->num_framesets+2)*sizeof(mmove_t), TAG_GAME);
 	gi.TTagMalloc(all_frames,info->num_frames*sizeof(mframe_t), TAG_GAME);
 
 	for (i = 0; i < info->num_framesets; i++)
 	{
+		new (desc->moves + i) mmove_t;
+		
 		decltype(desc->moves[i].frame[j].aifunc)func;
 		float	dist;
 
@@ -516,6 +520,7 @@ void anox_setup_moves(anox_entity_desc_t *desc)
 
 		for (j = 0; j < info->frameset[i].num_frames; j++)
 		{
+			new (&(desc->moves[i].frame[j]))mframe_t;
 			desc->moves[i].frame[j].aifunc = func;
 			desc->moves[i].frame[j].dist = dist;
 			desc->moves[i].frame[j].thinkfunc = nullptr;
